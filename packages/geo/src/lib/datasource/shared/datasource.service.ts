@@ -25,6 +25,8 @@ import {
   CartoDataSourceOptions,
   ArcGISRestDataSource,
   ArcGISRestDataSourceOptions,
+  ImageArcGISRestDataSource,
+  ArcGISRestImageDataSourceOptions,
   TileArcGISRestDataSource,
   TileArcGISRestDataSourceOptions,
   WebSocketDataSource,
@@ -99,6 +101,11 @@ export class DataSourceService {
           context as ArcGISRestDataSourceOptions
         );
         break;
+        case 'imagearcgisrest':
+          dataSource = this.createArcGISRestImageDataSource(
+            context as ArcGISRestImageDataSourceOptions
+          );
+          break;
       case 'websocket':
         dataSource = this.createWebSocketDataSource(
           context as FeatureDataSourceOptions
@@ -266,6 +273,18 @@ export class DataSourceService {
         map(
           (options: ArcGISRestDataSourceOptions) =>
             new ArcGISRestDataSource(options)
+        )
+      );
+  }
+  private createArcGISRestImageDataSource(
+    context: ArcGISRestImageDataSourceOptions
+  ): Observable<ImageArcGISRestDataSource> {
+    return this.capabilitiesService
+      .getImageArcgisOptions(context)
+      .pipe(
+        map(
+          (options: ArcGISRestImageDataSourceOptions) =>
+            new ImageArcGISRestDataSource(options)
         )
       );
   }

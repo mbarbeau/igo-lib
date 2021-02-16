@@ -130,7 +130,7 @@ export class ShareMapService {
       l => l.dataSource.options && (l.dataSource.options.type === typeService)
     )) {
       if (contextLayersID.indexOf(layer.id) === -1) {
-        const linkUrl = (layer.dataSource.options as any).url;
+        const linkUrl = encodeURIComponent((layer.dataSource.options as any).url);
         let addedLayer = '';
         if (layer.dataSource.options.type === 'wms') {
           addedLayer = encodeURIComponent((layer.dataSource.options as any).params.LAYERS);

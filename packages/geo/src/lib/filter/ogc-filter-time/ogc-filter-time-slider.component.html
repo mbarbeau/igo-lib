@@ -1,0 +1,20 @@
+<div class="slider-container">
+  <mat-slider
+    id="time-slider"
+    [step]="1"
+    [min]="1"
+    [max]="calculatedStep"
+    [(ngModel)]="sliderValue"
+    [displayWith]="sliderDisplayWith"
+    (input)="handleSliderInput($event)"
+    thumbLabel
+    >
+  </mat-slider>
+  <button mat-icon-button color="primary" (click)="playFilter($event)">
+    <mat-icon [svgIcon]="playIcon"></mat-icon>
+  </button>
+  <button mat-icon-button color="primary" (click)="resetFilter($event)">
+    <mat-icon svgIcon="{{resetIcon}}"></mat-icon>
+  </button>
+  
+</div>

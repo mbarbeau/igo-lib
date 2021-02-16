@@ -101,10 +101,6 @@ export class LayerItemComponent implements OnInit, OnDestroy {
 
   @Input() changeDetection;
 
-  get removable(): boolean {
-    return this.layer.options.removable !== false;
-  }
-
   get opacity() {
     return this.layer.opacity * 100;
   }

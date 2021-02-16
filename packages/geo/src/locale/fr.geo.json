@@ -170,7 +170,8 @@
         "advancedOgcFilters": "Filtres avancés",
         "placeholder": "Saisir une valeur",
         "placeholderSnrc": "Ex: 21L14",
-        "selectOperator": "Choisir un opérateur"
+        "selectOperator": "Choisir un opérateur",
+        "sliderModeTitle": "Curseur temporel"
       },
       "spatialSelector": {
         "fixedExtent": "Étendue fixe",
@@ -195,6 +196,8 @@
         "filterRaiseLayer": "Le déplacement avant se fait toujours selon l'ordre de la carte!",
         "moreOptions": "Outils de la couche",
         "removeLayer": "Retirer la couche de la carte",
+        "removeSelectedLayers": "Retirer les couches sélectionnées de la carte",
+        "removeSelectedLayersRestriction": "Certaines couches sélectionnées ne peuvent être supprimées",
         "showFeaturesList": "Afficher la liste des entités",
         "showLayer": "Afficher la couche",
         "showSelectedLayers": "Afficher les couches sélectionnées",
@@ -266,7 +269,8 @@
         "showLegend": "Afficher la légende",
         "showProjection": "Afficher la projection",
         "showScale": "Afficher l'échelle",
-        "title": "Titre"
+        "title": "Titre",
+        "subtitle": "Sous-titre"
       },
       "directionsForm": {
         "start": "Début",
@@ -587,7 +591,7 @@
           "message": "Hors-Ligne",
           "title": "Statut:"
         }
-      },   
+      },
       "workspace": {
         "inMapExtent.active.tooltip": "Ne montrer que les enregistrements contenus dans la carte",
         "inMapExtent.inactive.tooltip": "Montrer tous les enregistrements"

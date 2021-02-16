@@ -1,4 +1,4 @@
-// import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+// import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 // import { By } from '@angular/platform-browser';
 // import { MatDatepickerModule, MatNativeDateModule } from '@angular/material';
 //
@@ -36,7 +36,7 @@
 //   // const dateYAfterHandleTime = new Date('1999-02-02T11:00:00Z');
 //   // const dateZAfterHandleTime = new Date('1999-02-02T17:00:00Z');
 //
-//   beforeEach(async(() => {
+//   beforeEach(waitForAsync(() => {
 //     TestBed.configureTestingModule({
 //       imports: [
 //         MatDatepickerModule,

@@ -1,4 +1,4 @@
-import { async, inject, TestBed } from '@angular/core/testing';
+import { waitForAsync, inject, TestBed } from '@angular/core/testing';
 import { ElementRef, Renderer2 } from '@angular/core';
 
 import { CollapseDirective } from './collapse.directive';
@@ -7,7 +7,7 @@ export class MockElementRef extends ElementRef {}
 
 describe('CollapseDirective', () => {
   beforeEach(
-    async(() => {
+    waitForAsync(() => {
       TestBed.configureTestingModule({
         providers: [Renderer2]
       }).compileComponents();
