@@ -118,6 +118,8 @@ export interface OgcFilterDuringOptions extends OgcFilterAttributeOptions {
   end?: string;
   step: string;
   restrictToStep?: boolean;
+  sliderOptions?: SliderOptionsInterface;
+  displayFormat?: string;
 }
 export interface OgcFilterIsBetweenOptions extends OgcFilterAttributeOptions {
   lowerBoundary: number;
@@ -145,6 +147,8 @@ export interface OgcInterfaceFilterOptions {
   end?: string;
   step?: string;
   restrictToStep?: boolean;
+  sliderOptions: SliderOptionsInterface;
+  displayFormat?: string;
   escapeChar?: string;
   expression?: string | number;
   extent?: [number, number, number, number];
@@ -168,4 +172,10 @@ export interface OgcInterfaceFilterOptions {
   // id?: string;
   // abbrev?: string;
 
+}
+
+export interface SliderOptionsInterface extends OgcFilterDuringOptions {
+  interval?: number;
+  displayFormat?: string;
+  enabled?: boolean;
 }

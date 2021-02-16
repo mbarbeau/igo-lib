@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { SimpleNotificationsModule } from 'angular2-notifications';
 
 import { MessageCenterComponent } from './message-center.component';
@@ -7,7 +7,7 @@ describe('NotificationComponent', () => {
   let component: MessageCenterComponent;
   let fixture: ComponentFixture<MessageCenterComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [SimpleNotificationsModule.forRoot()],
       declarations: [MessageCenterComponent]

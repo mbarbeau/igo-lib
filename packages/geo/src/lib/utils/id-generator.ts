@@ -20,6 +20,7 @@ export function generateIdFromSourceOptions(options: DataSourceOptions): string 
     xyz: generateXYZIdFromSourceOptions,
     feature: generateFeatureIdFromSourceOptions,
     arcgisrest: generateArcgisRestIdFromSourceOptions,
+    imagearcgisrest: generateArcgisRestIdFromSourceOptions,
     tilearcgisrest: generateArcgisRestIdFromSourceOptions,
     osm: (_options: AnyDataSourceOptions) => 'OSM',
     tiledebug: (_options: AnyDataSourceOptions) => 'tiledebug'

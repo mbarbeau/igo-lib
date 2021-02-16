@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { ActionStore, EntityRecord, EntityStoreFilterCustomFuncStrategy, EntityStoreFilterSelectionStrategy, EntityStoreStrategyFuncOptions, EntityTableColumnRenderer, EntityTableTemplate } from '@igo2/common';
 import { StorageScope, StorageService } from '@igo2/core';
 import { skipWhile, take } from 'rxjs/operators';
-import { SourceFieldsOptionsParams } from '../../datasource';
+import { SourceFieldsOptionsParams, WMSDataSource } from '../../datasource';
 import { FeatureDataSource } from '../../datasource/shared/datasources/feature-datasource';
 import { WFSDataSourceOptions } from '../../datasource/shared/datasources/wfs-datasource.interface';
 import { Feature, FeatureMotion, FeatureStore, FeatureStoreInMapExtentStrategy, FeatureStoreInMapResolutionStrategy, FeatureStoreLoadingLayerStrategy, FeatureStoreSelectionStrategy } from '../../feature';
@@ -29,6 +29,7 @@ export class WmsWorkspaceService {
     if (layer.options.workspace?.enabled !== true) {
       return;
     }
+    const dataSource: WMSDataSource = layer.dataSource as WMSDataSource ;
     const wmsLinkId = layer.id + '.WmsWorkspaceTableSrc';
     const wfsLinkId = layer.id + '.WfsWorkspaceTableDest';
     if (!layer.options.linkedLayers) {
@@ -47,7 +48,7 @@ export class WmsWorkspaceService {
        linkProperties.properties.push(LinkedProperties.MINRESOLUTION);
     }
     let hasOgcFilters = false;
-    if ((layer.dataSource.options as OgcFilterableDataSourceOptions).ogcFilters?.enabled) {
+    if ((dataSource.options as OgcFilterableDataSourceOptions).ogcFilters?.enabled) {
       linkProperties.properties.push(LinkedProperties.OGCFILTERS);
       hasOgcFilters = true;
     }
@@ -81,14 +82,14 @@ export class WmsWorkspaceService {
         minResolution: layer.options.workspace?.minResolution || layer.minResolution || 0,
         maxResolution: layer.options.workspace?.maxResolution || layer.maxResolution || Infinity,
         sourceOptions: {
-          download: layer.dataSource.options.download,
+          download: dataSource.options.download,
           type: 'wfs',
-          url: layer.dataSource.options.urlWfs || layer.dataSource.options.url,
+          url: dataSource.options.urlWfs || dataSource.options.url,
           queryable: true,
-          queryTitle: (layer.dataSource.options as QueryableDataSourceOptions).queryTitle,
-          params: layer.dataSource.options.paramsWFS,
-          ogcFilters: Object.assign({}, layer.dataSource.ogcFilters$.value, {enabled: hasOgcFilters}),
-          sourceFields: layer.dataSource.options.sourceFields || undefined
+          queryTitle: (dataSource.options as QueryableDataSourceOptions).queryTitle,
+          params: dataSource.options.paramsWFS,
+          ogcFilters: Object.assign({}, dataSource.ogcFilters$.value, {enabled: hasOgcFilters}),
+          sourceFields: dataSource.options.sourceFields || undefined
         } as WFSoptions
       })
       .subscribe((workspaceLayer: VectorLayer) => {
@@ -117,7 +118,7 @@ export class WmsWorkspaceService {
             workspaceId: workspaceLayer.id
           } as GeoWorkspaceOptions);
 
-        delete layer.dataSource.options.download;
+        delete dataSource.options.download;
         return wks;
 
       });

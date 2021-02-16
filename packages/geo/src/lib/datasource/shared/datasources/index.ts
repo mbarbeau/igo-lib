@@ -19,6 +19,8 @@ export * from './carto-datasource';
 export * from './carto-datasource.interface';
 export * from './arcgisrest-datasource';
 export * from './arcgisrest-datasource.interface';
+export * from './imagearcgisrest-datasource';
+export * from './imagearcgisrest-datasource.interface';
 export * from './tilearcgisrest-datasource';
 export * from './tilearcgisrest-datasource.interface';
 export * from './tiledebug-datasource';

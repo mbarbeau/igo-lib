@@ -51,6 +51,7 @@ import { OgcFilterableListBindingDirective } from './ogc-filterable-list/ogc-fil
 import { OgcFilterableListComponent } from './ogc-filterable-list/ogc-filterable-list.component';
 import { OgcFilterButtonComponent } from './ogc-filter-button/ogc-filter-button.component';
 import { OGCFilterService } from './shared/ogc-filter.service';
+import { OGCFilterTimeService } from './shared/ogc-filter-time.service';
 import { OgcFilterToggleButtonComponent } from './ogc-filter-toggle-button/ogc-filter-toggle-button.component';
 
 import { SpatialFilterTypeComponent } from './spatial-filter/spatial-filter-type/spatial-filter-type.component';
@@ -58,6 +59,7 @@ import { SpatialFilterListComponent } from './spatial-filter/spatial-filter-list
 import { SpatialFilterItemComponent } from './spatial-filter/spatial-filter-item/spatial-filter-item.component';
 import { SpatialFilterService } from './shared/spatial-filter.service';
 import { OgcFilterTimeComponent } from './ogc-filter-time/ogc-filter-time.component';
+import { OgcFilterTimeSliderComponent } from './ogc-filter-time/ogc-filter-time-slider.component';
 
 @NgModule({
   imports: [
@@ -111,7 +113,8 @@ import { OgcFilterTimeComponent } from './ogc-filter-time/ogc-filter-time.compon
     SpatialFilterTypeComponent,
     SpatialFilterListComponent,
     SpatialFilterItemComponent,
-    OgcFilterTimeComponent
+    OgcFilterTimeComponent,
+    OgcFilterTimeSliderComponent
   ],
   declarations: [
     FilterableDataSourcePipe,
@@ -130,9 +133,10 @@ import { OgcFilterTimeComponent } from './ogc-filter-time/ogc-filter-time.compon
     SpatialFilterTypeComponent,
     SpatialFilterListComponent,
     SpatialFilterItemComponent,
-    OgcFilterTimeComponent
+    OgcFilterTimeComponent,
+    OgcFilterTimeSliderComponent
   ],
-  providers: [TimeFilterService, OGCFilterService, SpatialFilterService]
+  providers: [TimeFilterService, OGCFilterService, OGCFilterTimeService, SpatialFilterService]
 })
 export class IgoFilterModule {
   static forRoot(): ModuleWithProviders<IgoFilterModule> {

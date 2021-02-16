@@ -14,6 +14,7 @@ export interface ICatalog {
   type?: TypeCatalogStrings;
   version?: string;
   matrixSet?: string;
+  forcedProperties?: any[];
   requestEncoding?: string;
   regFilters?: string[];
   groupImpose?: CatalogItemGroup; // only use by ICompositeCatalog object (id and title)

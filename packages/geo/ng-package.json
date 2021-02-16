@@ -5,6 +5,7 @@
   "lib": {
     "entryFile": "src/public_api.ts",
     "umdModuleIds": {
+      "ngx-color-picker": "ngxColorPicker",
       "ol-mapbox-style/dist/stylefunction": "stylefunction",
       "ol/source/OSM": "olSourceOSM",
       "ol/source/XYZ": "olSourceXYZ",
@@ -13,6 +14,7 @@
       "ol/format/GML32": "olFormatGML32",
       "ol/format/OSMXML": "olFormatOSMXML",
       "ol/geom/GeometryLayout": "olGeometryLayout",
+      "ol/source/ImageArcGISRest": "olSourceImageArcGISRest",
       "ol/render/Feature": "OlRenderFeature",
       "ol/source/ImageWMS": "olSourceImageWMS",
       "ol/source/WMTS": "olSourceWMTS",

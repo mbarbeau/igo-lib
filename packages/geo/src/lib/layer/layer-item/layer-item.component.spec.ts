@@ -1,4 +1,4 @@
-// import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+// import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 //
 // import { IgoTestModule } from '../../../test/module';
 // import { IgoSharedModule } from '../../shared';
@@ -18,7 +18,7 @@
 //   let fixture: ComponentFixture<LayerItemComponent>;
 //
 //   beforeEach(
-//     async(() => {
+//     waitForAsync(() => {
 //       TestBed.configureTestingModule({
 //         imports: [IgoTestModule, IgoSharedModule, IgoFilterModule],
 //         declarations: [LayerItemComponent, LayerLegendComponent],

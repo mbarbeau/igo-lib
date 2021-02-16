@@ -12,6 +12,7 @@ import { WebSocketDataSource } from './websocket-datasource';
 import { MVTDataSource } from './mvt-datasource';
 import { ClusterDataSource } from './cluster-datasource';
 import { TileDebugDataSource } from './tiledebug-datasource';
+import { ImageArcGISRestDataSource } from './imagearcgisrest-datasource';
 
 export type AnyDataSource =
   | DataSource
@@ -24,6 +25,7 @@ export type AnyDataSource =
   | WMSDataSource
   | CartoDataSource
   | ArcGISRestDataSource
+  | ImageArcGISRestDataSource
   | TileArcGISRestDataSource
   | WebSocketDataSource
   | MVTDataSource

@@ -15,6 +15,7 @@ import {
   WMTSDataSource,
   WMSDataSource,
   CartoDataSource,
+  ImageArcGISRestDataSource,
   ArcGISRestDataSource,
   TileArcGISRestDataSource,
   WebSocketDataSource,
@@ -82,6 +83,7 @@ export class LayerService {
       case ClusterDataSource:
         layer = this.createVectorLayer(layerOptions as VectorLayerOptions);
         break;
+      case ImageArcGISRestDataSource:
       case WMSDataSource:
         layer = this.createImageLayer(layerOptions as ImageLayerOptions);
         break;
