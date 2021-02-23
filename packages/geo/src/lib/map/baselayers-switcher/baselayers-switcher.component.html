@@ -16,7 +16,7 @@
        </button>
      </div>
 
-     <igo-mini-basemap *ngFor="let baseLayer of baseLayers; let i = index"
+     <igo-mini-basemap class="mat-typography" *ngFor="let baseLayer of baseLayers; let i = index"
        [map]="map"
        [baseLayer]="baseLayer"
        [title]="(baseLayers.length > 2 && !expand) ? ('igo.geo.baselayersSwitcher.title' | translate) : baseLayer.title"

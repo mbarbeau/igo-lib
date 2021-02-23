@@ -12,6 +12,7 @@ export interface PrintOptions {
   orientation: PrintOrientation;
   resolution: PrintResolution;
   title?: string;
+  subtitle?: string;
   comment?: string;
   imageFormat?: PrintSaveImageFormat;
   showLegend?: boolean;

@@ -52,15 +52,23 @@ export class PrintService {
       doc.internal.pageSize.height
     ];
 
-    const margins = [20, 10, 20, 10];
+    const margins = [10, 10, 10, 10];
     const width = dimensions[0] - margins[3] - margins[1];
     const height = dimensions[1] - margins[0] - margins[2];
     const size = [width, height];
+    let titleSizeResults = [0, 0];
 
     if (options.title !== undefined) {
-      this.addTitle(doc, options.title, dimensions[0]);
+      titleSizeResults = this.getTitleSize(options.title, width, height, doc); // return : size(pt) and left margin (mm)
+      this.addTitle(doc, options.title, titleSizeResults[0], margins[3] + titleSizeResults[1], titleSizeResults[0] * (25.4 / 72));
     }
-
+    if (options.subtitle !== undefined) {
+      let subtitleSizeResult = 0;
+      const titleH = titleSizeResults[0];
+      subtitleSizeResult = this.getSubTitleSize(options.subtitle, width, height, doc); // return : size(pt) and left margin (mm)
+      this.addSubTitle(doc, options.subtitle, titleH * 0.7, margins[3] + subtitleSizeResult, titleH * 1.7 * (25.4 / 72));
+      margins[0] = margins[0] + titleSizeResults[0] * 0.7 * (25.4 / 72);
+    }
     if (options.showProjection === true || options.showScale === true) {
       this.addProjScale(
         doc,
@@ -227,23 +235,62 @@ export class PrintService {
     return status$;
   }
 
-  private addTitle(doc: jsPDF, title: string, pageWidth: number) {
+  getTitleSize(title: string, pageWidth: number, pageHeight: number, doc: jsPDF) {
     const pdfResolution = 96;
-    const titleSize = 32;
-    const titleWidth = ((titleSize * 25.4) / pdfResolution) * title.length;
+    const titleSize = Math.round(2 * (pageHeight + 145) * 0.05) / 2;
+    doc.setFont('Times');
+    doc.setFontType('Bold');
+    const width = doc.getTextWidth(title);
+
+    const titleWidth = doc.getStringUnitWidth(title) * titleSize / doc.internal.scaleFactor;
+    const titleTailleMinimale = Math.round( 2 * (pageHeight + 150 ) * 0.037) / 2;
+    let titleFontSize = 0;
 
     let titleMarginLeft;
-    if (titleWidth > pageWidth) {
+    if (titleWidth >= (pageWidth)) {
       titleMarginLeft = 0;
+      titleFontSize = Math.round(((pageWidth / title.length) * pdfResolution) / 25.4);
+      // If the formula to find the font size gives below the defined minimum size
+      if (titleFontSize < titleTailleMinimale) {
+        titleFontSize = titleTailleMinimale;
+      }
     } else {
-      titleMarginLeft = (pageWidth - titleWidth) / 2;
+      titleMarginLeft = (pageWidth - titleWidth) / 2 ;
+      titleFontSize = titleSize;
     }
-
-    doc.setFont('courier');
-    doc.setFontSize(32);
-    doc.text(title, titleMarginLeft, 15);
+    return [titleFontSize, titleMarginLeft];
   }
 
+  getSubTitleSize(subtitle: string, pageWidth: number, pageHeight: number, doc: jsPDF) {
+    const subtitleSize = 0.7 * Math.round(2 * (pageHeight + 145) * 0.05) / 2; // 70% of the title's font size
+
+    doc.setFont('Times');
+    doc.setFontType('Bold');
+
+    const subtitleWidth = doc.getStringUnitWidth(subtitle) * subtitleSize / doc.internal.scaleFactor;
+
+    let subtitleMarginLeft;
+    if (subtitleWidth >= (pageWidth)) {
+      subtitleMarginLeft = 0;
+    } else {
+      subtitleMarginLeft = (pageWidth - subtitleWidth) / 2 ;
+    }
+    return subtitleMarginLeft;
+  }
+
+  private addTitle(doc: jsPDF, title: string, titleFontSize: number, titleMarginLeft: number, titleMarginTop: number) {
+    doc.setFont('Times');
+    doc.setFontType('Bold');
+    doc.setFontSize(titleFontSize);
+    doc.text(title, titleMarginLeft, titleMarginTop);
+  }
+
+  private addSubTitle(doc: jsPDF, subtitle: string, subtitleFontSize: number, subtitleMarginLeft: number, subtitleMarginTop: number) {
+    doc.setFont('Times');
+    doc.setFontType();
+    doc.setFontSize(subtitleFontSize);
+    doc.text(subtitle, subtitleMarginLeft, subtitleMarginTop);
+  }
   /**
    * Add comment to the document
    * * @param  doc - pdf document
@@ -393,7 +440,6 @@ export class PrintService {
     const heightPixels = Math.round((size[1] * resolution) / 25.4);
 
     let timeout;
-
     map.ol.once('rendercomplete', (event: any) => {
       const canvases = event.target
         .getViewport()
@@ -426,7 +472,6 @@ export class PrintService {
             'print'
           );
         }
-
         this.renderMap(map, mapSize, extent);
         status$.next(status);
       });
@@ -455,7 +500,6 @@ export class PrintService {
             'print'
           );
         }
-
         this.renderMap(map, mapSize, extent);
         status$.next(status);
       }, 200);
@@ -478,6 +522,7 @@ export class PrintService {
    * @param  scale - Indicate if scale need to be add. Default to false
    * @param  legend - Indicate if the legend of layers need to be download. Default to false
    * @param  title - Title to add for the map - Default to blank
+   * @param  subtitle - Subtitle to add for the map - Default to blank
    * @param  comment - Comment to add for the map - Default to blank
    * @param  doZipFile - Indicate if we do a zip with the file
    * @return Image file of the map with extension format given as parameter
@@ -490,6 +535,7 @@ export class PrintService {
     scale = false,
     legend = false,
     title = '',
+    subtitle = '',
     comment = '',
     doZipFile = true
   ) {
@@ -516,6 +562,8 @@ export class PrintService {
       const commentWidth = newContext.measureText(comment).width;
       // Add height for title if defined
       height = title !== '' ? height + 30 : height;
+      // Add height for title if defined
+      height = subtitle !== '' ? height + 30 : height;
       // Add height for projection or scale (same line) if defined
       height = projection !== false || scale !== false ? height + 30 : height;
       const positionHProjScale = height - 10;
@@ -536,10 +584,19 @@ export class PrintService {
       // If a title need to be added to canvas
       if (title !== '') {
         // Set font for title
+        // Adjust according to title length
         newContext.font = '26px Calibri';
         positionHCanvas = 30;
         newContext.textAlign = 'center';
-        newContext.fillText(title, width / 2, 20);
+        newContext.fillText(title, width / 2, 20, width * 0.9);
+      }
+      if (subtitle !== '') {
+        // Set font for subtitle
+        // Adjust according to title length
+        newContext.font = '26px Calibri';
+        positionHCanvas = 60;
+        newContext.textAlign = 'center';
+        newContext.fillText(subtitle, width / 2, 50, width * 0.9);
       }
       // Set font for next section
       newContext.font = '20px Calibri';
@@ -554,6 +611,7 @@ export class PrintService {
         );
         positionWProjScale += 200; // Width position change for scale position
       }
+
       // If scale need to be added to canvas
       if (scale !== false) {
         const scaleText = translate.instant('igo.geo.printForm.scale');
@@ -656,6 +714,7 @@ export class PrintService {
   }
 
   private renderMap(map, size, extent) {
+    map.ol.updateSize();
     map.ol.renderSync();
   }
 

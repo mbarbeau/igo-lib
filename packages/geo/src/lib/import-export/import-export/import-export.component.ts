@@ -47,6 +47,7 @@ import { WfsWorkspace } from '../../workspace/shared/wfs-workspace';
 import { FeatureWorkspace } from '../../workspace/shared/feature-workspace';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 import { InputProjections, ProjectionsLimitationsOptions } from './import-export.interface';
+import { DownloadService } from '../../download/shared/download.service';
 
 @Component({
   selector: 'igo-import-export',
@@ -151,7 +152,8 @@ export class ImportExportComponent implements OnDestroy, OnInit {
     private formBuilder: FormBuilder,
     private config: ConfigService,
     private cdRef: ChangeDetectorRef,
-    private storageService: StorageService
+    private storageService: StorageService,
+    private downloadService: DownloadService
   ) {
     this.loadConfig();
     this.buildForm();
@@ -483,11 +485,16 @@ export class ImportExportComponent implements OnDestroy, OnInit {
       if (
         data.format === ExportFormat.URL &&
         dSOptions.download &&
-        dSOptions.download.url
+        (dSOptions.download.url || dSOptions.download.dynamicUrl)
       ) {
         setTimeout(() => {
           // better look an feel
-          window.open(dSOptions.download.url, '_blank');
+          const url = dSOptions.download.url || dSOptions.download.dynamicUrl;
+          if (url.match(/service=wfs/gi)) {
+            this.downloadService.open(lay);
+          } else {
+            window.open(url , '_blank');
+          }
           this.loading$.next(false);
         }, 500);
         return;
@@ -669,17 +676,23 @@ export class ImportExportComponent implements OnDestroy, OnInit {
   }
 
   private computeFormats(layers?: AnyLayer[]) {
+    let appliedformats: string[] = Object.keys(ExportFormat);
+    const formatsType = {
+      onlyUrl: false,
+      onlyVector: false,
+      vectorAndUrl: false,
+      customList: false
+    };
+    const customList = [];
     if (layers && layers.length) {
-      const formatsType = {
-        onlyUrl: false,
-        onlyVector: false,
-        vectorAndUrl: false
-      };
       layers.forEach((layer) => {
         if (!layer) {
           return;
         }
-        if (
+        if (layer.dataSource.options.download?.allowedFormats) {
+          formatsType.customList = true;
+          customList.push({layer: layer.title, formats: this.validateListFormat(layer.dataSource.options.download.allowedFormats)});
+        } else if (
           !(layer instanceof VectorLayer) &&
           layer.dataSource.options.download &&
           layer.dataSource.options.download.url
@@ -687,7 +700,7 @@ export class ImportExportComponent implements OnDestroy, OnInit {
           formatsType.onlyUrl = true;
         } else if (
           layer.dataSource.options.download &&
-          layer.dataSource.options.download.url
+          (layer.dataSource.options.download.url || layer.dataSource.options.download.dynamicUrl)
         ) {
           formatsType.vectorAndUrl = true;
         } else if (layer instanceof VectorLayer) {
@@ -696,7 +709,7 @@ export class ImportExportComponent implements OnDestroy, OnInit {
       });
 
       if (formatsType.onlyUrl === true && formatsType.onlyVector === false) {
-        this.formats$.next(strEnum(['URL']));
+        appliedformats = ['URL'];
       } else if (
         formatsType.onlyVector === true &&
         formatsType.onlyUrl === false
@@ -706,7 +719,7 @@ export class ImportExportComponent implements OnDestroy, OnInit {
           const keys = Object.keys(this.formats$.value).filter(
             (key) => key !== 'URL'
           );
-          this.formats$.next(strEnum(keys));
+          appliedformats = keys;
         }
       } else if (
         formatsType.vectorAndUrl === true &&
@@ -717,29 +730,47 @@ export class ImportExportComponent implements OnDestroy, OnInit {
         if (!(ExportFormat.URL in this.formats$.value)) {
           const keys = Object.keys(this.formats$.value);
           keys.push('URL');
-          this.formats$.next(strEnum(keys));
+          appliedformats = keys;
         }
-      } else {
-        this.formats$.next([]);
-        this.messageService.alert(
-          this.languageService.translate.instant(
-            'igo.geo.export.noFormat.text'
-          ),
-          this.languageService.translate.instant(
-            'igo.geo.export.noFormat.title'
-          )
-        );
       }
-      return;
     }
-
     if (this.config.getConfig('importExport.formats') !== undefined) {
       const validatedListFormat = this.validateListFormat(
         this.config.getConfig('importExport.formats')
       );
-      this.formats$.next(strEnum(validatedListFormat));
+      appliedformats = validatedListFormat;
+    }
+    if (formatsType.customList) {
+      let commonFormats;
+      const layersWithCustomFormats = [];
+      let previousCustomListFormats = customList[0].formats;
+      customList.map(list => {
+        layersWithCustomFormats.push(list.layer);
+        commonFormats = list.formats.filter(value => previousCustomListFormats.includes(value));
+        previousCustomListFormats = list.formats;
+      });
+      const finalFormats = commonFormats.filter(value => appliedformats.includes(value));
+      if (finalFormats.length > 0) {
+        this.formats$.next(strEnum(finalFormats));
+
+        if (layers && layers.length) {
+          if (layers.length > 1) {
+            this.messageService.alert(
+              this.languageService.translate.instant('igo.geo.export.customList.text', { value: layersWithCustomFormats.join() }),
+              this.languageService.translate.instant('igo.geo.export.customList.title')
+            );
+          }
+        }
+      } else {
+        this.formats$.next([]);
+        this.messageService.alert(
+          this.languageService.translate.instant('igo.geo.export.noFormat.text'),
+          this.languageService.translate.instant('igo.geo.export.noFormat.title')
+        );
+      }
+      return;
     } else {
-      this.formats$.next(ExportFormat);
+      this.formats$.next(strEnum(appliedformats));
     }
   }
 

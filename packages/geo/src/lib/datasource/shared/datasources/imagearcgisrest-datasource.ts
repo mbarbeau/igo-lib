@@ -1,13 +1,12 @@
-import olSourceTileArcGISRest from 'ol/source/TileArcGISRest';
+import ImageArcGISRest from 'ol/source/ImageArcGISRest';
 
 import { DataSource } from './datasource';
 import { Legend } from './datasource.interface';
-import { TileArcGISRestDataSourceOptions } from './tilearcgisrest-datasource.interface';
+import { ArcGISRestImageDataSourceOptions } from './imagearcgisrest-datasource.interface';
 import { QueryHtmlTarget } from '../../../query/shared/query.enums';
-
-export class TileArcGISRestDataSource extends DataSource {
-  public ol: olSourceTileArcGISRest;
-  public options: TileArcGISRestDataSourceOptions;
+export class ImageArcGISRestDataSource extends DataSource {
+  public ol: ImageArcGISRest;
+  public options: ArcGISRestImageDataSourceOptions;
 
   get params(): any {
     return this.options.params as any;
@@ -29,12 +28,17 @@ export class TileArcGISRestDataSource extends DataSource {
       : QueryHtmlTarget.BLANK;
   }
 
-  protected createOlSource(): olSourceTileArcGISRest {
-    return new olSourceTileArcGISRest(this.options);
+  protected createOlSource(): ImageArcGISRest {
+
+    return new ImageArcGISRest({
+      ratio: 1,
+      params: {LAYERS: `show:${this.options.layer}`},
+      url: this.options.url
+    });
   }
 
   getLegend(): Legend[] {
-    const legendInfo = this.options.legendInfo;
+    const legendInfo = this.options.params.legendInfo;
     const legend = super.getLegend();
     if (legendInfo === undefined || legend.length > 0) {
       return legend;

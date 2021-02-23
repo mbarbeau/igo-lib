@@ -1,21 +1,26 @@
-import { EventEmitter, Inject, Injectable, OnDestroy, Output } from '@angular/core';
+import { Inject, Injectable, OnDestroy } from '@angular/core';
 
-import { Action, Widget, EntityStoreFilterCustomFuncStrategy, EntityStoreFilterSelectionStrategy } from '@igo2/common';
+import {
+  Action,
+  EntityStoreFilterCustomFuncStrategy,
+  EntityStoreFilterSelectionStrategy,
+  Widget
+} from '@igo2/common';
+
 import { BehaviorSubject, Subscription } from 'rxjs';
 import {
   WfsWorkspace,
   mapExtentStrategyActiveToolTip,
-  FeatureStoreSelectionStrategy,
-  FeatureMotion,
   noElementSelected,
   ExportOptions,
   OgcFilterWidget,
-  OgcFilterableDataSource
+  OgcFilterableDataSource,
 } from '@igo2/geo';
-import { StorageService, StorageScope, StorageServiceEvent, LanguageService, MediaService } from '@igo2/core';
+import { StorageService, StorageServiceEvent, LanguageService, MediaService} from '@igo2/core';
 import { StorageState } from '../../storage/storage.state';
 import { map, skipWhile } from 'rxjs/operators';
 import { ToolState } from '../../tool/tool.state';
+import { handleZoomAuto } from './workspace.utils';
 
 @Injectable({
   providedIn: 'root'
@@ -26,6 +31,8 @@ export class WfsActionsService implements OnDestroy  {
     this.storageService.get('workspaceMaximize') as boolean
   );
 
+  selectOnlyCheckCondition$: BehaviorSubject<boolean> = new BehaviorSubject(false);
+  // rowsInMapExtentCheckCondition$: BehaviorSubject<boolean> = new BehaviorSubject(true);
   zoomAuto$: BehaviorSubject<boolean> = new BehaviorSubject(false);
   private storageChange$$: Subscription;
 
@@ -37,12 +44,6 @@ export class WfsActionsService implements OnDestroy  {
     return this.storageService.get('zoomAuto') as boolean;
   }
 
-  get rowsInMapExtent(): boolean {
-    return this.storageService.get('rowsInMapExtent') as boolean;
-  }
-
-  @Output() workspaceMaximizeEvent = new EventEmitter<boolean>();
-
   constructor(
     @Inject(OgcFilterWidget) private ogcFilterWidget: Widget,
     private storageState: StorageState,
@@ -50,30 +51,37 @@ export class WfsActionsService implements OnDestroy  {
     private mediaService: MediaService,
     private toolState: ToolState) {}
 
-    getWorkspaceMaximizeEmitter(): EventEmitter<boolean> {
-      return this.workspaceMaximizeEvent;
-    }
-
   ngOnDestroy(): void {
     if (this.storageChange$$) {
       this.storageChange$$.unsubscribe();
     }
   }
 
-  loadActions(workspace: WfsWorkspace) {
-    const actions = this.buildActions(workspace);
+  loadActions(
+    workspace: WfsWorkspace,
+    rowsInMapExtentCheckCondition$: BehaviorSubject<boolean>,
+    selectOnlyCheckCondition$: BehaviorSubject<boolean>
+    ) {
+    const actions = this.buildActions(
+      workspace,
+      rowsInMapExtentCheckCondition$,
+      selectOnlyCheckCondition$
+      );
     workspace.actionStore.load(actions);
   }
 
-  buildActions(workspace: WfsWorkspace): Action[] {
+  buildActions(
+    workspace: WfsWorkspace,
+    rowsInMapExtentCheckCondition$: BehaviorSubject<boolean>,
+    selectOnlyCheckCondition$: BehaviorSubject<boolean>
+    ): Action[] {
     this.zoomAuto$.next(this.zoomAuto);
-    this.storageService.storageChange$
+    this.storageChange$$ = this.storageService.storageChange$
       .pipe(skipWhile((storageChange: StorageServiceEvent) => storageChange.key !== 'zoomAuto'))
       .subscribe(() => {
         this.zoomAuto$.next(this.zoomAuto);
-        this.handleZoomAuto(workspace);
-      }
-      );
+        handleZoomAuto(workspace, this.storageService);
+      });
     const actions = [
       {
         id: 'zoomAuto',
@@ -82,7 +90,7 @@ export class WfsActionsService implements OnDestroy  {
         tooltip: 'igo.integration.workspace.zoomAuto.tooltip',
         checkCondition: this.zoomAuto$,
         handler: () => {
-          this.handleZoomAuto(workspace);
+          handleZoomAuto(workspace, this.storageService);
           this.storageService.set('zoomAuto', !this.storageService.get('zoomAuto') as boolean);
         }
       },
@@ -91,33 +99,16 @@ export class WfsActionsService implements OnDestroy  {
         checkbox: true,
         title: 'igo.integration.workspace.inMapExtent.title',
         tooltip: mapExtentStrategyActiveToolTip(workspace),
-        checkCondition: this.rowsInMapExtent,
-        handler: () => {
-          const filterStrategy = workspace.entityStore
-            .getStrategyOfType(EntityStoreFilterCustomFuncStrategy);
-          if (filterStrategy.active) {
-            filterStrategy.deactivate();
-          } else {
-            filterStrategy.activate();
-          }
-          this.storageService.set('rowsInMapExtent', !this.storageService.get('rowsInMapExtent') as boolean, StorageScope.SESSION);
-        }
+        checkCondition: rowsInMapExtentCheckCondition$,
+        handler: () => rowsInMapExtentCheckCondition$.next(!rowsInMapExtentCheckCondition$.value)
       },
       {
         id: 'selectedOnly',
         checkbox: true,
         title: 'igo.integration.workspace.selected.title',
         tooltip: 'igo.integration.workspace.selected.title',
-        checkCondition: false,
-        handler: () => {
-          const filterStrategy = workspace.entityStore
-            .getStrategyOfType(EntityStoreFilterSelectionStrategy);
-          if (filterStrategy.active) {
-            filterStrategy.deactivate();
-          } else {
-            filterStrategy.activate();
-          }
-        }
+        checkCondition: selectOnlyCheckCondition$,
+        handler: () => selectOnlyCheckCondition$.next(!selectOnlyCheckCondition$.value)
       },
       {
         id: 'clearselection',
@@ -194,11 +185,5 @@ export class WfsActionsService implements OnDestroy  {
     ];
     return (workspace.layer.dataSource as OgcFilterableDataSource).ogcFilters$?.value?.enabled ?
     actions : actions.filter(action => action.id !== 'ogcFilter');
-  }
-
-  private handleZoomAuto(workspace: WfsWorkspace) {
-    const zoomStrategy = workspace.entityStore
-      .getStrategyOfType(FeatureStoreSelectionStrategy) as FeatureStoreSelectionStrategy;
-    zoomStrategy.setMotion(this.zoomAuto ? FeatureMotion.Default : FeatureMotion.None);
   }
 }

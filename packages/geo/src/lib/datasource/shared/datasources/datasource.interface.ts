@@ -13,6 +13,7 @@ export interface DataSourceOptions {
     | 'tiledebug'
     | 'carto'
     | 'arcgisrest'
+    | 'imagearcgisrest'
     | 'tilearcgisrest'
     | 'websocket'
     | 'mvt'

@@ -90,7 +90,13 @@ export class PrintFormComponent implements OnInit {
   set title(value: string) {
     this.titleField.setValue(value, { onlySelf: true });
   }
-
+  @Input()
+  get subtitle(): string {
+    return this.subtitleField.value;
+  }
+  set subtitle(value: string) {
+    this.subtitleField.setValue(value, { onlySelf: true });
+  }
   @Input()
   get comment(): string {
     return this.commentField.value;
@@ -172,11 +178,16 @@ export class PrintFormComponent implements OnInit {
     return (this.form.controls as any).title as FormControl;
   }
 
+  get subtitleField() {
+    return (this.form.controls as any).subtitle as FormControl;
+  }
+
   @Output() submit: EventEmitter<PrintOptions> = new EventEmitter();
 
   constructor(private formBuilder: FormBuilder) {
     this.form = this.formBuilder.group({
       title: ['', []],
+      subtitle: ['', []],
       comment: ['', []],
       outputFormat: ['', [Validators.required]],
       paperFormat: ['', [Validators.required]],

@@ -320,7 +320,7 @@ export class TimeFilterFormComponent implements OnInit {
 
   resetFilter(event: any) {
     this.date = new Date(this.min);
-    this.year = this.date.getFullYear() + 1;
+    this.year = this.date.getFullYear();
     if (
       !this.isRange &&
       TimeFilterStyle.SLIDER &&
@@ -372,18 +372,16 @@ export class TimeFilterFormComponent implements OnInit {
       this.stopFilter();
     } else {
       this.playIcon = 'pause-circle';
-      this.interval = setInterval(
-        // tslint:disable-next-line:only-arrow-functions
-        function(that) {
-          that.year = that.year + that.mySlider.step;
-          if (that.year > that.max.getFullYear()) {
-            that.stopFilter();
-          }
-          that.yearChange.emit(that.year);
-        },
-        this.timeInterval,
-        this
-      );
+      this.interval = setInterval(() => {
+        if (
+          (this.year + this.mySlider.step) > this.max.getFullYear()) {
+          this.stopFilter();
+        } else {
+          this.year = this.year + this.mySlider.step;
+        }
+        this.yearChange.emit(this.year);
+
+      }, this.timeInterval, this);
     }
   }
 

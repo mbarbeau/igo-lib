@@ -26,7 +26,8 @@ import { SourceFieldsOptionsParams, FeatureDataSource } from '../../datasource';
 
 import { FeatureWorkspace } from './feature-workspace';
 import { skipWhile, take } from 'rxjs/operators';
-import { StorageService, StorageScope } from '@igo2/core';
+import { StorageService } from '@igo2/core';
+import { getRowsInMapExtent, getSelectedOnly, setRowsInMapExtent, setSelectedOnly } from './workspace.utils';
 
 @Injectable({
   providedIn: 'root'
@@ -93,7 +94,6 @@ export class FeatureWorkspaceService {
       many: true,
       dragBox: true
     });
-    this.storageService.set('rowsInMapExtent', true, StorageScope.SESSION);
     store.addStrategy(loadingStrategy, true);
     store.addStrategy(inMapExtentStrategy, true);
     store.addStrategy(inMapResolutionStrategy, true);

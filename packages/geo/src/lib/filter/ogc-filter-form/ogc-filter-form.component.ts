@@ -101,16 +101,20 @@ export class OgcFilterFormComponent implements OnInit {
   }
 
   ngOnInit() {
-    const sFields = this.datasource.options.sourceFields.filter(
-      (sf) =>
-        sf.excludeFromOgcFilters === undefined || !sf.excludeFromOgcFilters
-    );
-    sFields.map((sfs) => {
-      if (sfs.values) {
-        sfs.values.sort();
-      }
-    });
-    this.fields$.next(sFields);
+
+    if ( this.datasource.options.sourceFields) {
+      const sFields = this.datasource.options.sourceFields.filter(
+        (sf) =>
+          sf.excludeFromOgcFilters === undefined || !sf.excludeFromOgcFilters
+      );
+      sFields.map((sfs) => {
+        if (sfs.values) {
+          sfs.values.sort();
+        }
+      });
+      this.fields$.next(sFields);
+    }
+
     this.updateFieldsList();
     this.selectedField$.next(
       this.fields$.value.find((f) => f.name === this.currentFilter.propertyName)
@@ -250,13 +254,16 @@ export class OgcFilterFormComponent implements OnInit {
     this.refreshFilters();
   }
 
-  changeProperty(value: any, pos?: number) {
+  changeProperty(value: any, pos?: number, refreshFilter = true) {
     const detectedProperty = this.detectProperty(pos);
     if (detectedProperty) {
       this.datasource.options.ogcFilters.interfaceOgcFilters.find(
         (f) => f.filterid === this.currentFilter.filterid
       )[detectedProperty] = value;
-      this.refreshFilters();
+
+      if ( refreshFilter ) {
+        this.refreshFilters();
+      }
     }
   }
 

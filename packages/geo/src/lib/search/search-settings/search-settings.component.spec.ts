@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { IgoLanguageModule } from '@igo2/core';
 import { SearchSettingsComponent } from './search-settings.component';
 import { CommonModule } from '@angular/common';
@@ -30,45 +30,47 @@ describe('SearchSettingsComponent', () => {
   let component: SearchSettingsComponent;
   let fixture: ComponentFixture<SearchSettingsComponent>;
 
-  beforeEach(async(() => {
-    const spy = jasmine.createSpyObj('SearchSourceService', [
-      'getSources',
-      'getEnabledSources'
-    ]);
-    spy.getSources = jasmine.createSpy().and.returnValue([]);
-    spy.getEnabledSources = jasmine.createSpy().and.returnValue([]);
+  beforeEach(
+    waitForAsync(() => {
+      const spy = jasmine.createSpyObj('SearchSourceService', [
+        'getSources',
+        'getEnabledSources'
+      ]);
+      spy.getSources = jasmine.createSpy().and.returnValue([]);
+      spy.getEnabledSources = jasmine.createSpy().and.returnValue([]);
 
-    TestBed.configureTestingModule({
-      imports: [
-        HttpClientModule,
-        TranslateModule.forRoot({
-          loader: {
-            provide: TranslateLoader,
-            useFactory: HttpLoaderFactory,
-            deps: [HttpClient]
-          }
-        }),
-        IgoLanguageModule,
-        CommonModule,
-        MatTooltipModule,
-        MatIconModule,
-        MatButtonModule,
-        MatMenuModule,
-        MatRadioModule,
-        MatCheckboxModule,
-        MatDividerModule,
-        MatSlideToggleModule,
-        MatIconTestingModule
-      ],
-      declarations: [SearchSettingsComponent],
-      providers: [
-        { provide: SearchSourceService, useValue: spy },
-        provideDefaultIChercheSearchResultFormatter(),
-        provideDefaultCoordinatesSearchResultFormatter(),
-        provideILayerSearchResultFormatter()
-      ]
-    }).compileComponents();
-  }));
+      TestBed.configureTestingModule({
+        imports: [
+          HttpClientModule,
+          TranslateModule.forRoot({
+            loader: {
+              provide: TranslateLoader,
+              useFactory: HttpLoaderFactory,
+              deps: [HttpClient]
+            }
+          }),
+          IgoLanguageModule,
+          CommonModule,
+          MatTooltipModule,
+          MatIconModule,
+          MatButtonModule,
+          MatMenuModule,
+          MatRadioModule,
+          MatCheckboxModule,
+          MatDividerModule,
+          MatSlideToggleModule,
+          MatIconTestingModule
+        ],
+        declarations: [SearchSettingsComponent],
+        providers: [
+          { provide: SearchSourceService, useValue: spy },
+          provideDefaultIChercheSearchResultFormatter(),
+          provideDefaultCoordinatesSearchResultFormatter(),
+          provideILayerSearchResultFormatter()
+        ]
+      }).compileComponents();
+    })
+  );
 
   beforeEach(() => {
     fixture = TestBed.createComponent(SearchSettingsComponent);

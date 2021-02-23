@@ -80,8 +80,9 @@ export function formatWFSQueryString(
     }`;
   }
 
-  const getCapabilities = `${url}?service=WFS&request=GetCapabilities&${version}`;
-  let getFeature = `${url}?service=WFS&request=GetFeature&${version}&${featureTypes}&`;
+  const separator = url.indexOf('?') === -1 ? '?' : '&';
+  const getCapabilities = `${url}${separator}service=WFS&request=GetCapabilities&${version}`;
+  let getFeature = `${url}${separator}service=WFS&request=GetFeature&${version}&${featureTypes}&`;
   getFeature += `${outputFormat}&${srs}&${cnt}&${propertyName}&${effectiveStartIndex}`;
 
   let getpropertyvalue = `${url}?service=WFS&request=GetPropertyValue&version=${versionWfs200}&${featureTypes}&`;

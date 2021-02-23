@@ -277,9 +277,8 @@ export class ILayerSearchSource extends SearchSource implements TextSearch {
         url,
         queryFormat: queryParams.queryFormat,
         queryHtmlTarget: queryParams.queryHtmlTarget,
-        params: {
-          LAYERS: data.properties.name
-        },
+        params: data.properties.format === 'wms' ? {LAYERS: data.properties.name} : undefined,
+        layer: data.properties.format === 'wms' ? undefined : data.properties.name,
         optionsFromCapabilities: true,
         crossOrigin: 'anonymous'
       },

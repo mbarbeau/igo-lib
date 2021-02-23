@@ -41,6 +41,12 @@ export class RouteService {
       wmsLayersKey:  'wmsLayers',
       wmtsUrlKey: 'wmtsUrl',
       wmtsLayersKey:  'wmtsLayers',
+      arcgisUrlKey: 'arcgisUrl',
+      arcgisLayersKey:  'arcgisLayers',
+      iarcgisUrlKey: 'iarcgisUrl',
+      iarcgisLayersKey:  'iarcgisLayers',
+      tarcgisUrlKey: 'tarcgisUrl',
+      tarcgisLayersKey:  'tarcgisLayers',
       vectorKey: 'vector'
     };
     this.options = Object.assign({}, defaultOptions, options);
