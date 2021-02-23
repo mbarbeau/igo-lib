@@ -171,7 +171,7 @@ export class SpatialFilterItemComponent implements OnDestroy, OnInit {
   public selectedItemType: SpatialFilterItemType = SpatialFilterItemType.Address;
   public selectedSourceAddress;
 
-  treeControl = new NestedTreeControl<SpatialFilterThematic>(node => node.children);
+  treeControl: NestedTreeControl<SpatialFilterThematic> = new NestedTreeControl<SpatialFilterThematic>(node => node.children);
 
   // For thematics and results tables
   public displayedColumns: string[] = ['name', 'select'];

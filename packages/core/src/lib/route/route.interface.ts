@@ -12,5 +12,11 @@ export interface RouteServiceOptions {
   wmsLayersKey?: boolean | string;
   wmtsUrlKey?: boolean | string;
   wmtsLayersKey?: boolean | string;
+  arcgisUrlKey?: boolean | string;
+  arcgisLayersKey?: boolean | string;
+  iarcgisUrlKey?: boolean | string;
+  iarcgisLayersKey?: boolean | string;
+  tarcgisUrlKey?: boolean | string;
+  tarcgisLayersKey?: boolean | string;
   vectorKey?: boolean | string;
 }

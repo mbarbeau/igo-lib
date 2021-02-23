@@ -3,7 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { WMSDataSourceOptions } from '../datasources';
+import { ArcGISRestDataSourceOptions, ArcGISRestImageDataSourceOptions, TileArcGISRestDataSourceOptions, WMSDataSourceOptions } from '../datasources';
 import { OptionsService } from './options.service';
 import { OptionsApiOptions } from './options-api.interface';
 
@@ -54,6 +54,46 @@ export class OptionsApiService extends OptionsService {
         }) => {
           if (!res || !res.sourceOptions) {
             return {} as WMSDataSourceOptions;
+          }
+          res.sourceOptions._layerOptionsFromSource = res.layerOptions;
+          return res.sourceOptions;
+        }
+      )
+    );
+  }
+
+
+  getArcgisRestOptions(
+    baseOptions: ArcGISRestDataSourceOptions | ArcGISRestImageDataSourceOptions | TileArcGISRestDataSourceOptions,
+    detailedContextUri?: string
+  ): Observable<ArcGISRestDataSourceOptions | ArcGISRestImageDataSourceOptions | TileArcGISRestDataSourceOptions> {
+    if (!this.urlApi) {
+      return of({} as ArcGISRestImageDataSourceOptions);
+    }
+    let params = new HttpParams({
+      fromObject: {
+        type: baseOptions.type,
+        url: baseOptions.url,
+        layers: baseOptions.layer
+      }
+    });
+
+    if (detailedContextUri && this.provideContextUri) {
+      params = params.append('context', detailedContextUri);
+    }
+
+    const request = this.http.get(this.urlApi, {
+      params
+    });
+
+    return request.pipe(
+      map(
+        (res: {
+          sourceOptions: ArcGISRestDataSourceOptions | ArcGISRestImageDataSourceOptions | TileArcGISRestDataSourceOptions;
+          layerOptions: { [keys: string]: string };
+        }) => {
+          if (!res || !res.sourceOptions) {
+            return {} as ArcGISRestDataSourceOptions | ArcGISRestImageDataSourceOptions | TileArcGISRestDataSourceOptions;
           }
           res.sourceOptions._layerOptionsFromSource = res.layerOptions;
           return res.sourceOptions;

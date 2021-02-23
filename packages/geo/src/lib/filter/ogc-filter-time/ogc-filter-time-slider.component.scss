@@ -1,0 +1,63 @@
+
+::ng-deep input {
+  text-align: center !important;
+  margin: auto 5px auto 5px !important;
+}
+
+::ng-deep {
+    
+  .mat-slider-thumb {
+    transform: scale(0) !important;
+  }
+
+  .mat-slider-thumb-label {
+    transform: rotate(45deg) !important;
+    border-radius: 50% 50% 0 !important;
+    background-color: #ffd740 !important;
+  }
+
+  .mat-slider-thumb-label-text {
+    opacity: 1 !important;
+    transform: rotate(135deg) !important;
+  }
+
+  .mat-slider-horizontal .mat-slider-thumb-label{
+    top: 10px !important;
+    transform: rotate(225deg) !important;
+  }
+  .mat-slider-horizontal.cdk-focused .mat-slider-thumb-label {
+    transform: rotate(225deg) !important;
+  }
+
+}
+
+.datetime-container {
+  text-align: center;
+}
+
+.slider-container {
+  text-align: center;
+}
+
+.datetime-input {
+  display: inline-block;
+  margin: 5px 25px;
+}
+
+.date-input {
+  width: 120px;
+  margin-right: 25px;
+}
+
+.time-input {
+  display: inherit;
+  margin-right: 25px;
+}
+
+.hour-input, .minute-input {
+  width: 40px;
+}
+
+.minute-input {
+  margin-left: 10px;
+}

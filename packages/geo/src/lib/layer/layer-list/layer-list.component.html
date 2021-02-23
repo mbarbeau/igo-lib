@@ -99,6 +99,7 @@
     </button>
 
     <button
+      *ngIf="isLayerRemovable(activeLayer)"
       class="delete-button"
       mat-icon-button
       color="warn"
@@ -127,7 +128,6 @@
                     ('igo.geo.layer.selectAll' | translate)}}
     </button>
 
-    <!-- <label>{{ 'igo.geo.layer.opacity' | translate }} </label> -->
     <button
       class="opacity-button"
       color="primary"
@@ -204,9 +204,10 @@
       tooltip-position="below"
       matTooltipShowDelay="500"
       [disabled]="layersChecked.length === 0"
-      [matTooltip]="'igo.geo.layer.removeLayer' | translate"
+      [matTooltip]="isAllLayersRemovable(layersChecked) ? ('igo.geo.layer.removeSelectedLayers' | translate) : 'igo.geo.layer.removeSelectedLayersRestriction' | translate"
       (click)="removeLayers(layersChecked)">
-      <mat-icon svgIcon="delete"></mat-icon>
+      <mat-icon [matBadge]="'!'" matBadgeColor="warn" matBadgeSize="medium" [matBadgeHidden]="isAllLayersRemovable(layersChecked)"
+        svgIcon="delete"></mat-icon>
     </button>
 
   </div>

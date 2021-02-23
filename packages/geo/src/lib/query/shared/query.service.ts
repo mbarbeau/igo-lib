@@ -19,7 +19,8 @@ import {
   WMSDataSource,
   CartoDataSource,
   TileArcGISRestDataSource,
-  WMSDataSourceOptions
+  WMSDataSourceOptions,
+  ImageArcGISRestDataSource
 } from '../../datasource';
 
 import {
@@ -32,6 +33,7 @@ import {
   QueryableDataSource,
   QueryableDataSourceOptions
 } from './query.interfaces';
+import { MapExtent } from '../../map/shared/map.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -48,7 +50,7 @@ export class QueryService {
   }
 
   queryLayer(layer: Layer, options: QueryOptions): Observable<Feature[]> {
-    const url = this.getQueryUrl(layer.dataSource, options);
+    const url = this.getQueryUrl(layer.dataSource, options, false, layer.map.viewController.getExtent());
     if (!url) {
       return of([]);
     }
@@ -244,7 +246,7 @@ export class QueryService {
         features = this.extractGeoJSONData(res);
         break;
       case QueryFormat.ESRIJSON:
-        features = this.extractEsriJSONData(res, layer.zIndex);
+        features = this.extractEsriJSONData(res, layer.zIndex, allowedFieldsAndAlias);
         break;
       case QueryFormat.TEXT:
         features = this.extractTextData(res);
@@ -422,11 +424,11 @@ export class QueryService {
     return features;
   }
 
-  private extractEsriJSONData(res, zIndex) {
+  private extractEsriJSONData(res, zIndex, allowedFieldsAndAlias) {
     const parser = new olFormatEsriJSON();
     const features = parser.readFeatures(res);
 
-    return features.map(feature => this.featureToResult(feature, zIndex));
+    return features.map(feature => this.featureToResult(feature, zIndex, allowedFieldsAndAlias));
   }
 
   private extractTextData(res) {
@@ -522,7 +524,8 @@ export class QueryService {
   private getQueryUrl(
     datasource: QueryableDataSource,
     options: QueryOptions,
-    forceGML2 = false
+    forceGML2 = false,
+    mapExtent?: MapExtent
   ): string {
     let url;
     switch (datasource.constructor) {
@@ -582,15 +585,18 @@ export class QueryService {
 
         url = `${baseUrl}${format}${sql}${clause}${coordinates}`;
         break;
+      case ImageArcGISRestDataSource:
       case TileArcGISRestDataSource:
         const tileArcGISRestDatasource = datasource as TileArcGISRestDataSource;
-        let extent = olextent.boundingExtent([options.coordinates]);
-        if (tileArcGISRestDatasource.options.queryPrecision) {
-          extent = olextent.buffer(
-            extent,
-            tileArcGISRestDatasource.options.queryPrecision
-          );
-        }
+        const deltaX = Math.abs(mapExtent[0] - mapExtent[2]);
+        const deltaY = Math.abs(mapExtent[1] - mapExtent[3]);
+        const maxDelta = deltaX > deltaY ? deltaX : deltaY;
+        const clickBuffer = maxDelta * 0.005;
+        const threshold = tileArcGISRestDatasource.options.queryPrecision ? tileArcGISRestDatasource.options.queryPrecision : clickBuffer;
+        const extent = olextent.buffer(
+          olextent.boundingExtent([options.coordinates]),
+          threshold
+        );
         const serviceUrl =
           tileArcGISRestDatasource.options.url +
           '/' +
@@ -641,10 +647,7 @@ export class QueryService {
   getAllowedFieldsAndAlias(layer: any) {
     let allowedFieldsAndAlias;
     if (
-      layer.options &&
-      layer.options.source &&
-      layer.options.source.options &&
-      layer.options.source.options.sourceFields &&
+      layer.options?.source?.options?.sourceFields &&
       layer.options.source.options.sourceFields.length >= 1
     ) {
       allowedFieldsAndAlias = {};
@@ -658,7 +661,7 @@ export class QueryService {
 
   getQueryTitle(feature: Feature, layer: Layer): string {
     let title;
-    if (layer.options && layer.options.source && layer.options.source.options) {
+    if (layer.options?.source?.options) {
       const dataSourceOptions = layer.options.source
         .options as QueryableDataSourceOptions;
       if (dataSourceOptions.queryTitle) {

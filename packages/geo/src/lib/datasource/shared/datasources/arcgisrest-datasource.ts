@@ -62,8 +62,11 @@ export class ArcGISRestDataSource extends DataSource {
     }
 
     const id = parseInt(this.options.layer, 10);
-    const lyr = legendInfo.layers[id];
-    let htmlString = '<table><tr><td>' + lyr.layerName + '</td></tr>';
+    const lyr = legendInfo.layers.find(layer => layer.layerId === id);
+    if (!lyr) {
+      return;
+    }
+    let htmlString = '<table>';
 
     for (const lyrLegend of lyr.legend) {
       const modifiedUrl = this.options.url.replace(

@@ -574,7 +574,7 @@ export class CatalogService {
     catalog,
     capabilities
   ): CatalogItemLayer[] {
-    const layers = capabilities.layers;
+    const layers = capabilities.layers.filter(layer => !layer.type || layer.type === 'Feature Layer');
     const regexes = (catalog.regFilters || []).map(
       (pattern: string) => new RegExp(pattern)
     );
@@ -598,12 +598,14 @@ export class CatalogService {
           return undefined;
         }
         const baseSourceOptions = {
-          type: 'arcgisrest',
+          type: TypeCatalog[catalog.type],
           url: catalog.url,
           crossOrigin: catalog.setCrossOriginAnonymous
             ? 'anonymous'
             : undefined,
           layer: layer.id as string,
+          queryable: true,
+          queryFormat: 'esrijson',
           matrixSet: catalog.matrixSet,
           optionsFromCapabilities: true,
           style: 'default'
@@ -621,6 +623,8 @@ export class CatalogService {
           address: catalog.id,
           options: {
             sourceOptions,
+            minResolution: getResolutionFromScale(layer.maxScale),
+            maxResolution: getResolutionFromScale(layer.minScale),
             metadata: {
               url: undefined,
               extern: undefined,

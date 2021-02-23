@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { OgcFilterOperator } from '../../filter/shared/ogc-filter.enum';
-
+import { OGCFilterTimeService } from '../shared/ogc-filter-time.service';
 import {
   OgcFilterableDataSourceOptions,
   OgcFilterableDataSource
@@ -29,7 +29,8 @@ export class OgcFilterTimeComponent implements OnInit {
   @Output() changeProperty: EventEmitter<{
     value: string;
     pos: number;
-  }> = new EventEmitter();
+    refreshFilter: boolean;
+  }> = new EventEmitter<any>();
 
   beginHours: number[];
   endHours: number[];
@@ -42,7 +43,11 @@ export class OgcFilterTimeComponent implements OnInit {
   _beginValue: Date;
   _endValue: Date;
   readonly _defaultMin: string = '1900-01-01';
+  readonly _defaultMax: string = '2052-01-06';
+  readonly _defaultDisplayFormat: string = 'DD/MM/YYYY HH:mm A';
+  readonly _defaultSliderModeEnabled: boolean = true;
   ogcFilterOperator = OgcFilterOperator;
+  public sliderMode = false;
 
   readonly defaultStepMillisecond = 60000;
   public options: OgcFilterableDataSourceOptions;
@@ -79,9 +84,26 @@ export class OgcFilterTimeComponent implements OnInit {
     return this._endValue;
   }
 
-  constructor() {}
+  get sliderInterval(): number {
+    return this.currentFilter.sliderInterval === undefined
+      ? 2000
+      : this.currentFilter.sliderInterval;
+  }
+
+  get maxDate(): string {
+    return this.datasource.options.maxDate ? this.datasource.options.maxDate : this._defaultMax;
+  }
+
+  get displayFormat(): string {
+    return this.currentFilter.displayFormat ? this.currentFilter.displayFormat : this._defaultDisplayFormat;
+  }
+
+
+  constructor(public ogcFilterTimeService: OGCFilterTimeService) {}
 
   ngOnInit(){
+    this.currentFilter.sliderOptions.enabled = this.currentFilter.sliderOptions.enabled ?
+                                                  this.currentFilter.sliderOptions.enabled : this._defaultSliderModeEnabled;
     this.beginValue = this.parseFilter(this.handleMin());
     this.endValue = this.parseFilter(this.handleMax());
     this.updateHoursMinutesArray();
@@ -129,10 +151,9 @@ export class OgcFilterTimeComponent implements OnInit {
     return filter ? new Date(filter) : new Date();
   }
 
-  changeTemporalProperty(value, position?) {
+  changeTemporalProperty(value, position?, refreshFilter = true) {
     let valueTmp = this.getDateTime(value, position);
-
-    if (position === 2 && this.calendarType() === 'date') {
+    if (position === 2 && this.calendarType() === 'date' && !this.sliderMode) {
       /* Above month: see yearSelected or monthSelected */
       valueTmp = moment(valueTmp).endOf('day').toDate();
     }
@@ -140,15 +161,13 @@ export class OgcFilterTimeComponent implements OnInit {
     if (position === 1) {
       this.beginValue = valueTmp;
       if (this.restrictedToStep()) {
-        this.changeTemporalProperty(this.addStep(valueTmp), 2);
+        this.changeTemporalProperty(this.ogcFilterTimeService.addStep(valueTmp, this.stepMilliseconds), 2, refreshFilter);
       }
     } else {
       this.endValue = valueTmp;
     }
-
     this.updateHoursMinutesArray();
-
-    this.changeProperty.next({ value: valueTmp.toISOString(), pos: position });
+    this.changeProperty.next({ value: valueTmp.toISOString(), pos: position, refreshFilter });
   }
 
   handleDate(value): Date {
@@ -165,8 +184,8 @@ export class OgcFilterTimeComponent implements OnInit {
     return 'date';
   }
 
-  yearSelected(year, datePicker?: any, property?: string) {
-    if (this.stepIsYearDuration()) {
+  yearSelected(year, datePicker?: any, property?: string, refreshFilter = true) {
+    if (this.ogcFilterTimeService.stepIsYearDuration(this.step)) {
       if (datePicker) {
         datePicker.close();
       }
@@ -175,12 +194,12 @@ export class OgcFilterTimeComponent implements OnInit {
       } else if (property === 'begin' && this.restrictedToStep()) {
         this.yearSelected(year, undefined, 'end');
       }
-      this.changeTemporalProperty(year, property === 'begin' ? 1 : 2);
+      this.changeTemporalProperty(year, property === 'begin' ? 1 : 2, refreshFilter);
     }
   }
 
-  monthSelected(month, datePicker?: any, property?: string) {
-    if (this.stepIsMonthDuration()) {
+  monthSelected(month, datePicker?: any, property?: string, refreshFilter = true) {
+    if (this.ogcFilterTimeService.stepIsMonthDuration(this.step)) {
       if (datePicker) {
         datePicker.close();
       }
@@ -189,7 +208,7 @@ export class OgcFilterTimeComponent implements OnInit {
       } else if (property === 'begin' && this.restrictedToStep()) {
         this.monthSelected(month, undefined, 'end');
       }
-      this.changeTemporalProperty(month, property === 'begin' ? 1 : 2);
+      this.changeTemporalProperty(month, property === 'begin' ? 1 : 2, refreshFilter);
     }
   }
 
@@ -199,9 +218,9 @@ export class OgcFilterTimeComponent implements OnInit {
       this.parseFilter(this.currentFilter.end).getTime() -
         this.parseFilter(this.currentFilter.begin).getTime()
     );
-    if (this.stepIsYearDuration()) {
+    if (this.ogcFilterTimeService.stepIsYearDuration(this.step)) {
       return 'multi-year';
-    } else if (this.stepIsMonthDuration()) {
+    } else if (this.ogcFilterTimeService.stepIsMonthDuration(this.step)) {
       return 'year';
     } else if (test < 86400000 && diff < 86400000) {
       return 'clock';
@@ -210,59 +229,21 @@ export class OgcFilterTimeComponent implements OnInit {
     }
   }
 
-  stepIsYearDuration() {
-    const year = moment.duration(this.step);
-    return (
-      year.years() !== 0 &&
-      year.months() === 0 &&
-      year.weeks() === 0 &&
-      year.days() === 0 &&
-      year.hours() === 0 &&
-      year.minutes() === 0
-    );
-  }
-
-  stepIsMonthDuration() {
-    const month = moment.duration(this.step);
-    return (
-      month.months() !== 0 &&
-      month.weeks() === 0 &&
-      month.days() === 0 &&
-      month.hours() === 0 &&
-      month.minutes() === 0
-    );
-  }
-
-  stepIsWeekDuration() {
-    const week = moment.duration(this.step);
-    return (
-      week.weeks() !== 0 &&
-      week.days() === 7 &&
-      week.hours() === 0 &&
-      week.minutes() === 0
-    );
-  }
-
-  stepIsDayDuration() {
-    const day = moment.duration(this.step);
-    return day.days() !== 0 && day.hours() === 0 && day.minutes() === 0;
-  }
-
-  stepIsHourDuration() {
-    const hour = moment.duration(this.step);
-    return hour.hours() !== 0 && hour.minutes() === 0;
-  }
-
-  stepIsMinuteDuration() {
-    const minute = moment.duration(this.step);
-    return minute.minutes() !== 0;
-  }
-
   dateFilter(type: string, date: string): boolean {
     const dateValue = new Date(date);
     const diff = dateValue.getTime() - new Date(this.handleMin()).getTime();
 
-    if (this.stepIsMonthDuration()) {
+    if (this.ogcFilterTimeService.stepIsYearDuration(this.step)) {
+      const monthDiff = moment(dateValue).diff(moment(this.handleMin()), 'years', true);
+      if ( type === 'end' ) {
+        const dateValuePlus1 = moment(dateValue).add(1, 'd');
+        const monthDiffPlus1 =  moment(dateValuePlus1).diff(moment(this.handleMin()), 'years', true);
+        return (monthDiffPlus1 % moment.duration(this.step).asYears()) === 0;
+      } else if ( type === 'begin' ) {
+        return (monthDiff % moment.duration(this.step).asYears()) === 0;
+      }
+    }
+    else if (this.ogcFilterTimeService.stepIsMonthDuration(this.step)) {
       const monthDiff = moment(dateValue).diff(moment(this.handleMin()), 'months', true);
       if ( type === 'end' ) {
         const dateValuePlus1 = moment(dateValue).add(1, 'd');
@@ -271,7 +252,7 @@ export class OgcFilterTimeComponent implements OnInit {
       } else if ( type === 'begin' ) {
         return (monthDiff % moment.duration(this.step).asMonths()) === 0;
       }
-    } else if (this.stepIsWeekDuration()) {
+    } else if (this.ogcFilterTimeService.stepIsWeekDuration(this.step)) {
       const weekDiff = moment(dateValue).diff(moment(this.handleMin()), 'weeks', true);
       if ( type === 'end' ) {
         const dateValuePlus1 = moment(dateValue).add(1, 'd');
@@ -280,7 +261,7 @@ export class OgcFilterTimeComponent implements OnInit {
       } else if ( type === 'begin' ) {
         return (weekDiff % moment.duration(this.step).asWeeks()) === 0;
       }
-    } else if (this.stepIsDayDuration()) {
+    } else if (this.ogcFilterTimeService.stepIsDayDuration(this.step)) {
       const dayDiff = moment(dateValue).diff(moment(this.handleMin()), 'days', true);
       if ( type === 'end' ) {
         const dateValuePlus1 = moment(dateValue).add(1, 'd');
@@ -291,11 +272,11 @@ export class OgcFilterTimeComponent implements OnInit {
         const _mod = ((dayDiff % moment.duration(this.step).asDays()) + 1);
         return (_mod < 0.0000001 && _mod > -0.0000001 && _mod !== 0) || _mod === 1 ; // 1 millisecond = 1.1574074074074076e-8
       }
-    } else if ( this.stepIsHourDuration() ) {
+    } else if ( this.ogcFilterTimeService.stepIsHourDuration(this.step) ) {
       const hourDiff = moment(dateValue).diff(moment(this.handleMin()), 'hours', true);
       return (hourDiff % moment.duration(this.step).asHours()) === 0;
 
-    } else if ( this.stepIsMinuteDuration() ) {
+    } else if ( this.ogcFilterTimeService.stepIsMinuteDuration(this.step) ) {
       return true;
     }
 
@@ -306,39 +287,40 @@ export class OgcFilterTimeComponent implements OnInit {
     const valuetmp = new Date(date);
     let valuetmp2;
 
-    switch (pos) {
-      case 1:
-        valuetmp2 = valuetmp.setHours(
-          this.beginHourFormControl.value,
-          this.beginMinuteFormControl.value
-        );
-        break;
-      case 2:
-        valuetmp2 = valuetmp.setHours(
-          this.endHourFormControl.value,
-          this.endMinuteFormControl.value
-        );
-        break;
+    if (!this.sliderMode) {
+      switch (pos) {
+        case 1:
+          valuetmp2 = valuetmp.setHours(
+            this.beginHourFormControl.value,
+            this.beginMinuteFormControl.value
+          );
+          break;
+        case 2:
+          valuetmp2 = valuetmp.setHours(
+            this.endHourFormControl.value,
+            this.endMinuteFormControl.value
+          );
+          break;
+      }
     }
-
     return new Date(valuetmp2 ? valuetmp2 : valuetmp);
   }
 
   handleMinuteIncrement() {
-    if (this.stepIsMinuteDuration()) {
+    if (this.ogcFilterTimeService.stepIsMinuteDuration(this.step)) {
       if (this.stepMilliseconds < 3600000) {
         return this.stepMilliseconds / 1000 === 60 ? 1 : this.stepMilliseconds / 1000;
       } else {
         return (this.stepMilliseconds % 3600000) / 60;
       }
-    } else if (this.stepIsHourDuration()) {
+    } else if (this.ogcFilterTimeService.stepIsHourDuration(this.step)) {
       return 60;
     }
     return 1;
   }
 
   handleHourIncrement() {
-    if (this.stepIsHourDuration()) {
+    if (this.ogcFilterTimeService.stepIsHourDuration(this.step)) {
       return this.stepMilliseconds / 1000 / 60 / 60;
     }
     return 1;
@@ -443,18 +425,13 @@ export class OgcFilterTimeComponent implements OnInit {
   }
 
   private updateValues() {
-    this.changeTemporalProperty(this.beginValue, 1);
-    this.changeTemporalProperty(this.endValue, 2);
+    this.changeTemporalProperty(this.beginValue, 1, false);
+    this.changeTemporalProperty(this.endValue, 2, true);
   }
 
   public restrictedToStep(): boolean {
     return this.currentFilter.restrictToStep
-      ? this.currentFilter.restrictToStep
-      : false;
-  }
-
-  private addStep(value) {
-    return moment(value).add(this.stepMilliseconds, 'milliseconds').toDate();
+      ? this.currentFilter.restrictToStep : false;
   }
 
   public handleMin() {
@@ -464,6 +441,17 @@ export class OgcFilterTimeComponent implements OnInit {
 
   public handleMax() {
     return this.currentFilter.end ? this.currentFilter.end :
-              (this.datasource.options.maxDate ? this.datasource.options.maxDate : undefined);
+              (this.datasource.options.maxDate ? this.datasource.options.maxDate : this._defaultMax);
   }
+
+  changePropertyByPass(event) {
+    this.changeProperty.next(event);
+  }
+
+  modeChange(event) {
+    if (!event.checked) {
+      this.updateValues();
+    }
+  }
+
 }

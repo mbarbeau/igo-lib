@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { IgoCustomHtmlModule } from '@igo2/common';
 import { IgoLanguageModule } from '@igo2/core';
@@ -9,7 +9,7 @@ describe('AboutToolComponent', () => {
   let fixture: ComponentFixture<AboutToolComponent>;
 
   beforeEach(
-    async(() => {
+    waitForAsync(() => {
       TestBed.configureTestingModule({
         imports: [IgoLanguageModule, IgoCustomHtmlModule],
         declarations: [AboutToolComponent]

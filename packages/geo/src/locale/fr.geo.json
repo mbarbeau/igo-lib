@@ -50,6 +50,10 @@
         }
       },
       "export": {
+        "customList": {
+          "text": "Certaines couches sélectionnées ( {{value}} ) réduisent la liste des formats possible",
+          "title": "Liste restreinte de formats"
+        },
         "nothing": {
           "text": "Impossible d’exporter, donnée non valide ou aucune donnée sélectionnée.",
           "title": "Donnée non valide ou non présente"
@@ -170,7 +174,8 @@
         "advancedOgcFilters": "Filtres avancés",
         "placeholder": "Saisir une valeur",
         "placeholderSnrc": "Ex: 21L14",
-        "selectOperator": "Choisir un opérateur"
+        "selectOperator": "Choisir un opérateur",
+        "sliderModeTitle": "Curseur temporel"
       },
       "spatialSelector": {
         "fixedExtent": "Étendue fixe",
@@ -195,6 +200,8 @@
         "filterRaiseLayer": "Le déplacement avant se fait toujours selon l'ordre de la carte!",
         "moreOptions": "Outils de la couche",
         "removeLayer": "Retirer la couche de la carte",
+        "removeSelectedLayers": "Retirer les couches sélectionnées de la carte",
+        "removeSelectedLayersRestriction": "Certaines couches sélectionnées ne peuvent être supprimées",
         "showFeaturesList": "Afficher la liste des entités",
         "showLayer": "Afficher la couche",
         "showSelectedLayers": "Afficher les couches sélectionnées",
@@ -246,12 +253,12 @@
         "outputFormat": "Format de sortie",
         "paperFormat": "Format du papier",
         "paperFormats": {
-          "A0": "A0",
-          "A1": "A1",
-          "A2": "A2",
-          "A3": "A3",
-          "A4": "A4",
-          "A5": "A5",
+          "A0": "33.1 X 46.8\" (A0)",
+          "A1": "23.4 X 33.1\" (A1)",
+          "A2": "16.5 X 23.5\" (A2)",
+          "A3": "11.7 X 16.5\" (A3)",
+          "A4": "8.3 X 11.7\" (A4)",
+          "A5": "5.8 X 8.3\" (A5)",
           "Letter": "Lettre",
           "Legal": "Légal"
         },
@@ -266,7 +273,8 @@
         "showLegend": "Afficher la légende",
         "showProjection": "Afficher la projection",
         "showScale": "Afficher l'échelle",
-        "title": "Titre"
+        "title": "Titre",
+        "subtitle": "Sous-titre"
       },
       "directionsForm": {
         "start": "Début",
@@ -587,7 +595,7 @@
           "message": "Hors-Ligne",
           "title": "Statut:"
         }
-      },   
+      },
       "workspace": {
         "inMapExtent.active.tooltip": "Ne montrer que les enregistrements contenus dans la carte",
         "inMapExtent.inactive.tooltip": "Montrer tous les enregistrements"

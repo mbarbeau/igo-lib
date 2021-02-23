@@ -2,7 +2,7 @@ import { Injectable, OnDestroy } from '@angular/core';
 
 import { BehaviorSubject, Subscription } from 'rxjs';
 
-import { EntityRecord, Workspace, WorkspaceStore, Widget } from '@igo2/common';
+import { EntityRecord, Workspace, WorkspaceStore, Widget, EntityStoreFilterCustomFuncStrategy, EntityStoreFilterSelectionStrategy } from '@igo2/common';
 import { WfsWorkspace, FeatureWorkspace } from '@igo2/geo';
 import { FeatureActionsService } from './shared/feature-actions.service';
 import { WfsActionsService } from './shared/wfs-actions.service';
@@ -19,11 +19,16 @@ export class WorkspaceState implements OnDestroy {
   public workspacePanelExpanded: boolean = false;
 
   readonly workspaceEnabled$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  readonly rowsInMapExtentCheckCondition$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
+  readonly selectOnlyCheckCondition$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   readonly workspaceMaximize$: BehaviorSubject<boolean> = new BehaviorSubject(
     this.storageService.get('workspaceMaximize') as boolean
   );
   private actionMaximize$$: Subscription[] = [];
+
+  private rowsInMapExtentCheckCondition$$: Subscription;
+  private selectOnlyCheckCondition$$: Subscription;
 
   /** Subscription to the active workspace */
   private activeWorkspace$$: Subscription;
@@ -72,9 +77,15 @@ export class WorkspaceState implements OnDestroy {
       workspaces.map((wks: EntityRecord<Workspace>) => {
         if (wks.entity.actionStore.empty) {
           if (wks.entity instanceof WfsWorkspace) {
-            this.wfsActionsService.loadActions(wks.entity);
+            this.wfsActionsService.loadActions(
+              wks.entity,
+              this.rowsInMapExtentCheckCondition$,
+              this.selectOnlyCheckCondition$);
           } else if (wks.entity instanceof FeatureWorkspace) {
-            this.featureActionsService.loadActions(wks.entity);
+            this.featureActionsService.loadActions(
+              wks.entity,
+              this.rowsInMapExtentCheckCondition$,
+              this.selectOnlyCheckCondition$);
           }
         }
 
@@ -101,6 +112,36 @@ export class WorkspaceState implements OnDestroy {
             .subscribe((widget: Widget) => this.activeWorkspaceWidget$.next(widget));
         }
       });
+
+    this.rowsInMapExtentCheckCondition$$ = this.rowsInMapExtentCheckCondition$.subscribe((rowsInMapExtent) => {
+      this._store.stateView.all().map((wks: EntityRecord<Workspace>) => {
+        if (!wks.entity.actionStore.empty) {
+          const filterStrategy = wks.entity.entityStore.getStrategyOfType(EntityStoreFilterCustomFuncStrategy);
+          if (filterStrategy) {
+            if (rowsInMapExtent) {
+              filterStrategy.activate();
+            } else {
+              filterStrategy.deactivate();
+            }
+          }
+        }
+      });
+    });
+
+    this.selectOnlyCheckCondition$$ = this.selectOnlyCheckCondition$.subscribe((selectOnly) => {
+      this._store.stateView.all().map((wks: EntityRecord<Workspace>) => {
+        if (!wks.entity.actionStore.empty) {
+          const filterStrategy = wks.entity.entityStore.getStrategyOfType(EntityStoreFilterSelectionStrategy);
+          if (filterStrategy) {
+            if (selectOnly) {
+              filterStrategy.activate();
+            } else {
+              filterStrategy.deactivate();
+            }
+          }
+        }
+      });
+    });
   }
 
   private setWorkspaceIsMaximized(maximized: boolean) {
@@ -124,6 +165,12 @@ export class WorkspaceState implements OnDestroy {
   ngOnDestroy() {
     this.teardownWorkspaces();
     this.actionMaximize$$.map(a => a.unsubscribe());
+    if (this.rowsInMapExtentCheckCondition$$) {
+      this.selectOnlyCheckCondition$$.unsubscribe();
+    }
+    if (this.selectOnlyCheckCondition$$) {
+      this.selectOnlyCheckCondition$$.unsubscribe();
+    }
   }
 
   /**

@@ -120,7 +120,8 @@ export class AppLayerComponent {
         const layer: LayerOptions = {
           title: 'WFS (Custom EPSG)',
           visible: true,
-          source: dataSource
+          source: dataSource,
+          removable: false
         };
         this.map.addLayer(this.layerService.createLayer(layer));
       });

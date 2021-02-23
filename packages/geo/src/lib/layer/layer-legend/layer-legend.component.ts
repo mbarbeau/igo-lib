@@ -184,6 +184,7 @@ export class LayerLegendComponent implements OnInit, OnDestroy {
           sA.name.normalize('NFD').replace(/[\u0300-\u036f]/gi, '') !== 'default' &&
           sA.name.normalize('NFD').replace(/[\u0300-\u036f]/gi, '') !== 'defaut')));
       }
+      stylesAvailable.filter(sa => !sa.title).map((sa) => sa.title = sa.name);
       stylesAvailable.map(s => s.title = s.title.charAt(0).toUpperCase() + s.title.slice(1).replace(/_/g, ' '));
       return stylesAvailable;
     }

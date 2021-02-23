@@ -11,8 +11,7 @@ import {
   OgcFilterableDataSourceOptions,
   AnyBaseOgcFilterOptions,
   OgcFilterOperatorType,
-  OgcFilterDuringOptions,
-  TimeFilterType
+  OgcFilterDuringOptions
 } from '@igo2/geo';
 
 @Component({
@@ -140,9 +139,6 @@ export class AppOgcFilterComponent {
         outputFormat: undefined,
         outputFormatDownload: 'SHP' // based on service capabilities
       },
-      sourceFields: [
-        { name: 'date_observation', alias: 'Date de l\'observation', allowedOperatorsType: 'Time' as OgcFilterOperatorType }
-      ],
       ogcFilters: {
         enabled: true,
         editable: true,
@@ -263,7 +259,8 @@ export class AppOgcFilterComponent {
             operator: 'During',
             propertyName: 'date_observation',
             begin: '2016-01-01T00:00:00-05:00',
-            end: '2016-03-01T00:00:00-05:00'
+            end: '2016-03-31T00:00:00-05:00',
+            displayFormat: 'MMMM'
           } as OgcFilterDuringOptions
       },
       minDate: '2016-01-01T00:00:00-05:00',
@@ -317,12 +314,17 @@ export class AppOgcFilterComponent {
           {
             operator: 'During',
             propertyName: 'date_observation',
-            begin: '2016-01-01T00:00:00-05:00',
-            end: '2016-12-31T00:00:00-05:00'
+            begin: '2014-01-01T00:00:00-05:00',
+            end: '2019-12-31T00:00:00-05:00',
+            sliderOptions: {
+              interval: 2000,
+              displayFormat: 'YY'
+            },
+            displayFormat: 'YYYY'
           } as OgcFilterDuringOptions
       },
-      minDate: '2016-01-01T00:00:00-05:00',
-      maxDate: '2018-12-31T00:00:00-05:00',
+      minDate: '2014-01-01T00:00:00-05:00',
+      maxDate: '2019-12-31T00:00:00-05:00',
       stepDate: 'P1Y'
     };
 

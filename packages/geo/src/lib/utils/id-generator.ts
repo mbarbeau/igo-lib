@@ -7,6 +7,7 @@ import { AnyDataSourceOptions } from '../datasource/shared/datasources/any-datas
 import { DataSourceOptions } from '../datasource/shared/datasources/datasource.interface';
 import { WMSDataSourceOptions } from '../datasource/shared/datasources/wms-datasource.interface';
 import { WMTSDataSourceOptions } from '../datasource/shared/datasources/wmts-datasource.interface';
+import { WFSDataSourceOptions } from '../datasource';
 
 /**
  * Generate a id from it's datasource options.
@@ -19,7 +20,9 @@ export function generateIdFromSourceOptions(options: DataSourceOptions): string 
     wmts: generateWMTSIdFromSourceOptions,
     xyz: generateXYZIdFromSourceOptions,
     feature: generateFeatureIdFromSourceOptions,
+    wfs: generateWfsIdFromSourceOptions,
     arcgisrest: generateArcgisRestIdFromSourceOptions,
+    imagearcgisrest: generateArcgisRestIdFromSourceOptions,
     tilearcgisrest: generateArcgisRestIdFromSourceOptions,
     osm: (_options: AnyDataSourceOptions) => 'OSM',
     tiledebug: (_options: AnyDataSourceOptions) => 'tiledebug'
@@ -35,7 +38,7 @@ export function generateIdFromSourceOptions(options: DataSourceOptions): string 
  */
 export function generateWMSIdFromSourceOptions(options: WMSDataSourceOptions) {
   const layers = options.params.LAYERS;
-  const url = options.url.charAt(0) === '/' ? window.location.origin + options.url : options.url;
+  const url = standardizeUrl(options.url);
   const chain = 'wms' + url + layers;
   return Md5.hashStr(chain) as string;
 }
@@ -47,7 +50,8 @@ export function generateWMSIdFromSourceOptions(options: WMSDataSourceOptions) {
  */
 export function generateWMTSIdFromSourceOptions(options: WMTSDataSourceOptions) {
   const layer = options.layer;
-  const chain = 'wmts' + options.url + layer;
+  const url = standardizeUrl(options.url);
+  const chain = 'wmts' + url + layer;
   return Md5.hashStr(chain) as string;
 }
 
@@ -57,7 +61,8 @@ export function generateWMTSIdFromSourceOptions(options: WMTSDataSourceOptions) 
  * @returns A md5 hash of the the url and layer
  */
 export function generateXYZIdFromSourceOptions(options: WMTSDataSourceOptions) {
-  const chain = 'xyz' + options.url;
+  const url = standardizeUrl(options.url);
+  const chain = 'xyz' + url;
   return Md5.hashStr(chain) as string;
 }
 
@@ -67,11 +72,23 @@ export function generateXYZIdFromSourceOptions(options: WMTSDataSourceOptions) {
  * @returns A md5 hash of the the url and layer
  */
 export function generateFeatureIdFromSourceOptions(options: WMTSDataSourceOptions) {
-  if (! options.url) { return generateId(options); }
-  const chain = 'feature' + options.url;
+  if (!options.url) { return generateId(options); }
+  const url = standardizeUrl(options.url);
+  const chain = 'feature' + url;
   return Md5.hashStr(chain) as string;
 }
 
+/**
+ * Generate a id from feature data source options
+ * @param options XYZ data source options
+ * @returns A md5 hash of the the url and layer
+ */
+export function generateWfsIdFromSourceOptions(options: WFSDataSourceOptions) {
+  if (!options.url || !options.params) { return generateId(options); }
+  const url = standardizeUrl(options.url);
+  const chain = 'wfs' + url + options.params.featureTypes;
+  return Md5.hashStr(chain) as string;
+}
 /**
  * Generate a id from ArcGIS Rest data source options
  * @param options ArcGIS Rest data source options
@@ -79,7 +96,7 @@ export function generateFeatureIdFromSourceOptions(options: WMTSDataSourceOption
  */
 export function generateArcgisRestIdFromSourceOptions(options: ArcGISRestDataSourceOptions) {
   const layers = options.layer;
-  const url = options.url.charAt(0) === '/' ? window.location.origin + options.url : options.url;
+  const url = standardizeUrl(options.url);
   const chain = (options.type || 'arcgis') + url + layers;
   return Md5.hashStr(chain) as string;
 }
@@ -88,6 +105,17 @@ export function generateArcgisRestIdFromSourceOptions(options: ArcGISRestDataSou
  * Generate a unique id
  * @returns A uuid
  */
-export function generateId(options: AnyDataSourceOptions) {
+export function generateId(_options: AnyDataSourceOptions) {
   return uuid();
+}
+
+export function standardizeUrl(url: string): string {
+  const absUrl = url.charAt(0) === '/' ? window.location.origin + url : url;
+  const urlDecomposed = absUrl.split(/[?&]/);
+  let urlStandardized = urlDecomposed.shift();
+  const paramsToKeep = urlDecomposed.filter(p => p.length !== 0 && p.charAt(0) !== '_');
+  if (paramsToKeep.length) {
+    urlStandardized += '?' + paramsToKeep.join('&');
+  }
+  return urlStandardized;
 }

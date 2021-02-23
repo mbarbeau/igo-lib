@@ -52,7 +52,7 @@ export class DownloadService {
         );
         const outputFormatDownload =
           wfsOptions.outputFormatDownload === undefined
-            ? 'outputformat=' + wfsOptions.outputFormat
+            ? wfsOptions.outputFormat === undefined  ? '' : 'outputformat=' + wfsOptions.outputFormat
             : 'outputformat=' + wfsOptions.outputFormatDownload;
 
         const baseurl = DSOptions.download.dynamicUrl

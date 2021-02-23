@@ -11,6 +11,7 @@ import { TileArcGISRestDataSourceOptions } from './tilearcgisrest-datasource.int
 import { MVTDataSourceOptions } from './mvt-datasource.interface';
 import { ClusterDataSourceOptions } from './cluster-datasource.interface';
 import { TileDebugDataSourceOptions } from './tiledebug-datasource.interface';
+import { ArcGISRestImageDataSourceOptions } from './imagearcgisrest-datasource.interface';
 
 export type AnyDataSourceOptions =
   | DataSourceOptions
@@ -23,6 +24,7 @@ export type AnyDataSourceOptions =
   | WMSDataSourceOptions
   | CartoDataSourceOptions
   | ArcGISRestDataSourceOptions
+  | ArcGISRestImageDataSourceOptions
   | TileArcGISRestDataSourceOptions
   | MVTDataSourceOptions
   | ClusterDataSourceOptions;

@@ -50,6 +50,10 @@
         }
       },
       "export": {
+        "customList": {
+          "text": "Some of the selected layers ( {{value}} ) limit the format's list",
+          "title": "Restricted list of formats"
+        },
         "nothing": {
           "text": "No feature could be exported.",
           "title": "Nothing to export"
@@ -171,7 +175,8 @@
         "advancedOgcFilters": "Advanced filters",
         "placeholder": "Enter a value",
         "placeholderSnrc": "Ex: 21L14",
-        "selectOperator": "Select an operator"
+        "selectOperator": "Select an operator",
+        "sliderModeTitle": "Time slider"
       },
       "spatialSelector": {
         "fixedExtent": "Fixed extent",
@@ -196,6 +201,8 @@
         "filterRaiseLayer": "The forward movement is always done according to the order of the map!",
         "moreOptions": "Layer's tools",
         "removeLayer": "Remove this layer from the map",
+        "removeSelectedLayers": "Remove selected layers from the map",
+        "removeSelectedLayersRestriction": "Some selected layers cannot be removed",
         "showFeaturesList": "Show features list",
         "showLayer": "Show Layer",
         "showSelectedLayers": "Show selected layers",
@@ -247,12 +254,12 @@
         "outputFormat": "Output format",
         "paperFormat": "Paper format",
         "paperFormats": {
-          "A0": "A0",
-          "A1": "A1",
-          "A2": "A2",
-          "A3": "A3",
-          "A4": "A4",
-          "A5": "A5",
+          "A0": "33.1 X 46.8\" (A0)",
+          "A1": "23.4 X 33.1\" (A1)",
+          "A2": "16.5 X 23.5\" (A2)",
+          "A3": "11.7 X 16.5\" (A3)",
+          "A4": "8.3 X 11.7\" (A4)",
+          "A5": "5.8 X 8.3\" (A5)",
           "Letter": "Letter",
           "Legal": "Legal"
         },
@@ -267,7 +274,8 @@
         "showLegend": "Show legend",
         "showProjection": "Show projection",
         "showScale": "Show scale",
-        "title": "Title"
+        "title": "Title",
+        "subtitle": "Subtitle"
       },
       "directionsForm": {
         "start": "Start",
@@ -587,7 +595,7 @@
           "message": "Offline",
           "title": "Status:"
         }
-      },   
+      },
       "workspace": {
         "inMapExtent.active.tooltip": "Ne montrer que les entités contenues dans la carte",
         "inMapExtent.inactive.tooltip": "Montrer tous les entités"

@@ -25,6 +25,8 @@ import {
   CartoDataSourceOptions,
   ArcGISRestDataSource,
   ArcGISRestDataSourceOptions,
+  ImageArcGISRestDataSource,
+  ArcGISRestImageDataSourceOptions,
   TileArcGISRestDataSource,
   TileArcGISRestDataSourceOptions,
   WebSocketDataSource,
@@ -87,8 +89,8 @@ export class DataSourceService {
         dataSource = this.createXYZDataSource(context as XYZDataSourceOptions);
         break;
       case 'tiledebug':
-          dataSource = this.createTileDebugDataSource(context as TileDebugDataSource);
-          break;
+        dataSource = this.createTileDebugDataSource(context as TileDebugDataSource);
+        break;
       case 'carto':
         dataSource = this.createCartoDataSource(
           context as CartoDataSourceOptions
@@ -96,7 +98,12 @@ export class DataSourceService {
         break;
       case 'arcgisrest':
         dataSource = this.createArcGISRestDataSource(
-          context as ArcGISRestDataSourceOptions
+          context as ArcGISRestDataSourceOptions, detailedContextUri
+        );
+        break;
+      case 'imagearcgisrest':
+        dataSource = this.createArcGISRestImageDataSource(
+          context as ArcGISRestImageDataSourceOptions, detailedContextUri
         );
         break;
       case 'websocket':
@@ -109,7 +116,7 @@ export class DataSourceService {
         break;
       case 'tilearcgisrest':
         dataSource = this.createTileArcGISRestDataSource(
-          context as TileArcGISRestDataSourceOptions
+          context as TileArcGISRestDataSourceOptions, detailedContextUri
         );
         break;
       case 'cluster':
@@ -258,29 +265,133 @@ export class DataSourceService {
   }
 
   private createArcGISRestDataSource(
-    context: ArcGISRestDataSourceOptions
+    context: ArcGISRestDataSourceOptions,
+    detailedContextUri?: string
   ): Observable<ArcGISRestDataSource> {
-    return this.capabilitiesService
+    const observables = [];
+    observables.push(this.capabilitiesService
       .getArcgisOptions(context)
       .pipe(
         map(
           (options: ArcGISRestDataSourceOptions) =>
             new ArcGISRestDataSource(options)
         )
+      ));
+    if (this.optionsService && context.optionsFromApi === true) {
+      observables.push(
+        this.optionsService.getArcgisRestOptions(context, detailedContextUri).pipe(
+          catchError(e => {
+            e.error.toDisplay = true;
+            e.error.title = this.languageService.translate.instant(
+              'igo.geo.dataSource.unavailableTitle'
+            );
+            e.error.message = this.languageService.translate.instant(
+              'igo.geo.dataSource.optionsApiUnavailable'
+            );
+            return of({});
+          })
+        )
       );
+    }
+    observables.push(of(context));
+    return forkJoin(observables).pipe(
+      map((options: ArcGISRestDataSource[]) => {
+        const optionsMerged = options.reduce((a, b) =>
+          ObjectUtils.mergeDeep(a, b)
+        );
+        return new ArcGISRestDataSource(optionsMerged);
+      }),
+      catchError(() => {
+        return of(undefined);
+      })
+    );
+  }
+
+  private createArcGISRestImageDataSource(
+    context: ArcGISRestImageDataSourceOptions,
+    detailedContextUri?: string
+  ): Observable<ArcGISRestImageDataSourceOptions> {
+    const observables = [];
+
+    observables.push(this.capabilitiesService
+      .getImageArcgisOptions(context)
+      .pipe(
+        map(
+          (options: ArcGISRestImageDataSourceOptions) =>
+            new ImageArcGISRestDataSource(options)
+        )
+      ));
+    if (this.optionsService && context.optionsFromApi === true) {
+      observables.push(
+        this.optionsService.getArcgisRestOptions(context, detailedContextUri).pipe(
+          catchError(e => {
+            e.error.toDisplay = true;
+            e.error.title = this.languageService.translate.instant(
+              'igo.geo.dataSource.unavailableTitle'
+            );
+            e.error.message = this.languageService.translate.instant(
+              'igo.geo.dataSource.optionsApiUnavailable'
+            );
+            return of({});
+          })
+        )
+      );
+    }
+    observables.push(of(context));
+    return forkJoin(observables).pipe(
+      map((options: ImageArcGISRestDataSource[]) => {
+        const optionsMerged = options.reduce((a, b) =>
+          ObjectUtils.mergeDeep(a, b)
+        );
+        return new ImageArcGISRestDataSource(optionsMerged);
+      }),
+      catchError(() => {
+        return of(undefined);
+      })
+    );
   }
 
   private createTileArcGISRestDataSource(
-    context: TileArcGISRestDataSourceOptions
+    context: TileArcGISRestDataSourceOptions,
+    detailedContextUri?: string
   ): Observable<TileArcGISRestDataSource> {
-    return this.capabilitiesService
+    const observables = [];
+    observables.push(this.capabilitiesService
       .getTileArcgisOptions(context)
       .pipe(
         map(
           (options: TileArcGISRestDataSourceOptions) =>
             new TileArcGISRestDataSource(options)
         )
+      ));
+    if (this.optionsService && context.optionsFromApi === true) {
+      observables.push(
+        this.optionsService.getArcgisRestOptions(context, detailedContextUri).pipe(
+          catchError(e => {
+            e.error.toDisplay = true;
+            e.error.title = this.languageService.translate.instant(
+              'igo.geo.dataSource.unavailableTitle'
+            );
+            e.error.message = this.languageService.translate.instant(
+              'igo.geo.dataSource.optionsApiUnavailable'
+            );
+            return of({});
+          })
+        )
       );
+    }
+    observables.push(of(context));
+    return forkJoin(observables).pipe(
+      map((options: TileArcGISRestDataSource[]) => {
+        const optionsMerged = options.reduce((a, b) =>
+          ObjectUtils.mergeDeep(a, b)
+        );
+        return new TileArcGISRestDataSource(optionsMerged);
+      }),
+      catchError(() => {
+        return of(undefined);
+      })
+    );
   }
 
   private createMVTDataSource(

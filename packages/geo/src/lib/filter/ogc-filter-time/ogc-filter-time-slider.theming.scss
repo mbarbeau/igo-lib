@@ -1,0 +1,9 @@
+@mixin igo-ogc-filter-time-slider-theming($theme) {
+    $primary: map-get($theme, primary);    
+    $color: mat-palette($mat-yellow);
+
+    .mat-slider-thumb-label {
+        transform: rotate(45deg) !important;
+        border-radius: 50% 50% 0 !important;
+      }
+  }

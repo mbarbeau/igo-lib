@@ -673,11 +673,15 @@ export class LayerListComponent implements OnInit, OnDestroy {
 
   removeLayers(layers?: Layer[]) {
     if (layers && layers.length > 0) {
-      for (const layer of layers) {
-        layer.map.removeLayer(layer);
-      }
       this.layersChecked = [];
-    } else if (!layers) {
+      for (const layer of layers) {
+        if (layer.options.removable !== false) {
+          layer.map.removeLayer(layer);
+        } else {
+          this.layersChecked.push(layer);
+        }
+      }
+    } else if (!layers && this.activeLayer.options.removable !== false) {
       this.activeLayer.map.removeLayer(this.activeLayer);
       this.layerTool = false;
     }
@@ -690,6 +694,14 @@ export class LayerListComponent implements OnInit, OnDestroy {
       }
     }
     this.layerItemChangeDetection$.next(true);
+  }
+
+  isLayerRemovable(layer: Layer): boolean {
+    return layer.options.removable !== false;
+  }
+
+  isAllLayersRemovable(layers: Layer[]): boolean {
+    return layers.every(l => this.isLayerRemovable(l));
   }
 
   get statusSelectedLayersCheck(): LayerListSelectVisibleEnum {
