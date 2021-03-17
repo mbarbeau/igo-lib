@@ -11,12 +11,14 @@ export class SecureImagePipe implements PipeTransform {
   constructor(private http: HttpClient) {}
 
   transform(url: string): Observable<string> {
-    const headers1 = new HttpHeaders();
-    headers1.append('Content-Type', 'text/plain');
-    headers1.append('activityInterceptor', 'false');
+    const headers = new HttpHeaders({
+      'Content-Type': 'text/plain',
+      activityInterceptor: 'false'
+    });
+
     return this.http
       .get(url, {
-        headers: headers1,
+        headers,
         responseType: 'blob'
       })
       .pipe(

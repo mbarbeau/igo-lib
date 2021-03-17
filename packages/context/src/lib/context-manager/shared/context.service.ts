@@ -183,7 +183,7 @@ export class ContextService {
 
   create(context: DetailedContext): Observable<Context> {
     const url = this.baseUrl + '/contexts';
-    return this.http.post<Context>(url, JSON.stringify(context)).pipe(
+    return this.http.post<Context>(url, context).pipe(
       map((contextCreated) => {
         if (this.authService.authenticated) {
           contextCreated.permission = TypePermission[TypePermission.write];
@@ -199,7 +199,7 @@ export class ContextService {
 
   clone(id: string, properties = {}): Observable<Context> {
     const url = this.baseUrl + '/contexts/' + id + '/clone';
-    return this.http.post<Context>(url, JSON.stringify(properties)).pipe(
+    return this.http.post<Context>(url, properties).pipe(
       map((contextCloned) => {
         contextCloned.permission = TypePermission[TypePermission.write];
         this.contexts$.value.ours.unshift(contextCloned);
@@ -211,7 +211,7 @@ export class ContextService {
 
   update(id: string, context: Context): Observable<Context> {
     const url = this.baseUrl + '/contexts/' + id;
-    return this.http.patch<Context>(url, JSON.stringify(context));
+    return this.http.patch<Context>(url, context);
   }
 
   // =================================================================
@@ -221,7 +221,7 @@ export class ContextService {
     const association = {
       toolId
     };
-    return this.http.post<void>(url, JSON.stringify(association));
+    return this.http.post<void>(url, association);
   }
 
   deleteToolAssociation(contextId: string, toolId: string): Observable<any> {
@@ -245,13 +245,11 @@ export class ContextService {
       typePermission: type
     };
 
-    return this.http
-      .post<ContextPermission[]>(url, JSON.stringify(association))
-      .pipe(
-        catchError((res) => {
-          return [this.handleError(res, undefined, true)];
-        })
-      );
+    return this.http.post<ContextPermission[]>(url, association).pipe(
+      catchError((res) => {
+        return [this.handleError(res, undefined, true)];
+      })
+    );
   }
 
   deletePermissionAssociation(

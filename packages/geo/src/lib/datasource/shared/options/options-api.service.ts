@@ -55,7 +55,9 @@ export class OptionsApiService extends OptionsService {
           if (!res || !res.sourceOptions) {
             return {} as WMSDataSourceOptions;
           }
-          res.sourceOptions._layerOptionsFromSource = res.layerOptions;
+          if (res.layerOptions) {
+            res.sourceOptions._layerOptionsFromSource = res.layerOptions;
+          }
           return res.sourceOptions;
         }
       )
@@ -95,7 +97,9 @@ export class OptionsApiService extends OptionsService {
           if (!res || !res.sourceOptions) {
             return {} as ArcGISRestDataSourceOptions | ArcGISRestImageDataSourceOptions | TileArcGISRestDataSourceOptions;
           }
-          res.sourceOptions._layerOptionsFromSource = res.layerOptions;
+          if (res.layerOptions) {
+            res.sourceOptions._layerOptionsFromSource = res.layerOptions;
+          }
           return res.sourceOptions;
         }
       )

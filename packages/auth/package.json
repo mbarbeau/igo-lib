@@ -1,6 +1,6 @@
 {
   "name": "@igo2/auth",
-  "version": "1.6.3",
+  "version": "1.6.4",
   "description": "IGO Library",
   "author": "MSP",
   "keywords": ["igo"],
@@ -25,8 +25,8 @@
     "@angular/core": "^10.0.3",
     "@angular/forms": "^10.0.3",
     "@angular/material": "^10.0.1",
-    "@igo2/core": "^1.6.3",
-    "@igo2/utils": "^1.6.3",
+    "@igo2/core": "^1.6.4",
+    "@igo2/utils": "^1.6.4",
     "rxjs": "^6.6.0",
     "@azure/msal-angular": "^1.1.1",
     "msal": "^1.4.0"

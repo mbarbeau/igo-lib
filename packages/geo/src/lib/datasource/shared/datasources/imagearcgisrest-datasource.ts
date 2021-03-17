@@ -38,7 +38,8 @@ export class ImageArcGISRestDataSource extends DataSource {
   }
 
   getLegend(): Legend[] {
-    const legendInfo = this.options.params.legendInfo;
+    let legendInfo;
+    this.params ? legendInfo = this.options.params.legendInfo : legendInfo = this.options.options.legendInfo;
     const legend = super.getLegend();
     if (legendInfo === undefined || legend.length > 0) {
       return legend;
