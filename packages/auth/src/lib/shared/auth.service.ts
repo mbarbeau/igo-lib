@@ -37,25 +37,23 @@ export class AuthService {
   }
 
   login(username: string, password: string): Observable<void> {
-    const myHeader = new HttpHeaders();
-    myHeader.append('Content-Type', 'application/json');
+    const myHeader = new HttpHeaders({ 'Content-Type': 'application/json' });
 
-    const body = JSON.stringify({
+    const body = {
       username,
       password: this.encodePassword(password)
-    });
+    };
 
     return this.loginCall(body, myHeader);
   }
 
   loginWithToken(token: string, type: string): Observable<void> {
-    const myHeader = new HttpHeaders();
-    myHeader.append('Content-Type', 'application/json');
+    const myHeader = new HttpHeaders({ 'Content-Type': 'application/json' });
 
-    const body = JSON.stringify({
+    const body = {
       token,
       typeConnection: type
-    });
+    };
 
     return this.loginCall(body, myHeader);
   }
@@ -128,7 +126,7 @@ export class AuthService {
 
   updateUser(user: User): Observable<User> {
     const url = this.config.getConfig('auth.url');
-    return this.http.patch<User>(url, JSON.stringify(user));
+    return this.http.patch<User>(url, user);
   }
 
   private encodePassword(password: string) {

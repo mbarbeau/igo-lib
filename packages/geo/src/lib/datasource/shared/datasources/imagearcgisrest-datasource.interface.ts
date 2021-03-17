@@ -14,4 +14,5 @@ export interface ArcGISRestImageDataSourceOptions extends DataSourceOptions {
   url?: string;
   ol?: ImageArcGISRest;
   idColumn?: string;
+  options?: any;
 }

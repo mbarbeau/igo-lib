@@ -1,3 +1,16 @@
+## [1.6.4](https://github.com/infra-geo-ouverte/igo2-lib/compare/1.6.3...1.6.4) (2021-03-15)
+
+
+### Bug Fixes
+
+* **arcgisREST:** fix forced title and legend for arcgis layer ([#819](https://github.com/infra-geo-ouverte/igo2-lib/issues/819)) ([abdd881](https://github.com/infra-geo-ouverte/igo2-lib/commit/abdd8813865b58ab08ca82ed00b18aa2882caae1))
+* **auth:** httpHeader class are immutable objects ([72c51d0](https://github.com/infra-geo-ouverte/igo2-lib/commit/72c51d009aa5a887b4bec36ccd476b64ac407e35))
+* **context:** pass object to service instead of json.stringify ([2a54c62](https://github.com/infra-geo-ouverte/igo2-lib/commit/2a54c62e981f226ec67cf36303a2db4c7d71354b))
+* **draw:** drawing popup label changed ([#820](https://github.com/infra-geo-ouverte/igo2-lib/issues/820)) ([d2227b9](https://github.com/infra-geo-ouverte/igo2-lib/commit/d2227b95c06f35b903a5d6ea17676fa174ee4380)), closes [#645](https://github.com/infra-geo-ouverte/igo2-lib/issues/645) [#646](https://github.com/infra-geo-ouverte/igo2-lib/issues/646)
+* **options-api:** fix when layerOptions is undefined ([2255c5b](https://github.com/infra-geo-ouverte/igo2-lib/commit/2255c5b266d64ece14476fca2b1430e9c0c58747))
+
+
+
 ## [1.6.3](https://github.com/infra-geo-ouverte/igo2-lib/compare/1.6.2...1.6.3) (2021-02-23)
 
 

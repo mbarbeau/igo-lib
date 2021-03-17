@@ -615,7 +615,6 @@ export class CatalogService {
           baseSourceOptions,
           catalog.sourceOptions
         ) as ArcGISRestDataSourceOptions;
-
         return ObjectUtils.removeUndefined({
           id: generateIdFromSourceOptions(sourceOptions),
           type: CatalogItemType.Layer,
@@ -630,7 +629,8 @@ export class CatalogService {
               extern: undefined,
               abstract,
               type: baseSourceOptions.type
-            }
+            },
+            title: forcedTitle !== undefined ? forcedTitle : layer.name
           }
         });
       })

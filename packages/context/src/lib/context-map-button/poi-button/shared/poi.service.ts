@@ -29,6 +29,6 @@ export class PoiService {
 
   create(context: Poi): Observable<Poi> {
     const url = this.baseUrl + '/pois';
-    return this.http.post<Poi>(url, JSON.stringify(context));
+    return this.http.post<Poi>(url, context);
   }
 }
