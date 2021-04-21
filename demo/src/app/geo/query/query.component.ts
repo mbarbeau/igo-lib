@@ -169,7 +169,7 @@ export class AppQueryComponent {
     }
     this.feature$.next(feature);
 
-    this.map.overlay.setFeatures([feature], FeatureMotion.None);
+    this.map.queryResultsOverlay.setFeatures([feature], FeatureMotion.None);
   }
 
   getTitle(result: SearchResult) {

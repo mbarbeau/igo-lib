@@ -29,6 +29,9 @@ export class ContextState {
     this.contextService.context$.subscribe((context: DetailedContext) => {
       this.onContextChange(context);
     });
+    this.contextService.toolsChanged$.subscribe((context: DetailedContext) => {
+      this.updateTools(context);
+    });
   }
 
   /**

@@ -1,0 +1,37 @@
+<div class="igo-input-container linkToShare">
+  <mat-form-field>
+    <textarea #textArea matInput readonly rows="1"
+      [placeholder]="'igo.context.shareMap.placeholderLink' | translate"
+      [value]="url"></textarea>
+  </mat-form-field>
+
+  <div class="igo-form-button-group">
+    <button
+      mat-raised-button
+      (click)="copyTextToClipboard(textArea)">
+      <mat-icon svgIcon="content-copy"></mat-icon>
+      {{ 'igo.context.shareMap.copy' | translate }}
+    </button>
+  </div>
+  <div>
+    <br/>
+    <section class="mat-typography">
+        <h4>{{'igo.context.shareMap.included' | translate}}</h4>
+        <ul>
+          <li>{{'igo.context.shareMap.context' | translate}}</li>
+          <li>{{'igo.context.shareMap.center' | translate}}</li>
+          <li>{{'igo.context.shareMap.zoom' | translate}}</li>
+          <li>{{'igo.context.shareMap.addedLayers' | translate}}</li>
+          <li>{{'igo.context.shareMap.visibleInvisible' | translate}}</li>
+        </ul>
+
+      <h4>{{'igo.context.shareMap.excluded' | translate}}</h4>
+      <ul>
+        <li>{{'igo.context.shareMap.order' | translate}}</li>
+        <li>{{'igo.context.shareMap.opacity' | translate}}</li>
+        <li>{{'igo.context.shareMap.filterOgc' | translate}}</li>
+        <li>{{'igo.context.shareMap.filterTime' | translate}}</li>
+      </ul>
+    </section>
+  </div>
+</div>

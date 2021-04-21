@@ -11,10 +11,10 @@ import {
 } from '@angular/core';
 import type { TemplateRef } from '@angular/core';
 
-import { Observable, EMPTY, timer, BehaviorSubject, Subscription } from 'rxjs';
+import { Observable, EMPTY, timer, BehaviorSubject, Subscription, forkJoin } from 'rxjs';
 import { debounce, map } from 'rxjs/operators';
 
-import { EntityStore, EntityStoreWatcher } from '@igo2/common';
+import { EntityState, EntityStore, EntityStoreWatcher } from '@igo2/common';
 
 import { IgoMap } from '../../map';
 
@@ -90,6 +90,8 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
     this.pageIterator = [];
   }
   public _term: string;
+
+  @Input() termSplitter;
 
   @Input() settingsChange$ = new BehaviorSubject<boolean>(undefined);
 
@@ -195,12 +197,12 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
    * @internal
    */
   private liftResults(): Observable<{source: SearchSource; results: SearchResult[]}[]> {
-    return this.store.view.all$().pipe(
-      debounce((results: SearchResult[]) => {
+    return this.store.stateView.all$().pipe(
+      debounce((results: {entity: SearchResult, state: EntityState}[]) => {
         return results.length === 0 ? EMPTY : timer(200);
       }),
-      map((results: SearchResult[]) => {
-        return this.groupResults(results.sort(this.sortByOrder));
+      map((results: {entity: SearchResult, state: EntityState}[]) => {
+        return this.groupResults(results.map(r => r.entity).sort(this.sortByOrder));
       })
     );
   }
@@ -249,14 +251,18 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
       page: ++this.pageIterator[group.source.getId()]
     };
 
-    const researches = this.searchService.search(this.term, options);
-    researches.map(research => {
-      research.request.subscribe((results: SearchResult[]) => {
+    const terms = this.termSplitter ? this.term.split(this.termSplitter) : [this.term];
+
+    const researches = this.searchService.search(terms, options);
+    researches.map((r: Research) => r.source).map((source) => {
+      const currentResearch = researches.find((r) => r.source === source);
+      return forkJoin(currentResearch.requests).subscribe((res: SearchResult[][]) => {
+        const results = [].concat.apply([], res);
         const newResults = group.results.concat(results);
         if (!results.length) {
           newResults[newResults.length - 1].meta.nextPage = false;
         }
-        this.moreResults.emit({research, results: newResults});
+        this.moreResults.emit({research: currentResearch, results: newResults});
       });
     });
     return;

@@ -2,4 +2,8 @@
 
 @mixin igo-core-theming($theme, $typography) {
   @include igo-message-theming($theme);
+
+  button.mat-icon-button.mat-button-base[disabled="true"] {
+      color: rgba(0,0,0,.26);
+  }
 }

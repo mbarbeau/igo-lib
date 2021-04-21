@@ -1,0 +1,62 @@
+<form class="igo-form" [formGroup]="form"
+  (ngSubmit)="createUrl(form.value)">
+
+  <div class="igo-input-container">
+    <mat-form-field>
+      <input matInput required
+             [placeholder]="'igo.context.contextManager.form.title' | translate"
+             formControlName="title">
+     <mat-error>
+      {{ 'igo.context.contextManager.form.titleRequired' | translate }}
+     </mat-error>
+    </mat-form-field>
+  </div>
+
+  <div id="uriInput" class="igo-input-container">
+    <mat-form-field>
+      <span *ngIf="userId" class="prefix">{{userId}}-</span>
+      <span class="fieldWrapper">
+        <input matInput required
+             [readonly]="!userId"
+             [placeholder]="'igo.context.contextManager.form.uri' | translate"
+             formControlName="uri">
+       </span>
+     <mat-error>
+      {{ 'igo.context.contextManager.form.uriRequired' | translate }}
+     </mat-error>
+    </mat-form-field>
+  </div>
+
+  <div class="igo-form-button-group">
+    <button *ngIf="!url"
+      mat-raised-button
+      type="submit"
+      [disabled]="!form.valid">
+      {{ 'igo.context.shareMap.button' | translate }}
+    </button>
+    <button *ngIf="url"
+      mat-raised-button
+      type="button"
+      (click)="updateContextShared(form.value)">
+      {{ 'igo.context.shareMap.refreshBtn' | translate }}
+    </button>
+  </div>
+</form>
+
+<div *ngIf="url" class="igo-input-container linkToShare">
+  <mat-form-field>
+    <textarea #textArea matInput readonly rows="1"
+      class="textAreaWithButton"
+      [placeholder]="'igo.context.shareMap.placeholderLink' | translate"
+      [value]="url"></textarea>
+    <button
+      mat-icon-button
+      tooltip-position="below"
+      matTooltipShowDelay="500"
+      [matTooltip]="'igo.context.shareMap.copy' | translate"
+      color="primary"
+      (click)="copyTextToClipboard(textArea)">
+      <mat-icon svgIcon="content-copy"></mat-icon>
+    </button>
+  </mat-form-field>
+<div>

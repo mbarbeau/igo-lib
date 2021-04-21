@@ -11,6 +11,7 @@ export interface IChercheData {
     title2?: string;
     title3?: string;
   };
+  score?: number;
 }
 
 export interface IChercheResponse {

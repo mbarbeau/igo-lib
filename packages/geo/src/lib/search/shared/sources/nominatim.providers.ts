@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 
-import { ConfigService } from '@igo2/core';
+import { ConfigService, StorageService } from '@igo2/core';
 
 import { SearchSource } from './source';
 import { NominatimSearchSource } from './nominatim';
@@ -11,11 +11,13 @@ import { NominatimSearchSource } from './nominatim';
  */
 export function nominatimSearchSourceFactory(
   http: HttpClient,
-  config: ConfigService
+  config: ConfigService,
+  storageService: StorageService
 ) {
   return new NominatimSearchSource(
     http,
-    config.getConfig(`searchSources.${NominatimSearchSource.id}`)
+    config.getConfig(`searchSources.${NominatimSearchSource.id}`),
+    storageService
   );
 }
 
@@ -27,6 +29,6 @@ export function provideNominatimSearchSource() {
     provide: SearchSource,
     useFactory: nominatimSearchSourceFactory,
     multi: true,
-    deps: [HttpClient, ConfigService]
+    deps: [HttpClient, ConfigService, StorageService]
   };
 }

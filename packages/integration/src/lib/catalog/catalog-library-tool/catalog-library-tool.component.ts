@@ -1,10 +1,11 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, Input } from '@angular/core';
 import { take } from 'rxjs/operators';
 
 import { ToolComponent } from '@igo2/common';
 
 import { EntityStore } from '@igo2/common';
 import { Catalog, CatalogService } from '@igo2/geo';
+import { StorageService } from '@igo2/core';
 
 import { ToolState } from '../../tool/tool.state';
 import { CatalogState } from '../catalog.state';
@@ -31,10 +32,21 @@ export class CatalogLibraryToolComponent implements OnInit {
     return this.catalogState.catalogStore;
   }
 
+  /**
+   * Determine if the form to add a catalog is allowed
+   */
+  @Input() addCatalogAllowed: boolean = false;
+
+  /**
+   * List of predefined catalogs
+   */
+  @Input() predefinedCatalogs: Catalog[] = [];
+
   constructor(
     private catalogService: CatalogService,
     private catalogState: CatalogState,
-    private toolState: ToolState
+    private toolState: ToolState,
+    private storageService: StorageService
   ) {}
 
   /**
@@ -65,7 +77,7 @@ export class CatalogLibraryToolComponent implements OnInit {
   private loadCatalogs() {
     this.catalogService.loadCatalogs().pipe(take(1)).subscribe((catalogs: Catalog[]) => {
       this.store.clear();
-      this.store.load(catalogs);
+      this.store.load(catalogs.concat((this.storageService.get('addedCatalogs') || []) as Catalog[]));
     });
   }
 }

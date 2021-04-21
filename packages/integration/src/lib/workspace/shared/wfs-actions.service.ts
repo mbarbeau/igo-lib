@@ -16,7 +16,7 @@ import {
   OgcFilterWidget,
   OgcFilterableDataSource,
 } from '@igo2/geo';
-import { StorageService, StorageServiceEvent, LanguageService, MediaService} from '@igo2/core';
+import { StorageService, StorageServiceEvent, StorageServiceEventEnum, LanguageService, MediaService} from '@igo2/core';
 import { StorageState } from '../../storage/storage.state';
 import { map, skipWhile } from 'rxjs/operators';
 import { ToolState } from '../../tool/tool.state';
@@ -77,7 +77,8 @@ export class WfsActionsService implements OnDestroy  {
     ): Action[] {
     this.zoomAuto$.next(this.zoomAuto);
     this.storageChange$$ = this.storageService.storageChange$
-      .pipe(skipWhile((storageChange: StorageServiceEvent) => storageChange.key !== 'zoomAuto'))
+      .pipe(skipWhile((storageChange: StorageServiceEvent) =>
+        storageChange.key !== 'zoomAuto' || storageChange.event === StorageServiceEventEnum.CLEARED))
       .subscribe(() => {
         this.zoomAuto$.next(this.zoomAuto);
         handleZoomAuto(workspace, this.storageService);

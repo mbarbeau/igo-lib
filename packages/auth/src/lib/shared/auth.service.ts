@@ -21,6 +21,10 @@ export class AuthService {
   public redirectUrl: string;
   private anonymous = false;
 
+  get hasAuthService() {
+    return this.config.getConfig('auth.url') !== undefined;
+  }
+
   constructor(
     private http: HttpClient,
     private tokenService: TokenService,

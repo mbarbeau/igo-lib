@@ -430,8 +430,7 @@ export class CapabilitiesService {
     const params = Object.assign(
       {},
       {
-        legendInfo,
-        layers: 'show:' + baseOptions.layer,
+        LAYERS: baseOptions.layer ? 'show:' + baseOptions.layer : undefined,
         time: timeExtent
       }
     );

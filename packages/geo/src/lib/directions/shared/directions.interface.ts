@@ -6,7 +6,6 @@ export interface DirectionsOptions {
   steps?: boolean;
   geometries?: string;
   alternatives?: boolean;
-
 }
 
 export interface Stop {

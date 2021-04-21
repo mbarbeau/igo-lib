@@ -6,10 +6,12 @@ import { map } from 'rxjs/operators';
 
 import { FEATURE, Feature, FeatureGeometry } from '../../../feature';
 
+import { StorageService } from '@igo2/core';
 import { SearchResult } from '../search.interfaces';
 import { SearchSource, TextSearch } from './source';
 import { SearchSourceOptions, TextSearchOptions } from './source.interfaces';
 import { NominatimData } from './nominatim.interfaces';
+import { computeTermSimilarity } from '../search.utils';
 
 /**
  * Nominatim search source
@@ -21,9 +23,10 @@ export class NominatimSearchSource extends SearchSource implements TextSearch {
 
   constructor(
     private http: HttpClient,
-    @Inject('options') options: SearchSourceOptions
+    @Inject('options') options: SearchSourceOptions,
+    storageService: StorageService
   ) {
-    super(options);
+    super(options, storageService);
   }
 
   getId(): string {
@@ -148,7 +151,7 @@ export class NominatimSearchSource extends SearchSource implements TextSearch {
     }
     return this.http
       .get(this.searchUrl, { params })
-      .pipe(map((response: NominatimData[]) => this.extractResults(response)));
+      .pipe(map((response: NominatimData[]) => this.extractResults(response, term)));
   }
 
   private computeSearchRequestParams(
@@ -167,11 +170,11 @@ export class NominatimSearchSource extends SearchSource implements TextSearch {
     });
   }
 
-  private extractResults(response: NominatimData[]): SearchResult<Feature>[] {
-    return response.map((data: NominatimData) => this.dataToResult(data));
+  private extractResults(response: NominatimData[], term: string): SearchResult<Feature>[] {
+    return response.map((data: NominatimData) => this.dataToResult(data, term));
   }
 
-  private dataToResult(data: NominatimData): SearchResult<Feature> {
+  private dataToResult(data: NominatimData, term: string): SearchResult<Feature> {
     const properties = this.computeProperties(data);
     const geometry = this.computeGeometry(data);
     const extent = this.computeExtent(data);
@@ -183,7 +186,8 @@ export class NominatimSearchSource extends SearchSource implements TextSearch {
         dataType: FEATURE,
         id,
         title: data.display_name,
-        icon: 'map-marker'
+        icon: 'map-marker',
+        score: computeTermSimilarity(term.trim(), data.display_name),
       },
       data: {
         type: FEATURE,

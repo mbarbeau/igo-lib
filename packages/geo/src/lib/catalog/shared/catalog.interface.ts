@@ -10,6 +10,8 @@ export interface ICatalog {
   id: string;
   title?: string;
   url: string;
+  removable?: boolean;
+  externalProvider?: boolean;
   items?: CatalogItem[];
   type?: TypeCatalogStrings;
   version?: string;
@@ -18,6 +20,7 @@ export interface ICatalog {
   requestEncoding?: string;
   regFilters?: string[];
   groupImpose?: CatalogItemGroup; // only use by ICompositeCatalog object (id and title)
+  groupSeparator?: string;
   queryFormat?: QueryFormat;
   queryParams?: { [key: string]: string };
   sourceOptions?: { [key: string]: any };
@@ -36,6 +39,7 @@ export interface CatalogItem {
   title: string;
   type?: CatalogItemType;
   address?: string;
+  externalProvider?: boolean;
 }
 
 export interface CatalogItemLayer<L = MetadataLayerOptions>

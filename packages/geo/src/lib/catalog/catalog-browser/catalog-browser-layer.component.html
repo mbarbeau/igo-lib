@@ -1,7 +1,21 @@
 <mat-list-item>
   <mat-icon *ngIf="haveGroup()" mat-list-avatar svgIcon="blank"></mat-icon>
   <h4 mat-line matTooltipShowDelay="500" [ngClass]="(catalogAllowLegend)?'igo-cataloglayer-title':''" (click)="askForLegend($event)" [matTooltip]="computeTitleTooltip()">{{title}}</h4>
-
+  
+    <button *ngIf="layer.externalProvider"
+      disabled="true"
+      mat-icon-button>
+    <mat-icon 
+      class="igo-cataloglayer-external-icon"
+      *ngIf="layer.externalProvider"
+      tooltip-position="below"
+      matTooltipShowDelay="500"
+      [matTooltip]="'igo.geo.catalog.externalProvider.layer' | translate"
+      color="primary"
+      (click)="$event.stopPropagation()"
+      svgIcon="bank-transfer-in">
+    </mat-icon>
+  </button>
   <igo-metadata-button [layer]="layer"></igo-metadata-button>
 
   <button

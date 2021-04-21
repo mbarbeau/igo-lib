@@ -88,6 +88,11 @@
             (click)="$event.stopPropagation()" [checked]="pointerSummaryEnabled" [labelPosition]="'after'">
             {{'igo.geo.search.pointerSearchSummary.title' | translate}}
           </mat-slide-toggle>
+          <mat-slide-toggle class="pointer-summary-option" (change)="changeSearchResultsGeometry($event)" tooltip-position="below"
+            matTooltipShowDelay="500" [matTooltip]="'igo.geo.search.searchResultsGeometry.tooltip' | translate"
+            (click)="$event.stopPropagation()" [checked]="searchResultsGeometryEnabled" [labelPosition]="'after'">
+            {{'igo.geo.search.searchResultsGeometry.title' | translate}}
+          </mat-slide-toggle>
         </span>
       </span>
   </mat-menu>

@@ -1,6 +1,10 @@
 import { Feature } from '../../feature/shared/feature.interfaces';
 import { IgoMap } from '../../map/shared/map';
 
+export interface DrawOptions {
+  icons?: string[];
+}
+
 export interface Draw {
     area?: number;
     length?: number;

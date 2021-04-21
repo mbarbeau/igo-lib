@@ -11,6 +11,7 @@ import { Md5 } from 'ts-md5';
 
 import { ConfigService } from '@igo2/core';
 import { TokenService } from './token.service';
+import { WithCredentialsOptions } from './auth.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -24,6 +25,10 @@ export class AuthInterceptor implements HttpInterceptor {
     return trustHosts;
   }
 
+  private get hostsWithCredentials(): WithCredentialsOptions[] {
+    return this.config.getConfig('auth.hostsWithCredentials') || [];
+  }
+
   constructor(
     private config: ConfigService,
     private tokenService: TokenService,
@@ -31,9 +36,16 @@ export class AuthInterceptor implements HttpInterceptor {
   ) {}
 
   intercept(
-    req: HttpRequest<any>,
+    originalReq: HttpRequest<any>,
     next: HttpHandler
   ): Observable<HttpEvent<any>> {
+    const withCredentials = this.handleHostsWithCredentials(originalReq.url);
+    let req = originalReq.clone();
+    if (withCredentials) {
+      req = originalReq.clone({
+        withCredentials
+      });
+    }
     this.refreshToken();
     const token = this.tokenService.get();
     const element = document.createElement('a');
@@ -72,6 +84,12 @@ export class AuthInterceptor implements HttpInterceptor {
   }
 
   interceptXhr(xhr, url: string): boolean {
+    const withCredentials = this.handleHostsWithCredentials(url);
+    if (withCredentials) {
+       xhr.withCredentials = withCredentials;
+       return true;
+    }
+
     this.refreshToken();
     const element = document.createElement('a');
     element.href = url;
@@ -82,6 +100,18 @@ export class AuthInterceptor implements HttpInterceptor {
     }
     xhr.setRequestHeader('Authorization', 'Bearer ' + token);
     return true;
+  }
+
+  private handleHostsWithCredentials(reqUrl: string) {
+    let withCredentials = false;
+    for (const hostWithCredentials of this.hostsWithCredentials) {
+      const domainRegex = new RegExp(hostWithCredentials.domainRegFilters);
+      if (domainRegex.test(reqUrl)) {
+        withCredentials = hostWithCredentials.withCredentials !== undefined ? hostWithCredentials.withCredentials : undefined;
+        break;
+      }
+    }
+    return withCredentials;
   }
 
   refreshToken() {

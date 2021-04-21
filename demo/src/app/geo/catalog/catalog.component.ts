@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 
-import { LanguageService, ConfigService } from '@igo2/core';
+import { LanguageService, ConfigService, StorageService } from '@igo2/core';
 import { IgoMap, LayerService, Catalog, CatalogItem, CatalogService } from '@igo2/geo';
 import { EntityStore } from '@igo2/common';
 
@@ -31,7 +31,8 @@ export class AppCatalogComponent implements OnInit {
     private configService: ConfigService,
     private languageService: LanguageService,
     private layerService: LayerService,
-    private catalogService: CatalogService
+    private catalogService: CatalogService,
+    private storageService: StorageService
   ) {}
 
   /**
@@ -67,7 +68,7 @@ export class AppCatalogComponent implements OnInit {
     this.catalogService.loadCatalogs()
       .subscribe((catalogs: Catalog[]) => {
         this.catalogStore.clear();
-        this.catalogStore.load(catalogs);
+        this.catalogStore.load(catalogs.concat((this.storageService.get('addedCatalogs') || []) as Catalog[]));
       });
   }
 

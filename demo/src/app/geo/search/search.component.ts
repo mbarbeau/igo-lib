@@ -1,4 +1,4 @@
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, forkJoin } from 'rxjs';
 import {
   Component,
   ElementRef,
@@ -36,6 +36,8 @@ export class AppSearchComponent implements OnInit, OnDestroy {
   public store = new ActionStore([]);
 
   public igoSearchPointerSummaryEnabled: boolean = false;
+
+  public termSplitter = '|';
 
   public map = new IgoMap({
     overlay: true,
@@ -145,7 +147,7 @@ export class AppSearchComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.map.overlay.setFeatures(
+    this.map.searchResultsOverlay.setFeatures(
       [layer.data] as Feature[],
       FeatureMotion.Default
     );
@@ -180,7 +182,7 @@ export class AppSearchComponent implements OnInit, OnDestroy {
    * Remove a feature to the map overlay
    */
   removeFeatureFromMap() {
-    this.map.overlay.clear();
+    this.map.searchResultsOverlay.clear();
   }
 
   onContextMenuOpen(event: { x: number; y: number }) {
@@ -211,15 +213,15 @@ export class AppSearchComponent implements OnInit, OnDestroy {
 
   onSearchCoordinate() {
     this.searchStore.clear();
-    const results = this.searchService.reverseSearch(this.lonlat);
+    const researches = this.searchService.reverseSearch(this.lonlat);
 
-    for (const i in results) {
-      if (results.length > 0) {
-        results[i].request.subscribe((_results: SearchResult<Feature>[]) => {
-          this.onSearch({ research: results[i], results: _results });
-        });
-      }
-    }
+    researches.map((r: Research) => r.source).map((source) => {
+      const currentResearch = researches.find((r) => r.source === source);
+      return forkJoin(currentResearch.requests).subscribe((res: SearchResult[][]) => {
+        const results = [].concat.apply([], res);
+        this.onSearch({ research: currentResearch, results });
+      });
+    });
   }
 
   onOpenGoogleMaps() {

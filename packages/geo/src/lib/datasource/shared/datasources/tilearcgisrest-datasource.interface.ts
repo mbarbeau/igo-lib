@@ -6,7 +6,7 @@ import { DataSourceOptions } from './datasource.interface';
 export interface TileArcGISRestDataSourceOptions extends DataSourceOptions {
   // type?: 'tilearcgisrest';
   queryPrecision?: number;
-  layer: string;
+  layer?: string;
   legendInfo?: any;
 
   params?: any;

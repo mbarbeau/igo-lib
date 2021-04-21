@@ -1,46 +1,41 @@
 import { Injectable, Optional } from '@angular/core';
 
-import { RouteService, ConfigService, MessageService } from '@igo2/core';
+import { RouteService, MessageService } from '@igo2/core';
 import { Layer } from '@igo2/geo';
 import type { IgoMap } from '@igo2/geo';
 
+import { DetailedContext } from '../../context-manager/shared/context.interface';
 import { ContextService } from '../../context-manager/shared/context.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ShareMapService {
-  private apiUrl: string;
 
   constructor(
-    private config: ConfigService,
     private contextService: ContextService,
     private messageService: MessageService,
     @Optional() private route: RouteService
-  ) {
-    this.apiUrl = this.config.getConfig('context.url');
+  ) {}
+
+  getUrlWithApi(formValues) {
+    return `${location.origin + location.pathname}?context=${formValues.uri}`;
   }
 
-  getUrl(map: IgoMap, formValues, publicShareOption) {
-    if (this.apiUrl) {
-      return this.getUrlWithApi(map, formValues);
-    }
-    return this.getUrlWithoutApi(map, publicShareOption);
-  }
-
-  getUrlWithApi(map: IgoMap, formValues) {
+  createContextShared(map: IgoMap, formValues) {
     const context = this.contextService.getContextFromMap(map);
     context.scope = 'public';
     context.title = formValues.title;
     context.uri = formValues.uri;
-    this.contextService.create(context).subscribe(
-      rep => {},
-      err => {
-        err.error.title = 'Share Map';
-        this.messageService.showError(err);
-      }
-    );
-    return `${location.origin + location.pathname}?context=${formValues.uri}`;
+    return this.contextService.create(context);
+  }
+
+  updateContextShared(map: IgoMap, formValues, id: string) {
+    const context = this.contextService.getContextFromMap(map);
+    return this.contextService.update(id, {
+      title: formValues.title,
+      map: context.map
+    } as DetailedContext);
   }
 
   getUrlWithoutApi(map: IgoMap, publicShareOption) {

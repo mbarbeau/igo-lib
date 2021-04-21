@@ -1,11 +1,61 @@
 <igo-list [navigation]="false">
-  <ng-template ngFor let-catalog [ngForOf]="store.view.all$() | async">
+  <ng-template ngFor let-catalog [ngForOf]="getCatalogs() | async">
     <igo-catalog-library-item
       igoListItem
       color="accent"
       [map]="map"
       [catalog]="catalog"
+      (catalogRemove)="onCatalogRemove(catalog)"
       (select)="onCatalogSelect(catalog)">
     </igo-catalog-library-item>
   </ng-template>
+  <form *ngIf="addCatalogAllowed" class="igo-form" [formGroup]="form">
+    <mat-list-item></mat-list-item>
+    <mat-divider></mat-divider>
+    <div class="igo-input-container">
+      
+      <mat-form-field>
+        <input
+          matInput
+          formControlName="title"
+          placeholder="{{'igo.geo.printForm.title' | translate}}">
+      </mat-form-field>
+    </div>
+    <div class="igo-input-container">
+      <mat-form-field>
+        <input type="text" formControlName="url" placeholder="URL" matInput [matAutocomplete]="auto">
+        <mat-autocomplete #auto="matAutocomplete" (optionSelected)='changeUrl($event.option.value)'>
+          <mat-option *ngFor="let predefinedCatalog of (predefinedCatalogsList$ | async)" matTooltipShowDelay="500"
+            [matTooltip]="predefinedCatalog.url" [value]="predefinedCatalog">
+            {{predefinedCatalog.url}}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+    </div>
+    <div class="igo-input-container">
+      <mat-form-field>
+        <mat-select
+          formControlName="type"
+          placeholder="Type">
+          <mat-option
+            *ngFor="let type of typeCapabilities"
+            [value]="type"
+            (click)="$event.stopPropagation()">
+              <p mat-line>{{type}}</p>
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+
+    <div class="igo-form-button-group add-catalog-button-top-padding">
+      <button
+        mat-raised-button 
+        type="button"
+        [disabled]="!form.valid"
+        (click)="addCatalog(form.value)">
+        {{'igo.geo.catalog.library.add' | translate}}
+      </button>
+    </div>
+  </form>
 </igo-list>

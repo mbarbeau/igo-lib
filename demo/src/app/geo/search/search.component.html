@@ -10,7 +10,7 @@
     <hr>
     <br>
     <span *ngIf="!isTouchScreen" title="Details">
-      F2 activate/desactivate the pointer location.
+      F2 activate/deactivate the pointer location.
     </span>
   </mat-card-content>
 
@@ -28,6 +28,7 @@
       (pointerSummaryStatus)="onPointerSummaryStatusChange($event)"
       [searchSettings]="true"
       [store]="searchStore"
+      [termSplitter]="termSplitter"
       (searchTermChange)="onSearchTermChange($event)"
       (search)="onSearch($event)"
       (clearFeature)="removeFeatureFromMap()"

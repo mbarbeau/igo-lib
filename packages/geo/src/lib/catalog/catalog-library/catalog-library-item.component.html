@@ -1,3 +1,34 @@
-<mat-list-item>
-  <h4 mat-line>{{title}}</h4>
+<mat-list-item>  
+  <h4 mat-line>
+    {{title}}
+  </h4>
+  <mat-icon 
+    class="igo-external-provider"
+    *ngIf="catalog.externalProvider"
+    tooltip-position="below"
+    matTooltipShowDelay="500"
+    [matTooltip]="'igo.geo.catalog.externalProvider.catalog' | translate"
+    color="primary"
+    (click)="$event.stopPropagation()"
+    svgIcon="bank-transfer-in">
+  </mat-icon>
+
+  <button 
+  *ngIf="catalog.removable"
+  mat-icon-button
+  tooltip-position="below"
+  matTooltipShowDelay="500"
+  [matTooltip]="'igo.geo.catalog.library.remove' | translate"
+  color="warn"
+  (click)="removeCatalogFromLibrary($event)">
+  <mat-icon svgIcon="delete"></mat-icon>
+</button>
+
+<button 
+  class="igo-blank"
+  *ngIf="!catalog.removable"
+  disabled="true"
+  mat-icon-button>
+  <mat-icon svgIcon="blank"></mat-icon>
+</button>
 </mat-list-item>

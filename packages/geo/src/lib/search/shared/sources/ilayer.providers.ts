@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 
-import { ConfigService, LanguageService } from '@igo2/core';
+import { ConfigService, LanguageService, StorageService } from '@igo2/core';
 
 import { SearchSource } from './source';
 import { ILayerSearchSource, ILayerSearchResultFormatter } from './ilayer';
@@ -33,12 +33,14 @@ export function provideILayerSearchResultFormatter() {
 export function ilayerSearchSourceFactory(
   http: HttpClient,
   languageService: LanguageService,
+  storageService: StorageService,
   config: ConfigService,
   formatter: ILayerSearchResultFormatter
 ) {
   return new ILayerSearchSource(
     http,
     languageService,
+    storageService,
     config.getConfig(`searchSources.${ILayerSearchSource.id}`),
     formatter
   );
@@ -52,6 +54,6 @@ export function provideILayerSearchSource() {
     provide: SearchSource,
     useFactory: ilayerSearchSourceFactory,
     multi: true,
-    deps: [HttpClient, LanguageService, ConfigService, ILayerSearchResultFormatter]
+    deps: [HttpClient, LanguageService, StorageService, ConfigService, ILayerSearchResultFormatter]
   };
 }

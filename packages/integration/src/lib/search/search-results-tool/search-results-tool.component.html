@@ -1,4 +1,4 @@
-<div *ngIf="!store || store.empty" style="margin: 10px;">
+<div *ngIf="!store || store.stateView.empty" style="margin: 10px;">
   <section class="mat-typography">
     <h4><strong>{{ 'igo.integration.searchResultsTool.noResults' | translate }}</strong></h4>
     <p><strong>{{ 'igo.integration.searchResultsTool.doSearch' | translate }}</strong></p>
@@ -7,7 +7,7 @@
 </div>
 
 <igo-flexible
-  *ngIf="store && !(store.empty$ | async)"
+  *ngIf="store && !(store.stateView.empty$ | async)"
   #topPanel
   initial="100%"
   initialMobile="100%"
@@ -22,6 +22,7 @@
       [store]="store"
       [showIcons]="showIcons"
       [term]="term"
+      [termSplitter]="termSplitter"
       [settingsChange$]="settingsChange$"
       placeholder="false"
       (resultFocus)="onResultFocus($event)"

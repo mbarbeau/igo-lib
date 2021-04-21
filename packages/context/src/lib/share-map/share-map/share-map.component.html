@@ -1,88 +1,10 @@
-<form class="igo-form" [formGroup]="form"
-  (ngSubmit)="resetUrl(form.value)">
+<mat-tab-group *ngIf="hasApi" >
+  <mat-tab [label]="'igo.context.shareMap.shareWithApi' | translate">
+    <igo-share-map-api [map]="map"></igo-share-map-api>
+  </mat-tab>
+  <mat-tab [label]="'igo.context.shareMap.shareWithUrl' | translate">
+    <igo-share-map-url [map]="map"></igo-share-map-url>
+  </mat-tab>
+</mat-tab-group>
 
-  <div *ngIf="hasApi" class="igo-input-container">
-    <mat-form-field>
-      <input matInput required
-             [placeholder]="'igo.context.contextManager.form.title' | translate"
-             formControlName="title">
-     <mat-error>
-      {{ 'igo.context.contextManager.form.titleRequired' | translate }}
-     </mat-error>
-    </mat-form-field>
-  </div>
-
-  <div *ngIf="hasApi" id="uriInput" class="igo-input-container">
-    <mat-form-field>
-      <span *ngIf="userId" class="prefix">{{userId}}-</span>
-      <span class="fieldWrapper">
-        <input matInput required
-             [readonly]="!userId"
-             [placeholder]="'igo.context.contextManager.form.uri' | translate"
-             formControlName="uri">
-       </span>
-     <mat-error>
-      {{ 'igo.context.contextManager.form.uriRequired' | translate }}
-     </mat-error>
-    </mat-form-field>
-  </div>
-
-  <div *ngIf="hasApi" class="igo-form-button-group">
-    <button
-      mat-raised-button
-      type="submit"
-      [disabled]="!form.valid">
-      {{ 'igo.context.shareMap.button' | translate }}
-    </button>
-  </div>
-
-</form>
-
-<div *ngIf="url" class="igo-input-container linkToShare">
-  <mat-form-field>
-    <textarea #textArea matInput readonly rows="1"
-      [ngClass]="{'textAreaWithButton': hasApi}"
-      [placeholder]="'igo.context.shareMap.placeholderLink' | translate"
-      [value]="url"></textarea>
-    <button *ngIf="hasApi"
-      mat-icon-button
-      tooltip-position="below"
-      matTooltipShowDelay="500"
-      [matTooltip]="'igo.context.shareMap.copy' | translate"
-      color="primary"
-      (click)="copyTextToClipboard(textArea)">
-      <mat-icon svgIcon="content-copy"></mat-icon>
-    </button>
-  </mat-form-field>
-
-  <div *ngIf="!hasApi" class="igo-form-button-group">
-    <button
-      mat-raised-button
-      (click)="copyTextToClipboard(textArea)">
-      <mat-icon svgIcon="content-copy"></mat-icon>
-      {{ 'igo.context.shareMap.copy' | translate }}
-    </button>
-  </div>
-  <div *ngIf="!hasApi">
-    <br/>
-    <section class="mat-typography">
-        <h4>{{'igo.context.shareMap.included' | translate}}</h4>
-        <ul>
-          <li>{{'igo.context.shareMap.context' | translate}}</li>
-          <li>{{'igo.context.shareMap.center' | translate}}</li>
-          <li>{{'igo.context.shareMap.zoom' | translate}}</li>
-          <li>{{'igo.context.shareMap.addedLayers' | translate}}</li>
-          <li>{{'igo.context.shareMap.visibleInvisible' | translate}}</li>
-        </ul>
-
-      <h4>{{'igo.context.shareMap.excluded' | translate}}</h4>
-      <ul>
-        <li>{{'igo.context.shareMap.order' | translate}}</li>
-        <li>{{'igo.context.shareMap.opacity' | translate}}</li>
-        <li>{{'igo.context.shareMap.filterOgc' | translate}}</li>
-        <li>{{'igo.context.shareMap.filterTime' | translate}}</li>
-      </ul>
-    </section>
-  </div>
-
-</div>
+<igo-share-map-url *ngIf="!hasApi" [map]="map"></igo-share-map-url>

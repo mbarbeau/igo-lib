@@ -13,6 +13,7 @@ import { HttpClient } from '@angular/common/http';
 import { Subscription } from 'rxjs';
 
 import { AuthService } from '@igo2/auth';
+import { ConfigService } from '@igo2/core';
 
 @Component({
   selector: 'igo-context-permissions',
@@ -55,7 +56,7 @@ export class ContextPermissionsComponent implements OnInit {
     return this.context.permission === TypePermission[TypePermission.write];
   }
 
-  private baseUrlProfils = '/apis/igo2/profils-users?';
+  private baseUrlProfils;
 
   public formControl = new FormControl();
   formValueChanges$$: Subscription;
@@ -67,10 +68,13 @@ export class ContextPermissionsComponent implements OnInit {
   constructor(private formBuilder: FormBuilder,
               private cd: ChangeDetectorRef,
               private http: HttpClient,
-              public authService: AuthService) {}
+              public authService: AuthService,
+              private config: ConfigService) {}
 
   ngOnInit(): void {
     this.buildForm();
+
+    this.baseUrlProfils = this.config.getConfig('context.url') + '/profils-users?';
 
     this.formValueChanges$$ = this.formControl.valueChanges.subscribe((value) => {
       if (value.length) {

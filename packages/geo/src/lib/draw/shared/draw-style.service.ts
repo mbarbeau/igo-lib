@@ -14,6 +14,7 @@ export class DrawStyleService {
     private strokeColor: string = 'rgba(51,153,204,1)';
     private drawCounter: number = 1;
     private toggleLabel = true;
+    private icon;
 
     constructor(
       private mapService: MapService
@@ -51,10 +52,18 @@ export class DrawStyleService {
       this.drawCounter = this.drawCounter + 1;
     }
 
-    createDrawLayerStyle(feature, resolution, map, label?: boolean): olstyle.Style {
+    setIcon(icon: string) {
+      this.icon = icon;
+    }
+
+    getIcon() {
+      return this.icon;
+    }
+
+    createDrawLayerStyle(feature, resolution, label?: boolean, icon?: string): olstyle.Style {
       let style;
       let labelOffset: boolean = false;
-      const proj = map.ol.getView().getProjection().getCode();
+      const proj = this.mapService.getMap().ol.getView().getProjection().getCode();
       const geom = feature.getGeometry();
 
       if (geom instanceof OlPoint) {
@@ -87,6 +96,35 @@ export class DrawStyleService {
               fill: new olstyle.Fill({
                 color: this.fillColor
               })
+            })
+          })
+        ];
+        return style;
+      } else if (icon) {
+        style = [
+          new olstyle.Style({
+            text: new olstyle.Text({
+              text: label ? feature.get('draw') : '',
+              offsetY: -26,
+              stroke: new olstyle.Stroke({
+                color: 'white',
+                width: 0.75
+              }),
+              fill: new olstyle.Fill({
+                color: 'black'
+              }),
+              font: '20px sans-serif',
+              overflow: true
+            }),
+            stroke: new olstyle.Stroke({
+              color: this.strokeColor,
+              width: 2
+            }),
+            fill:  new olstyle.Fill({
+              color: this.fillColor
+            }),
+            image: new olstyle.Icon({
+              src: icon
             })
           })
         ];

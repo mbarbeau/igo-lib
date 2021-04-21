@@ -13,7 +13,7 @@ import {
   FloatLabelType,
   MatFormFieldAppearance
 } from '@angular/material/form-field';
-import { BehaviorSubject, Subscription, EMPTY, timer } from 'rxjs';
+import { BehaviorSubject, Subscription, EMPTY, timer, forkJoin } from 'rxjs';
 import { debounce, distinctUntilChanged } from 'rxjs/operators';
 
 import { LanguageService } from '@igo2/core';
@@ -102,6 +102,11 @@ export class SearchBarComponent implements OnInit, OnDestroy {
   @Output() pointerSummaryStatus = new EventEmitter<boolean>();
 
   /**
+   * Event emitted when the show geometry setting is changed
+   */
+   @Output() searchResultsGeometryStatus = new EventEmitter<boolean>();
+
+  /**
    * Search term
    */
   @Input()
@@ -112,6 +117,8 @@ export class SearchBarComponent implements OnInit, OnDestroy {
     return this.term$.value;
   }
   readonly term$: BehaviorSubject<string> = new BehaviorSubject('');
+
+  @Input() termSplitter;
 
   /**
    * Whether this component is disabled
@@ -126,6 +133,7 @@ export class SearchBarComponent implements OnInit, OnDestroy {
   readonly disabled$: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
   @Input() pointerSummaryEnabled: boolean = false;
+  @Input() searchResultsGeometryEnabled: boolean = false;
   /**
    * Whether a float label should be displayed
    */
@@ -404,12 +412,20 @@ export class SearchBarComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const researches = this.searchService.search(term, {
+    const terms = this.termSplitter && this.term.match(new RegExp(this.termSplitter, 'g')) ?
+    term.split(this.termSplitter).filter((t) => t.length >= this.minLength ) : [term];
+
+    if (!terms.length) {
+      return;
+    }
+    const researches = this.searchService.search(terms, {
       forceNA: this.forceNA
     });
-    this.researches$$ = researches.map((research) => {
-      return research.request.subscribe((results: SearchResult[]) => {
-        this.onResearchCompleted(research, results);
+    this.researches$$ = researches.map((r: Research) => r.source).map((source) => {
+      const currentResearch = researches.find((r) => r.source === source);
+      return forkJoin(currentResearch.requests).subscribe((res: SearchResult[][]) => {
+        const results = [].concat.apply([], res);
+        this.onResearchCompleted(currentResearch, results);
       });
     });
   }

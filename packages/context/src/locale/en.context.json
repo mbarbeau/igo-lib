@@ -153,11 +153,15 @@
       },
       "shareMap": {
         "button": "Share map",
+        "refreshBtn": "Refresh sharing",
         "copy": "Copy to clipboard",
+        "shareWithApi": "Share by context",
+        "shareWithUrl": "Share by url",
         "dialog": {
           "copyMsg": "Link copied to clipboard",
           "copyTitle": "Link"
         },
+        "errorTitle": "Share Map error",
         "placeholderLink": "Link",
         "included": "Included in shared URL :",
         "context": "The context when creating the sharing link.",
@@ -183,7 +187,8 @@
         "dialog": {
           "email": "Email",
           "expiration": "Expiration",
-          "user": "User"
+          "user": "User",
+          "clearPreferences": "Clear my preferences"
         },
         "infoTitle": "User info",
         "logout": "Logout"
