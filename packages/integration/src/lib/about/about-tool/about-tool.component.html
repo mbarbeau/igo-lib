@@ -7,16 +7,32 @@
   [discoverTitleInLocale$]="discoverTitleInLocale$">
 </igo-interactive-tour>
 
-<button *ngIf="auth.authenticated && trainingGuideURL"
+<button *ngIf="auth.authenticated && trainingGuideURLs && trainingGuideURLs.length === 1"
   class="training-guide-button"
   mat-raised-button
   tooltip-position="below"
   matTooltipShowDelay="500"
+  [disabled]="!trainingGuideURLs.length"
   [matTooltip]="'igo.integration.aboutTool.trainingGuideTooltip' | translate"
   (click)="openGuide()">
   <span>{{'igo.integration.aboutTool.trainingGuide' | translate}}</span>
   <mat-icon svgIcon="file-document"></mat-icon>
 </button>
+
+<button *ngIf="auth.authenticated && trainingGuideURLs && trainingGuideURLs.length > 1"
+  class="training-guide-button"
+  mat-raised-button
+  tooltip-position="below"
+  matTooltipShowDelay="500"
+  [matTooltip]="'igo.integration.aboutTool.trainingGuideTooltip' | translate"
+  [matMenuTriggerFor]="menu">
+  <span>{{'igo.integration.aboutTool.trainingGuide' | translate}}</span>
+  <mat-icon svgIcon="file-document"></mat-icon>
+</button>
+
+<mat-menu #menu="matMenu">
+  <button *ngFor="let guide of trainingGuideURLs" mat-menu-item (click)="openGuide(guide)">{{formatFileName(guide)}}</button>
+</mat-menu>
 
 <igo-custom-html class="mat-typography"
   [html]="html |  translate: {version: version}">

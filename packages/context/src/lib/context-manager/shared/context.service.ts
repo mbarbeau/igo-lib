@@ -1,14 +1,15 @@
 import { Injectable, Optional } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
 import {
   map,
   tap,
   catchError,
   debounceTime,
   mergeMap,
-  first
+  first,
+  skip
 } from 'rxjs/operators';
 
 import olPoint from 'ol/geom/Point';
@@ -49,6 +50,7 @@ export class ContextService {
   public defaultContextId$ = new BehaviorSubject<string>(undefined);
   public editedContext$ = new BehaviorSubject<DetailedContext>(undefined);
   public importedContext: Array<DetailedContext> = [];
+  public toolsChanged$ = new Subject<DetailedContext>();
   private mapViewFromRoute: ContextMapView = {};
   private options: ContextServiceOptions;
   private baseUrl: string;
@@ -88,18 +90,19 @@ export class ContextService {
 
     this.readParamsFromRoute();
 
-    this.authService.authenticate$.subscribe((authenticated) => {
-      if (authenticated && this.baseUrl) {
-        this.get().subscribe((contexts) => {
-          this.handleContextsChange(contexts);
-        });
-      } else {
-        this.contexts$.pipe(first()).subscribe((contexts) => {
-          this.handleContextsChange(contexts);
-        });
-        this.loadContexts();
-      }
-    });
+    if (this.authService.hasAuthService) {
+      this.authService.logged$.subscribe((logged) => {
+        if (logged) {
+          this.contexts$.pipe(skip(1), first()).subscribe((c) => {
+            this.handleContextsChange();
+          });
+          this.loadContexts();
+        }
+      });
+    } else {
+      this.loadContexts();
+      this.handleContextsChange(false);
+    }
   }
 
   get(permissions?: string[], hidden?: boolean): Observable<ContextsList> {
@@ -715,19 +718,25 @@ export class ContextService {
   }
 
   private handleContextsChange(
-    contexts: ContextsList,
     keepCurrentContext = true
   ) {
     const context = this.context$.value;
     const editedContext = this.editedContext$.value;
-
+    if (!context || context.uri === this.options.defaultContextUri) {
+      keepCurrentContext = false;
+    }
     if (!keepCurrentContext || !this.findContext(context)) {
+      this.defaultContextUri = undefined;
       this.loadDefaultContext();
     } else {
-      if (context.map.view.keepCurrentView === undefined) {
-        context.map.view.keepCurrentView = true;
-      }
-      this.context$.next(context);
+      this.getContextByUri(context.uri)
+        .pipe(first())
+        .subscribe(
+          (newContext: DetailedContext) => {
+            this.toolsChanged$.next(newContext);
+          }
+        );
+
       if (this.baseUrl && this.authService.authenticated) {
         this.getDefault().subscribe();
       }

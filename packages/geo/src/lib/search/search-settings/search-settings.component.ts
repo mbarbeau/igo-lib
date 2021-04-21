@@ -22,7 +22,7 @@ import {
   sourceCanSearch,
   sourceCanReverseSearch
 } from '../shared/search.utils';
-import { MediaService } from '@igo2/core';
+import { MediaService, StorageService } from '@igo2/core';
 
 /**
  * This component allows a user to select a search type yo enable. In it's
@@ -50,6 +50,7 @@ export class SearchSettingsComponent implements OnInit {
   }
 
   @Input() pointerSummaryEnabled: boolean = false;
+  @Input() searchResultsGeometryEnabled: boolean = false;
 
   /**
    * Event emitted when the enabled search source changes
@@ -61,6 +62,11 @@ export class SearchSettingsComponent implements OnInit {
    */
   @Output() pointerSummaryStatus = new EventEmitter<boolean>();
 
+  /**
+   * Event emitted when the show geometry summary is changed
+   */
+  @Output() searchResultsGeometryStatus = new EventEmitter<boolean>();
+
   @HostListener('document:keydown', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent) {
     if (event.key === 'F2') {
@@ -71,7 +77,8 @@ export class SearchSettingsComponent implements OnInit {
 
   constructor(
     private searchSourceService: SearchSourceService,
-    private mediaService: MediaService
+    private mediaService: MediaService,
+    private storageService: StorageService
   ) {}
 
   ngOnInit(): void {
@@ -209,6 +216,12 @@ export class SearchSettingsComponent implements OnInit {
 
   onCheckSearchSource(event: MatCheckboxChange, source: SearchSource) {
     source.enabled = event.checked;
+    const storage = (this.storageService.get(source.getId() + '.options') || {}) as SettingOptions;
+    storage.enabled = source.enabled;
+    this.storageService.set(
+      source.getId() + '.options',
+      storage
+    );
     this.searchSourceChange.emit(source);
   }
 
@@ -227,14 +240,13 @@ export class SearchSettingsComponent implements OnInit {
     event.stopPropagation();
   }
 
-  changePointerReverseSearch(event, fromTitleButton?: boolean) {
-    if (fromTitleButton) {
-      event.stopPropagation();
-      this.pointerSummaryEnabled = !this.pointerSummaryEnabled;
-    } else {
-      this.pointerSummaryEnabled = event.checked;
-    }
-
+  changePointerReverseSearch(event) {
+    this.pointerSummaryEnabled = event.checked;
     this.pointerSummaryStatus.emit(this.pointerSummaryEnabled);
+  }
+
+  changeSearchResultsGeometry(event) {
+    this.searchResultsGeometryEnabled = event.checked;
+    this.searchResultsGeometryStatus.emit(this.searchResultsGeometryEnabled);
   }
 }

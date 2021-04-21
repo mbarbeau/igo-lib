@@ -75,4 +75,13 @@ export class StorageService {
     }
     this.storageChange$.next({key, scope, event: StorageServiceEventEnum.REMOVED, previousValue });
   }
+
+  clear(scope: StorageScope = StorageScope.LOCAL) {
+    if (scope === StorageScope.SESSION) {
+      sessionStorage.clear();
+    } else {
+      localStorage.clear();
+    }
+    this.storageChange$.next({scope, event: StorageServiceEventEnum.CLEARED });
+  }
 }

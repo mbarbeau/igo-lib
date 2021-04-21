@@ -94,15 +94,19 @@ export class DropGeoFileDirective extends DragAndDropDirective implements OnInit
     reader.onload = (e) => {
       if (file.name.toLowerCase().endsWith('.geojson')) {
         const geojson = JSON.parse(reader.result as string);
-        const epsg = geojson.crs.properties.name.match(/EPSG:{1,2}\d{0,6}/gm);
-        if (epsg !== null && epsg.length) {
-          this.epsgCode$.next(epsg[0].replace(/::/g, ':'));
-          return;
+        if (geojson.crs?.properties?.name) {
+          const epsg = geojson.crs.properties.name.match(/EPSG:{1,2}\d{0,6}/gm);
+          if (epsg !== null && epsg.length) {
+            this.epsgCode$.next(epsg[0].replace(/::/g, ':'));
+            return;
+          } else {
+            this.epsgCode$.next('epsgNotDefined');
+            return;
+          }
         } else {
           this.epsgCode$.next('epsgNotDefined');
           return;
-        }
-        return;
+      }
       } else if (file.name.toLowerCase().endsWith('.gml')) {
         const text = (reader.result as string);
         const lines = (text as string).split('\n');

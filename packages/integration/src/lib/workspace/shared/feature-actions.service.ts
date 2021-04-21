@@ -13,7 +13,7 @@ import {
   noElementSelected,
   ExportOptions
 } from '@igo2/geo';
-import { StorageService, StorageServiceEvent, LanguageService, MediaService} from '@igo2/core';
+import { StorageService, StorageServiceEvent, StorageServiceEventEnum, LanguageService, MediaService} from '@igo2/core';
 import { StorageState } from '../../storage/storage.state';
 import { map, skipWhile } from 'rxjs/operators';
 import { ToolState } from '../../tool/tool.state';
@@ -75,7 +75,7 @@ export class FeatureActionsService implements OnDestroy {
       .pipe(
         skipWhile(
           (storageChange: StorageServiceEvent) =>
-            storageChange.key !== 'zoomAuto'
+            storageChange.key !== 'zoomAuto' || storageChange.event === StorageServiceEventEnum.CLEARED
         )
       )
       .subscribe(() => {

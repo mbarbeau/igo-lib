@@ -39,8 +39,8 @@ export class ArcGISRestDataSource extends DataSource {
           'returnGeometry=true',
           'outSR=102100'
         ];
-        if (this.options.params.timeFilter) {
-          const time = `time=${this.options.params.timeExtent}`;
+        if (this.options.params.time) {
+          const time = `time=${this.options.params.time}`;
           params.push(time);
         }
         if (this.options.params.customParams) {
@@ -55,7 +55,7 @@ export class ArcGISRestDataSource extends DataSource {
   }
 
   getLegend(): Legend[] {
-    const legendInfo = this.options.params.legendInfo;
+    const legendInfo = this.options.legendInfo;
     const legend = super.getLegend();
     if (legendInfo === undefined || legend.length > 0) {
       return legend;

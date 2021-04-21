@@ -2,7 +2,6 @@
   <div class="igo-user-button-more-container" [@userButtonState]="expand ? 'expand' : 'collapse'">
 
     <igo-poi-button *ngIf="hasApi" [color]="color" [map]="map"></igo-poi-button>
-    <igo-bookmark-button *ngIf="hasApi" [color]="color" [map]="map"></igo-bookmark-button>
 
     <button
       mat-icon-button

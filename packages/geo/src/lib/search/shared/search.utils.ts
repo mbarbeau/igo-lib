@@ -53,3 +53,26 @@ export function featureToSearchResult(
     }
   };
 }
+
+export function findDiff(str1: string, str2: string){
+  let diff = '';
+  str2.split('').forEach((val, i) => {
+    if (val !== str1.charAt(i)) {
+      diff += val;
+    }
+  });
+  return diff;
+}
+
+export function computeTermSimilarity(from, to): number {
+  const fromToDiff = findDiff(from, to);
+  const toFromDiff = findDiff(to, from);
+  const totalDiff = fromToDiff + toFromDiff;
+
+  let delta = 0;
+  if (totalDiff.length) {
+    delta =  totalDiff.length / from.length * 100;
+  }
+
+  return 100 - Math.floor(delta);
+}

@@ -39,6 +39,7 @@ export interface TextSearchOptions {
 
 export interface ReverseSearchOptions {
   distance?: number;
+  conf?: number;
   zoom?: number;
   params?: { [key: string]: string };
 }

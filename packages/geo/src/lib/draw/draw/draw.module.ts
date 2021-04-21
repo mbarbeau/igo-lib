@@ -20,6 +20,9 @@ import {
   MatInputModule,
 } from '@angular/material/input';
 import {
+  MatListModule,
+} from '@angular/material/list';
+import {
   MatSelectModule,
 } from '@angular/material/select';
 import {
@@ -52,6 +55,7 @@ import { DrawPopupComponent } from './draw-popup.component';
     MatTooltipModule,
     MatFormFieldModule,
     MatInputModule,
+    MatListModule,
     MatSelectModule,
     MatSlideToggleModule,
     IgoLanguageModule,
@@ -64,8 +68,6 @@ import { DrawPopupComponent } from './draw-popup.component';
   ],
   exports: [
     DrawComponent
-  ],
-  entryComponents: [
   ]
 })
 export class IgoDrawModule {}

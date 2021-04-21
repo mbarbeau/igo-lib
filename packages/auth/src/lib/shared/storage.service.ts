@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 
 import { StorageService, StorageScope, ConfigService } from '@igo2/core';
 import { AuthService } from './auth.service';
+import { TokenService } from './token.service';
 import { AuthStorageOptions } from './storage.interface';
 
 @Injectable({
@@ -14,7 +15,8 @@ export class AuthStorageService extends StorageService {
   constructor(
     config: ConfigService,
     private http: HttpClient,
-    private authService: AuthService
+    private authService: AuthService,
+    private tokenService: TokenService
   ) {
     super(config);
 
@@ -61,6 +63,48 @@ export class AuthStorageService extends StorageService {
       preference[key] = undefined;
       this.http.patch(this.options.url, { preference }).subscribe();
     }
-    return super.remove(key, scope);
+    super.remove(key, scope);
+  }
+
+  clear(scope: StorageScope = StorageScope.LOCAL) {
+    if (
+      scope === StorageScope.LOCAL &&
+      this.authService.authenticated &&
+      this.options.url
+    ) {
+      this.http.patch(this.options.url, { preference: {}}, {
+        params: {
+          mergePreference: 'false'
+        }
+      }).subscribe();
+    }
+
+    let token: string;
+    if (scope === StorageScope.LOCAL) {
+      token = this.tokenService.get();
+    }
+
+    super.clear(scope);
+
+    if (token) {
+      this.tokenService.set(token);
+    }
+
+    if (
+      scope === StorageScope.LOCAL &&
+      this.authService.authenticated &&
+      this.options.url
+    ) {
+      this.http
+        .get(this.options.url)
+        .subscribe((userIgo: { preference: object }) => {
+          if (userIgo && userIgo.preference) {
+            for (const key of Object.keys(userIgo.preference)) {
+              const value = userIgo.preference[key];
+              super.set(key, value);
+            }
+          }
+        });
+    }
   }
 }

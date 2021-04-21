@@ -9,11 +9,10 @@ import {
   ChangeDetectorRef
 } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, FormArray } from '@angular/forms';
-import { Subscription, Subject, BehaviorSubject } from 'rxjs';
+import { Subscription, Subject, BehaviorSubject, forkJoin } from 'rxjs';
 import {
   debounceTime,
-  distinctUntilChanged,
-  map
+  distinctUntilChanged
 } from 'rxjs/operators';
 
 import olFeature from 'ol/Feature';
@@ -436,7 +435,8 @@ export class DirectionsFormComponent implements OnInit, OnDestroy {
       .reverseSearch(coordinates, { zoom: this.map.viewController.getZoom() })
       .map(res =>
         this.routesQueries$$.push(
-          res.request.pipe(map(f => f)).subscribe(results => {
+          forkJoin(res.requests).subscribe(r => {
+            const results = [].concat.apply([], r);
             results.forEach(result => {
               if (
                 groupedLocations.filter(f => f.source === result.source)
@@ -444,7 +444,7 @@ export class DirectionsFormComponent implements OnInit, OnDestroy {
               ) {
                 groupedLocations.push({
                   source: result.source,
-                  results: results.map(r => r.data)
+                  results: results.map(response => response.data)
                 });
               }
             });
@@ -1156,18 +1156,19 @@ export class DirectionsFormComponent implements OnInit, OnDestroy {
       const researches = this.searchService.search(term, {searchType: 'Feature'});
       researches.map(res =>
         this.search$$ =
-        res.request.subscribe(results => {
+        forkJoin(res.requests).subscribe(r => {
+          const results = [].concat.apply([], r);
           results
-            .filter(r => r.data.geometry)
+            .filter(resp => resp.data.geometry)
             .forEach(element => {
               if (
-                searchProposals.filter(r => r.source === element.source)
+                searchProposals.filter(q => q.source === element.source)
                   .length === 0
               ) {
                 searchProposals.push({
                   source: element.source,
                   meta: element.meta,
-                  results: results.map(r => r.data)
+                  results: results.map(p => p.data)
                 });
               }
             });
@@ -1306,17 +1307,17 @@ export class DirectionsFormComponent implements OnInit, OnDestroy {
     let stopColor;
     let stopText;
     if (directionsText === 'start') {
-      stopColor = 'green';
+      stopColor = '#008000';
       stopText = this.languageService.translate.instant(
         'igo.geo.directionsForm.start'
       );
     } else if (directionsText === 'end') {
-      stopColor = 'red';
+      stopColor = '#f64139';
       stopText = this.languageService.translate.instant(
         'igo.geo.directionsForm.end'
       );
     } else {
-      stopColor = 'yellow';
+      stopColor = '#ffd700';
       stopText =
         this.languageService.translate.instant(
           'igo.geo.directionsForm.intermediate'

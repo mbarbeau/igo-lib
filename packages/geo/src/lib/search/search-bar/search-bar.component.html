@@ -40,6 +40,8 @@
       *ngIf="searchSettings"
       [pointerSummaryEnabled]="pointerSummaryEnabled"
       (pointerSummaryStatus)="pointerSummaryStatus.emit($event)"
+      [searchResultsGeometryEnabled]="searchResultsGeometryEnabled"
+      (searchResultsGeometryStatus)="searchResultsGeometryStatus.emit($event)"
       (searchSourceChange)="onSearchSettingsChange()">
     </igo-search-settings>
   </div>

@@ -109,6 +109,7 @@ export class CatalogService {
             id: generateIdFromSourceOptions(layerOptions.sourceOptions),
             title: layerOptions.title,
             type: CatalogItemType.Layer,
+            externalProvider: catalog.externalProvider,
             options: layerOptions
           } as CatalogItemLayer;
         });
@@ -137,16 +138,38 @@ export class CatalogService {
         if (capabilities.Service && capabilities.Service.Abstract && capabilities.Service.Abstract.length) {
           catalog.abstract = capabilities.Service.Abstract;
         }
-
+        const finalLayers = [];
+        this.flattenWmsCapabilities(capabilities.Capability.Layer, 0, finalLayers, catalog.groupSeparator);
+        const capabilitiesCapabilityLayer = Object.assign({}, capabilities.Capability.Layer);
+        capabilitiesCapabilityLayer.Layer = finalLayers.filter(f => f.Layer.length !== 0);
         this.includeRecursiveItems(
           catalog,
-          capabilities.Capability.Layer,
+          capabilitiesCapabilityLayer,
           items
         );
         return items;
       })
     );
   }
+
+  flattenWmsCapabilities(parent, level = 0, finalLayers, separator = ' / ') {
+    if (!finalLayers.includes(parent.Title)) {
+        const modifiedParent = Object.assign({}, parent);
+        modifiedParent.Layer = [];
+        finalLayers.push(modifiedParent);
+    }
+    for (const layer of parent.Layer) {
+        const modifiedLayer = Object.assign({}, layer);
+        if (level > 0) {
+          modifiedLayer.Title = parent.Title + separator + layer.Title;
+        }
+        if (layer.Layer) {
+            this.flattenWmsCapabilities(modifiedLayer, level + 1, finalLayers, separator);
+        } else {
+            finalLayers.find(ff => ff.Title === parent.Title).Layer.push(layer);
+         }
+    }
+}
 
   loadCatalogWMTSLayerItems(catalog: Catalog): Observable<CatalogItem[]> {
     return this.getCatalogCapabilities(catalog).pipe(
@@ -379,6 +402,7 @@ export class CatalogService {
       type: CatalogItemType.Layer,
       title: layerTitle !== undefined ? layerTitle : layer.Title,
       address: idParent,
+      externalProvider: catalog.externalProvider || false,
       options: {
         maxResolution: getResolutionFromScale(layer.MaxScaleDenominator),
         minResolution: getResolutionFromScale(layer.MinScaleDenominator),
@@ -392,7 +416,7 @@ export class CatalogService {
         tooltip: { type: catalog.tooltipType },
         sourceOptions
       }
-    };
+    } as CatalogItem;
 
     return ObjectUtils.removeUndefined(layerPrepare);
   }
@@ -556,6 +580,7 @@ export class CatalogService {
           type: CatalogItemType.Layer,
           title: forcedTitle !== undefined ? forcedTitle : layer.Title,
           address: catalog.id,
+          externalProvider: catalog.externalProvider,
           options: {
             sourceOptions,
             metadata: {
@@ -565,7 +590,7 @@ export class CatalogService {
               type: baseSourceOptions.type
             }
           }
-        });
+        } as CatalogItem);
       })
       .filter((item: CatalogItemLayer | undefined) => item !== undefined);
   }
@@ -619,6 +644,7 @@ export class CatalogService {
           id: generateIdFromSourceOptions(sourceOptions),
           type: CatalogItemType.Layer,
           title: forcedTitle !== undefined ? forcedTitle : layer.name,
+          externalProvider: catalog.externalProvider,
           address: catalog.id,
           options: {
             sourceOptions,
@@ -632,7 +658,7 @@ export class CatalogService {
             },
             title: forcedTitle !== undefined ? forcedTitle : layer.name
           }
-        });
+        } as CatalogItem);
       })
       .filter((item: CatalogItemLayer | undefined) => item !== undefined);
   }

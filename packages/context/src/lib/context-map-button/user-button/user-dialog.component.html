@@ -3,9 +3,13 @@
   <p>{{'igo.context.userButton.dialog.user' | translate}}: {{user.sourceId}}</p>
   <p>{{'igo.context.userButton.dialog.email' | translate}}: {{user.email}}</p>
   <p>{{'igo.context.userButton.dialog.expiration' | translate}}: {{exp}}</p>
+  <button mat-stroked-button color="primary" (click)="clearPreferences()">
+    {{'igo.context.userButton.dialog.clearPreferences' | translate}}
+  </button>
+  <br>
 </div>
 <div mat-dialog-actions style="justify-content: center">
-  <button mat-button color="primary"
+  <button mat-raised-button color="primary"
          (click)="dialogRef.close(false)">
     OK
   </button>

@@ -8,7 +8,7 @@ export interface StorageOptions {
 }
 
 export interface StorageServiceEvent {
-  key: string;
+  key?: string;
   scope: StorageScope;
   event: StorageServiceEventEnum;
   previousValue?: any;
@@ -18,6 +18,6 @@ export interface StorageServiceEvent {
 export enum StorageServiceEventEnum {
   ADDED = 'Added',
   MODIFIED = 'Modified',
-  REMOVED = 'Removed'
+  REMOVED = 'Removed',
+  CLEARED = 'Cleared'
 }
-

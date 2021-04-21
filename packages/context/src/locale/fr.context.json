@@ -36,7 +36,7 @@
           "addPermissionEmpty": "La permission que vous tentez d'ajouter n'est pas valide",
           "addPermissionTitle": "Erreur d'ajout de permission"
         },
-        "favorite": "Définir comme context favori",
+        "favorite": "Définir comme contexte favori",
         "form": {
           "copy": "Copier l'identifiant du contexte",
           "edit": "Enregistrer",
@@ -89,22 +89,22 @@
         "import": {
           "success": {
             "title": "Contexte importé",
-            "text": "Le context '{{value}}' a été ajouté à la carte"
+            "text": "Le contexte '{{value}}' a été ajouté à la carte"
           },
           "empty": {
-            "text": "Le context '{{value}}' est vide, impossible d'importer",
+            "text": "Le contexte '{{value}}' est vide, impossible d'importer",
             "title": "Contexte vide"
           },
           "invalid": {
-            "text": "Le context '{{value}}' est invalide.",
+            "text": "Le contexte '{{value}}' est invalide.",
             "title": "Context invalide"
           },
           "unreadable": {
-            "text": "Le context '{{value}}' est impossible à lire",
+            "text": "Le contexte '{{value}}' est impossible à lire",
             "title": "Context illisible"
           },
           "tooLarge": {
-            "text": "Le context '{{value}}' est trop volumineux (Maximum: {{size}} Mo)",
+            "text": "Le contexte '{{value}}' est trop volumineux (Maximum: {{size}} Mo)",
             "title": "Context trop volumineux"
           }
         }
@@ -153,11 +153,15 @@
       },
       "shareMap": {
         "button": "Partager la carte",
+        "refreshBtn": "Actualiser le partage",
         "copy": "Copier le lien",
+        "shareWithApi": "Partage par contexte",
+        "shareWithUrl": "Partage par url",
         "dialog": {
           "copyMsg": "Lien copié",
           "copyTitle": "Lien"
         },
+        "errorTitle": "Erreur lors du partage",
         "placeholderLink": "Lien",
         "included": "Inclus dans le lien de partage :",
         "context": "Le contexte ouvert lors de la création du lien de partage.",
@@ -183,7 +187,8 @@
         "dialog": {
           "email": "Courriel",
           "expiration": "Expiration",
-          "user": "Utilisateur"
+          "user": "Utilisateur",
+          "clearPreferences": "Supprimer mes préférences"
         },
         "infoTitle": "Info sur l'utilisateur",
         "logout": "Se déconnecter"

@@ -1,9 +1,10 @@
 import * as olstyle from 'ol/style';
 import olFeature from 'ol/Feature';
+import { asArray as ColorAsArray } from 'ol/color';
 
-import { Feature } from '../feature/shared/feature.interfaces';
 import { createOverlayMarkerStyle } from '../overlay/shared/overlay-marker-style.utils';
 import { createOverlayDefaultStyle } from '../overlay/shared/overlay.utils';
+import { FeatureCommonVectorStyleOptions } from './commonVertorStyle.interface';
 
 
 /**
@@ -11,27 +12,30 @@ import { createOverlayDefaultStyle } from '../overlay/shared/overlay.utils';
  * @param feature The feature to generate the style
  * @returns A olStyle
  */
-export function getSelectedMarkerStyle(feature: Feature | olFeature): olstyle.Style {
+export function getCommonVectorSelectedStyle(
+  {
+    feature,
+    markerColor = [0, 161, 222],
+    markerOpacity = 1,
+    markerOutlineColor = [0, 255, 255],
+    fillColor,
+    fillOpacity = 0.15,
+    strokeColor = [0, 255, 255],
+    strokeOpacity = 0.5,
+    strokeWidth = 4
+  }: FeatureCommonVectorStyleOptions): olstyle.Style {
 
-  const baseColor = [0, 255, 255];
-  const strokeWidth = 4;
-
-  const isOlFeature = feature instanceof olFeature;
-  const geometry = isOlFeature ? feature.getGeometry() : feature.geometry;
-  const geometryType = isOlFeature ? geometry.getType() : geometry.type;
-
-  if (!geometry || geometryType === 'Point') {
-    return createOverlayMarkerStyle({
-      text: isOlFeature ? undefined : feature.meta.mapTitle,
-      outlineColor: baseColor
-    });
-  } else {
-    return createOverlayDefaultStyle({
-      text: isOlFeature ? undefined : feature.meta.mapTitle,
-      strokeWidth,
-      strokeColor: baseColor
-    });
-  }
+  return getCommonVectorStyle({
+    feature,
+    markerColor,
+    markerOpacity,
+    markerOutlineColor,
+    fillColor,
+    fillOpacity,
+    strokeColor,
+    strokeOpacity,
+    strokeWidth
+  });
 }
 
 /**
@@ -39,34 +43,57 @@ export function getSelectedMarkerStyle(feature: Feature | olFeature): olstyle.St
  * @param feature The feature to generate the style
  * @returns A olStyle
  */
-export function getMarkerStyle(feature: Feature | olFeature): olstyle.Style {
-
-  const baseColor = [0, 255, 255];
+export function getCommonVectorStyle(
+  {
+    feature,
+    markerColor = [0, 161, 222],
+    markerOpacity = 0.5,
+    markerOutlineColor,
+    fillColor = [0, 161, 222],
+    fillOpacity = 0.15,
+    strokeColor = [0, 161, 222],
+    strokeOpacity = 0.5,
+    strokeWidth = 2
+  }: FeatureCommonVectorStyleOptions): olstyle.Style {
 
   const isOlFeature = feature instanceof olFeature;
   const geometry = isOlFeature ? feature.getGeometry() : feature.geometry;
   const geometryType = isOlFeature ? geometry.getType() : geometry.type;
 
   if (!geometry || geometryType === 'Point') {
+    const markerColorAsArray = ColorAsArray(markerColor).slice(0);
+    const markerColorRGB = markerColorAsArray.slice(0, 3);
+
+    if (markerColorAsArray.length === 4 &&
+        (typeof markerColor !== 'string' || /^#[0-9A-F]{8}$/i.test(markerColor as string))) {
+      markerOpacity = markerColorAsArray[3];
+    }
+
     return createOverlayMarkerStyle({
       text: isOlFeature ? undefined : feature.meta.mapTitle,
-      opacity: 0.5,
-      outlineColor: baseColor
-    });
-  } else if (
-    geometryType === 'LineString' ||
-    geometryType === 'MultiLineString'
-  ) {
-    return createOverlayDefaultStyle({
-      text: isOlFeature ? undefined : feature.meta.mapTitle,
-      strokeOpacity: 0.5,
-      strokeColor: baseColor
+      opacity: markerOpacity,
+      markerOutlineColor,
+      markerColor: markerColorRGB
     });
   } else {
+    const fillWithOpacity = ColorAsArray(fillColor).slice(0);
+    const strokeWithOpacity = ColorAsArray(strokeColor).slice(0);
+
+    if (!(fillWithOpacity.length === 4 &&
+        (typeof fillColor !== 'string' || /^#[0-9A-F]{8}$/i.test(fillColor as string)))) {
+      fillWithOpacity[3] = fillOpacity;
+    }
+
+    if (!(strokeWithOpacity.length === 4 &&
+        (typeof strokeColor !== 'string' || /^#[0-9A-F]{8}$/i.test(strokeColor as string)))) {
+      strokeWithOpacity[3] = strokeOpacity;
+    }
+
     return createOverlayDefaultStyle({
       text: isOlFeature ? undefined : feature.meta.mapTitle,
-      fillOpacity: 0.15,
-      strokeColor: baseColor
+      strokeWidth,
+      strokeColor: strokeWithOpacity,
+      fillColor: fillWithOpacity
     });
   }
 }

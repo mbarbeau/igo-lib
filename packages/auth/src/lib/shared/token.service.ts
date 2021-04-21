@@ -42,7 +42,7 @@ export class TokenService {
   }
 
   private get tokenKey() {
-    const config = this.injector.get(ConfigService);
+    const config = this.injector.get<ConfigService>(ConfigService);
     this.options = config.getConfig('auth') || {};
     return this.options.tokenKey;
   }

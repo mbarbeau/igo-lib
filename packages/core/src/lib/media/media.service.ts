@@ -74,4 +74,9 @@ export class MediaService {
     const media = this.getMedia();
     return media === 'mobile';
   }
+
+  isDesktop(): boolean {
+    const media = this.getMedia();
+    return media === 'desktop';
+  }
 }

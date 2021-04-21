@@ -100,7 +100,7 @@ export class LayerLegendComponent implements OnInit, OnDestroy {
       const state$ = this.layer.map.viewController.state$;
       this.state$$ = state$
       .subscribe(() => this.onViewControllerStateChange());
-    } else if (lastlLegend.length !== 0) {
+    } else if (lastlLegend && lastlLegend.length !== 0) {
       this.legendItems$.next(lastlLegend);
     }
   }

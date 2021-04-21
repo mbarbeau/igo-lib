@@ -323,7 +323,6 @@ export class QueryService {
     const height = parseInt(searchParams.height, 10);
     const xPosition = parseInt(searchParams.i || searchParams.x, 10);
     const yPosition = parseInt(searchParams.j || searchParams.y, 10);
-    const projection = searchParams.crs || searchParams.srs || 'EPSG:3857';
 
     const bbox = bboxRaw.split(',');
     let threshold =
@@ -425,6 +424,13 @@ export class QueryService {
   }
 
   private extractEsriJSONData(res, zIndex, allowedFieldsAndAlias) {
+    if (res) {
+      try {
+        if (JSON.parse(res).error) {
+          return [];
+        }
+      } catch (e) {}
+    }
     const parser = new olFormatEsriJSON();
     const features = parser.readFeatures(res);
 
@@ -501,7 +507,7 @@ export class QueryService {
     delete properties.geom;
 
     let geometry;
-    if (featureGeometry !== undefined) {
+    if (featureGeometry) {
       geometry = {
         type: featureGeometry.getType(),
         coordinates: featureGeometry.getCoordinates()

@@ -1,5 +1,7 @@
 import { Observable } from 'rxjs';
 
+import { ObjectUtils } from '@igo2/utils';
+import { StorageService } from '@igo2/core';
 import { SearchResult } from '../search.interfaces';
 import {
   SearchSourceOptions,
@@ -111,7 +113,7 @@ export class SearchSource {
   /**
    * Set params from selected settings
    */
-  setParamFromSetting(setting: SearchSourceSettings) {
+  setParamFromSetting(setting: SearchSourceSettings, saveInStorage = true) {
     switch (setting.type) {
       case 'radiobutton':
         setting.values.forEach(conf => {
@@ -137,6 +139,13 @@ export class SearchSource {
         });
         break;
     }
+
+    if (saveInStorage && this.storageService) {
+      this.storageService.set(
+        this.getId() + '.options',
+        {params: this.options.params}
+      );
+    }
   }
 
   /**
@@ -146,13 +155,23 @@ export class SearchSource {
     return this.options.order === undefined ? 99 : this.options.order;
   }
 
-  constructor(options: SearchSourceOptions) {
+  constructor(options: SearchSourceOptions, private storageService?: StorageService) {
     this.options = options;
-    this.options = Object.assign({}, this.getDefaultOptions(), options);
+    if (this.storageService) {
+      const storageOptions = this.storageService.get(
+        this.getId() + '.options'
+      ) as object;
+      if (storageOptions) {
+        this.options = ObjectUtils.mergeDeep(this.options, storageOptions);
+      }
+    }
+
+    this.options = ObjectUtils.mergeDeep(this.getDefaultOptions(), this.options);
+
 
     // Set Default Params from Settings
     this.settings.forEach(setting => {
-      this.setParamFromSetting(setting);
+      this.setParamFromSetting(setting, false);
     });
   }
 
