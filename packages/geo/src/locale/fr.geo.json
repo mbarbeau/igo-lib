@@ -16,11 +16,14 @@
           "layer": "Cette couche provient d'une organisation externe."
         },
         "library.add": "Ajouter ce catalogue",
+        "library.cancel": "Annuler",
         "library.remove": "Retirer ce catalogue de la liste",
         "library.inlist": {
           "title": "Catalogue déjà contenu",
           "message": "Le catalogue à ajouter est déjà dans la liste"
-        }
+        },
+        "library.addTitle": "Ajout d'un catalogue",
+        "library.addBtn": "Ajouter un catalogue"
       },
       "clickOnMap": {
         "clickedFeature": "Entités cliquées"
@@ -182,10 +185,13 @@
         "layerFilterable": "Cette couche d'information est filtrable",
         "filterBy": "Filtrer par",
         "advancedOgcFilters": "Filtres avancés",
+        "displayMoreResults": "Afficher plus (+)",
+        "displayLessResults": "Afficher moins (-)",
         "placeholder": "Saisir une valeur",
         "placeholderSnrc": "Ex: 21L14",
         "selectOperator": "Choisir un opérateur",
-        "sliderModeTitle": "Curseur temporel"
+        "sliderModeTitle": "Curseur temporel",
+        "reportingDate": "Date de signalement"
       },
       "spatialSelector": {
         "fixedExtent": "Étendue fixe",
@@ -287,6 +293,8 @@
         "subtitle": "Sous-titre"
       },
       "directionsForm": {
+        "stopLayer": "Itinéraire - arrêts",
+        "routeLayer": "Itinéraire - Tracé",
         "start": "Début",
         "intermediate": "Intermédiaire",
         "end": "Fin",

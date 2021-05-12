@@ -297,7 +297,7 @@ export class MapToolsComponent implements OnInit, OnDestroy {
   isOGCFilterButton(layer): boolean {
     const options = layer.dataSource.options;
     return this.ogcButton && options.ogcFilters && options.ogcFilters.enabled &&
-    (options.ogcFilters.pushButtons || options.ogcFilters.editable);
+    (options.ogcFilters.pushButtons || options.ogcFilters.checkboxes || options.ogcFilters.radioButtons || options.ogcFilters.editable);
   }
 
   isExportButton(layer: Layer): boolean {

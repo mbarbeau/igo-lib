@@ -64,14 +64,16 @@ export function findDiff(str1: string, str2: string){
   return diff;
 }
 
-export function computeTermSimilarity(from, to): number {
-  const fromToDiff = findDiff(from, to);
-  const toFromDiff = findDiff(to, from);
+export function computeTermSimilarity(from, to, caseSensitive: boolean = false): number {
+  const termFrom = caseSensitive ? from : from.toLowerCase();
+  const termTo = caseSensitive ? to : to.toLowerCase();
+  const fromToDiff = findDiff(termFrom, termTo);
+  const toFromDiff = findDiff(termTo, termFrom);
   const totalDiff = fromToDiff + toFromDiff;
 
   let delta = 0;
   if (totalDiff.length) {
-    delta =  totalDiff.length / from.length * 100;
+    delta =  totalDiff.length / termFrom.length * 100;
   }
 
   return 100 - Math.floor(delta);

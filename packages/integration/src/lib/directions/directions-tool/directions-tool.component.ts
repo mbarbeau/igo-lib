@@ -44,4 +44,8 @@ export class DirectionsToolComponent {
     private mapState: MapState
   ) {}
 
+  onActiveRouteDescriptionChange(directions) {
+    this.directionState.activeRouteDescription = directions;
+  }
+
 }

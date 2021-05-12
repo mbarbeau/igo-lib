@@ -12,7 +12,7 @@ export class AppPrintComponent {
   public map = new IgoMap({
     controls: {
       attribution: {
-        collapsed: true
+        collapsed: false
       }
     }
   });
@@ -35,7 +35,8 @@ export class AppPrintComponent {
           layer: 'carte_gouv_qc_ro',
           matrixSet: 'EPSG_3857',
           version: '1.3.0',
-          crossOrigin: 'anonymous'
+          crossOrigin: 'anonymous',
+          attributions: "© <a href='http://www.droitauteur.gouv.qc.ca/copyright.php' target='_blank'><img src='https://geoegl.msp.gouv.qc.ca/gouvouvert/public/images/quebec/gouv_qc_logo.png' width='64' height='14'>Gouvernement du Québec</a> / <a href='https://www.igouverte.org/' target='_blank'>IGO2</a>"
         }
       })
       .subscribe(l => this.map.addLayer(l));

@@ -1,6 +1,6 @@
 <button 
   *ngIf="header && options.ogcFilters && options.ogcFilters.enabled &&
-  (options.ogcFilters.pushButtons || options.ogcFilters.editable)"
+  (options.ogcFilters.pushButtons || options.ogcFilters.checkboxes || options.ogcFilters.radioButtons || options.ogcFilters.editable)"
   mat-icon-button
   collapsibleButton
   tooltip-position="below"
@@ -12,7 +12,7 @@
 
 <div #ogcFilter class="igo-layer-actions-container"
 *ngIf="options.ogcFilters && options.ogcFilters.enabled &&
-(options.ogcFilters.pushButtons || options.ogcFilters.editable)">
+(options.ogcFilters.pushButtons || options.ogcFilters.checkboxes || options.ogcFilters.radioButtons || options.ogcFilters.editable)">
   <igo-ogc-filterable-item
     *ngIf="ogcFilterCollapse && options.ogcFilters.enabled"
     igoListItem

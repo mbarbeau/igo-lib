@@ -85,6 +85,7 @@ export class PrintService {
     this.addMap(doc, map, resolution, size, margins).subscribe(
       async (status: SubjectStatus) => {
         if (status === SubjectStatus.Done) {
+          await this.addScale(doc, map, margins);
           if (options.showLegend === true) {
             await this.addLegend(doc, map, margins, resolution);
           } else {
@@ -396,6 +397,49 @@ export class PrintService {
     }
   }
 
+  /**
+   * Add scale and attributions on the map on the document
+   * @param  doc - Pdf document where legend will be added
+   * @param  map - Map of the app
+   * @param  margins - Page margins
+   */
+  private async addScale(
+    doc: jsPDF,
+    map: IgoMap,
+    margins: Array<number>
+    ) {
+      const mapSize = map.ol.getSize();
+      const extent = map.ol.getView().calculateExtent(mapSize);
+      // Get the scale and attribution
+      // we use cloneNode to modify the nodes to print without modifying it on the page, using deep:true to get children
+      let canvasOverlayHTML;
+      const mapOverlayHTML = map.ol.getOverlayContainerStopEvent();
+      // Remove the UI buttons from the nodes
+      const OverlayHTMLButton = mapOverlayHTML.getElementsByTagName('button');
+      for (const but of OverlayHTMLButton) {
+        but.setAttribute('data-html2canvas-ignore', 'true');
+      }
+      // Change the styles of hyperlink in the printed version
+      // Transform the Overlay into a canvas
+      // scale is necessary to make it in google chrome
+      // background as null because otherwise it is white and cover the map
+      // allowtaint is to allow rendering images in the attributions
+      // useCORS: true pour permettre de renderer les images (ne marche pas en local)
+      const canvas = await html2canvas(mapOverlayHTML, {
+        scale: 1,
+        backgroundColor: null,
+        allowTaint: true,
+        useCORS: true,
+      }).then( e => {
+        canvasOverlayHTML = e;
+      });
+      this.addCanvas(doc, canvasOverlayHTML, margins); // this adds scales and attributions
+ }
+
+  defineNbFileToProcess(nbFileToProcess) {
+    this.nbFileToProcess = nbFileToProcess;
+  }
+
   private timeout(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
@@ -406,8 +450,9 @@ export class PrintService {
     margins: Array<number>
   ) {
     let image;
-
-    image = canvas.toDataURL('image/png');
+    if (canvas) {
+      image = canvas.toDataURL('image/png');
+    }
 
     if (image !== undefined) {
       const imageSize = this.getImageSizeToFitPdf(doc, canvas, margins);
@@ -440,10 +485,9 @@ export class PrintService {
     const heightPixels = Math.round((size[1] * resolution) / 25.4);
 
     let timeout;
+
     map.ol.once('rendercomplete', (event: any) => {
-      const canvases = event.target
-        .getViewport()
-        .getElementsByTagName('canvas');
+      const canvases = event.target.getViewport().getElementsByTagName('canvas');
       const mapStatus$$ = map.status$.subscribe((mapStatus: SubjectStatus) => {
         clearTimeout(timeout);
 
@@ -468,8 +512,7 @@ export class PrintService {
             ),
             this.languageService.translate.instant(
               'igo.geo.printForm.corsErrorMessageHeader'
-            ),
-            'print'
+            )
           );
         }
         this.renderMap(map, mapSize, extent);
@@ -496,8 +539,7 @@ export class PrintService {
             ),
             this.languageService.translate.instant(
               'igo.geo.printForm.corsErrorMessageHeader'
-            ),
-            'print'
+            )
           );
         }
         this.renderMap(map, mapSize, extent);
@@ -508,10 +550,6 @@ export class PrintService {
     this.renderMap(map, [widthPixels, heightPixels], extent);
 
     return status$;
-  }
-
-  defineNbFileToProcess(nbFileToProcess) {
-    this.nbFileToProcess = nbFileToProcess;
   }
 
   /**
@@ -796,8 +834,7 @@ export class PrintService {
         ),
         this.languageService.translate.instant(
           'igo.geo.printForm.corsErrorMessageHeader'
-        ),
-        'print'
+        )
       );
     }
   }
@@ -833,8 +870,7 @@ export class PrintService {
         ),
         this.languageService.translate.instant(
           'igo.geo.printForm.corsErrorMessageHeader'
-        ),
-        'print'
+        )
       );
     }
   }

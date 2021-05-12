@@ -151,7 +151,8 @@ export class CoordinatesReverseSearchSource extends SearchSource
         id: data[0].toString() + ',' + data[1].toString(),
         title: roundedCoordString,
         titleHtml: roundedCoordString + subtitleHtml,
-        icon: 'map-marker'
+        icon: 'map-marker',
+        score: 100, // every coord exists
       }
     };
   }

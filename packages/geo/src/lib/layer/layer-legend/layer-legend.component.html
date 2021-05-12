@@ -1,43 +1,44 @@
 <ng-container *ngIf="legendItems$ | async as items">
   <ng-container *ngIf="items.length; else noItems">
-    <ng-container *ngFor="let item of items.slice().reverse()" #renderedLegends >
-      <mat-list-item *ngIf="item.title">
-        <mat-icon
-          id="legend-toggle"
-          class="igo-chevron"
-          mat-list-avatar
-          igoCollapse
-          [target]="legend"
-          [collapsed]="(item.collapsed)"
-          (toggle)="toggleLegendItem($event, item)"
-          svgIcon="chevron-up">
-        </mat-icon>
-        <h4 matLine>{{computeItemTitle(item) | async}} </h4>
-      </mat-list-item>  
-      <div #legend class="igo-layer-legend" [ngClass]="{'with-title': item.title}">
-        <div *ngIf="currentStyle !== undefined">
-            <mat-form-field>
-              <mat-select tooltip-position="below" matTooltipShowDelay="500"
-                [matTooltip]="'igo.geo.layer.legend.selectStyle' | translate" [(ngModel)]="currentStyle"
-                (selectionChange)="onChangeStyle()">
-                <mat-option *ngFor="let style of styles" [value]="style.name">{{style.title}}</mat-option>
-              </mat-select>
-          </mat-form-field>
-        </div>
-        <div *ngIf="!(item.collapsed)">
-          <div *ngIf="item.url">
-            <img #renderedLegend id="{{item.title}}" (load)="onLoadImage(item.title)"
-              src="{{(item.url | secureImage) | async}}"
-              alt="{{'igo.geo.layer.legend.loadingLegendText' | translate}}"
-            >
-            <small *ngIf="imagesHeight[item.title]<16">
-                {{'igo.geo.layer.legend.noLegendScale' | translate}}
-            </small>
+    <ng-container *ngFor="let item of items.slice().reverse()" #renderedLegends>
+      <div *ngIf="getLegend; else noItems">
+        <mat-list-item *ngIf="item.title">
+          <mat-icon
+            id="legend-toggle"
+            class="igo-chevron"
+            mat-list-avatar
+            igoCollapse
+            [target]="legend"
+            [collapsed]="(item.collapsed)"
+            (toggle)="toggleLegendItem($event, item)"
+            svgIcon="chevron-up">
+          </mat-icon>
+          <h4 matLine>{{computeItemTitle(item) | async}} </h4>
+        </mat-list-item>
+        <div #legend class="igo-layer-legend" [ngClass]="{'with-title': item.title}">
+          <div *ngIf="currentStyle !== undefined">
+              <mat-form-field>
+                <mat-select tooltip-position="below" matTooltipShowDelay="500"
+                  [matTooltip]="'igo.geo.layer.legend.selectStyle' | translate" [(ngModel)]="currentStyle"
+                  (selectionChange)="onChangeStyle()">
+                  <mat-option *ngFor="let style of styles" [value]="style.name">{{style.title}}</mat-option>
+                </mat-select>
+            </mat-form-field>
           </div>
-          <div
-            [ngStyle]="item.style"
-            [innerHTML]="item.html"
-            *ngIf="item.html">
+          <div *ngIf="!(item.collapsed)">
+            <div *ngIf="item.url">
+              <img #renderedLegend id="{{item.title}}" (load)="onLoadImage(item.title)"
+                src="{{legendGraphic}}"
+                alt="{{'igo.geo.layer.legend.loadingLegendText' | translate}}">
+              <small *ngIf="imagesHeight[item.title]<16">
+                  {{'igo.geo.layer.legend.noLegendScale' | translate}}
+              </small>
+            </div>
+            <div
+              [ngStyle]="item.style"
+              [innerHTML]="item.html"
+              *ngIf="item.html">
+            </div>
           </div>
         </div>
       </div>

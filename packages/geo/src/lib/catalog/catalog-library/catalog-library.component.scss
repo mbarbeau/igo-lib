@@ -1,17 +1,9 @@
-  
- mat-form-field {
-    width: 100%;
-  }
-
-
-.add-catalog-button-top-padding {
-    padding-top: 25px;
+igo-list {
+  height: auto;
 }
 
-.igo-form {
-    padding: 10px 5px 5px;
-}
-
-.igo-form-button-group {
-    text-align: center;
+.btnAddCatalog {
+  justify-content: center;
+  display: flex;
+  margin: 30px 0;
 }

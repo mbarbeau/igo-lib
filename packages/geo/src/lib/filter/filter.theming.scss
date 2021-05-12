@@ -1,7 +1,9 @@
 @import './time-filter-form/time-filter-form.theming';
 @import './ogc-filter-time/ogc-filter-time-slider.theming';
+@import './ogc-filter-selection/ogc-filter-selection.theming';
 
 @mixin igo-filter-theming($theme, $typography) {
   @include igo-time-filter-form-theming($theme);
   @include igo-ogc-filter-time-slider-theming($theme);
+  @include igo-ogc-filter-selection-theming($theme);
 }

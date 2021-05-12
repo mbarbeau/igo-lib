@@ -1,6 +1,6 @@
 {
   "name": "@igo2/common",
-  "version": "1.6.4",
+  "version": "1.7.1",
   "description": "IGO Library",
   "author": "MSP",
   "keywords": ["igo"],
@@ -17,8 +17,8 @@
     "@angular/common": "^10.0.3",
     "@angular/core": "^10.0.3",
     "@angular/material": "^10.0.1",
-    "@igo2/core": "^1.6.4",
-    "@igo2/utils": "^1.6.4",
+    "@igo2/core": "^1.7.1",
+    "@igo2/utils": "^1.7.1",
     "scroll-into-view-if-needed": "^2.2.20",
     "typy": "^3.3.0"
   },

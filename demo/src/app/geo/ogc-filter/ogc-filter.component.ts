@@ -512,112 +512,122 @@ export class AppOgcFilterComponent {
         enabled: true,
         editable: true,
         pushButtons: {
+          selectorType: 'pushButton',
+          order: 2,
           groups : [
-            {title: 'Nom du group1', name: '1', ids : ['id1']},
-            {title: 'Nom du group2', name: '2', ids : ['id1', 'id2']},
+            {title: 'Nom du group1 - push', name: '1 - push', ids : ['id1']},
           ],
           bundles: [
-          {
-            id: 'id1',
-            logical: 'Or',
-            buttons: [
-              {
-                title: 'Radar photo fixe',
-                enabled: true,
-                color: '0,0,255',
-                tooltip: 'Here a tooltip explaning ...',
-                filters: {
-                  operator: 'PropertyIsEqualTo',
-                  propertyName: 'typeAppareil',
-                  expression: 'Radar photo fixe'
+            {
+              id: 'id1',
+              title: 'Régions',
+              logical: 'Or',
+              vertical: true,
+              selectors: [
+                {
+                  title: 'Montréal & Laval',
+                  enabled: false,
+                  tooltip: 'Here a tooltip explaning ...',
+                  filters: {
+                    logical: 'Or',
+                    filters: [
+                      {
+                        operator: 'PropertyIsEqualTo',
+                        propertyName: 'region',
+                        expression: 'Montréal'
+                      },
+                      {
+                        operator: 'PropertyIsEqualTo',
+                        propertyName: 'region',
+                        expression: 'Laval'
+                      }
+                    ]
+                  }
+                },
+                {
+                  title: 'Outside Montréal & Laval',
+                  enabled: false,
+                  tooltip: 'Here a tooltip explaning ...',
+                  filters: {
+                    logical: 'And',
+                    filters: [
+                      {
+                        operator: 'PropertyIsNotEqualTo',
+                        propertyName: 'region',
+                        expression: 'Montréal'
+                      },
+                      {
+                        operator: 'PropertyIsNotEqualTo',
+                        propertyName: 'region',
+                        expression: 'Laval'
+                      }
+                    ]
+                  }
                 }
-              },
-              {
-                title: 'Radar photo mobile',
-                enabled: false,
-                color: '255,200,0',
-                tooltip: 'Here a tooltip explaning ...',
-                filters: {
-                  operator: 'PropertyIsEqualTo',
-                  propertyName: 'typeAppareil',
-                  expression: 'Radar photo mobile'
+              ]
+            }
+          ]
+        },
+        checkboxes: {
+          selectorType: 'checkbox',
+          order: 1,
+          groups : [
+            {title: 'Nom du group1 - checkbox', name: '1 - checkbox', ids : ['id1']},
+          ],
+          bundles: [
+            {
+              id: 'id1',
+              title: 'Type de radar photo',
+              logical: 'Or',
+              selectors: [
+                {
+                  title: 'Radar photo fixe',
+                  enabled: true,
+                  tooltip: 'Here a tooltip explaning ...',
+                  filters: {
+                    operator: 'PropertyIsEqualTo',
+                    propertyName: 'typeAppareil',
+                    expression: 'Radar photo fixe'
+                  }
+                },
+                {
+                  title: 'Radar photo mobile',
+                  enabled: false,
+                  tooltip: 'Here a tooltip explaning ...',
+                  filters: {
+                    operator: 'PropertyIsEqualTo',
+                    propertyName: 'typeAppareil',
+                    expression: 'Radar photo mobile'
+                  }
+                },
+                {
+                  title: 'Radar photo fixe + feu rouge',
+                  enabled: false,
+                  color: '0,200,0',
+                  tooltip: 'Here a tooltip explaning ...',
+                  filters: {
+                    operator: 'PropertyIsEqualTo',
+                    propertyName: 'typeAppareil',
+                    expression: 'Radar photo fixe et surveillance au feu rouge'
+                  }
+                },
+                {
+                  title: 'Radar feu rouge',
+                  enabled: false,
+                  color: '255,0,0',
+                  tooltip: 'Here a tooltip explaning ...',
+                  filters: {
+                    operator: 'PropertyIsEqualTo',
+                    propertyName: 'typeAppareil',
+                    expression: 'Appareil de surveillance au feu rouge'
+                  }
                 }
-              },
-              {
-                title: 'Radar photo fixe + feu rouge',
-                enabled: false,
-                color: '0,200,0',
-                tooltip: 'Here a tooltip explaning ...',
-                filters: {
-                  operator: 'PropertyIsEqualTo',
-                  propertyName: 'typeAppareil',
-                  expression: 'Radar photo fixe et surveillance au feu rouge'
-                }
-              },
-              {
-                title: 'Radar feu rouge',
-                enabled: false,
-                color: '255,0,0',
-                tooltip: 'Here a tooltip explaning ...',
-                filters: {
-                  operator: 'PropertyIsEqualTo',
-                  propertyName: 'typeAppareil',
-                  expression: 'Appareil de surveillance au feu rouge'
-                }
-              }
-            ]
-          },
-          {
-            id: 'id2',
-            logical: 'Or',
-            vertical: true,
-            buttons: [
-              {
-                title: 'Montréal & Laval',
-                enabled: false,
-                tooltip: 'Here a tooltip explaning ...',
-                filters: {
-                  logical: 'Or',
-                  filters: [
-                    {
-                      operator: 'PropertyIsEqualTo',
-                      propertyName: 'region',
-                      expression: 'Montréal'
-                    },
-                    {
-                      operator: 'PropertyIsEqualTo',
-                      propertyName: 'region',
-                      expression: 'Laval'
-                    }
-                  ]
-                }
-              },
-              {
-                title: 'Outside Montréal & Laval',
-                enabled: false,
-                tooltip: 'Here a tooltip explaning ...',
-                filters: {
-                  logical: 'And',
-                  filters: [
-                    {
-                      operator: 'PropertyIsNotEqualTo',
-                      propertyName: 'region',
-                      expression: 'Montréal'
-                    },
-                    {
-                      operator: 'PropertyIsNotEqualTo',
-                      propertyName: 'region',
-                      expression: 'Laval'
-                    }
-                  ]
-                }
-              }
-            ]
-          }
-        ]
-      },
+              ]
+            }
+          ]
+        },
         allowedOperatorsType: OgcFilterOperatorType.Basic
-      },
+        },
       paramsWFS: {
         featureTypes: 'radars_photos',
         fieldNameGeometry: 'geometry',
@@ -633,7 +643,7 @@ export class AppOgcFilterComponent {
       .subscribe(dataSource => {
         this.map.addLayer(
           this.layerService.createLayer({
-            title: 'Filterable WMS layers with predefined filters (buttons)',
+            title: 'Filterable WMS layers with predefined filters (push buttons)',
             source: dataSource
           })
         );
