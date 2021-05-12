@@ -34,32 +34,27 @@ export class SearchService {
 
   /**
    * Perform a research by text
-   * @param terms Any text or a list of terms
+   * @param term Any text
    * @returns Researches
    */
-  search(
-    terms: string[] | string, // for compatibility
-    options: TextSearchOptions = {}
-    ): Research[] {
-    const validatedTerms = this.validateTerms(this.stringToArray(terms));
-
-    if (validatedTerms.length === 0) {
+  search(term: string, options: TextSearchOptions = {}): Research[] {
+    if (!this.termIsValid(term)) {
       return [];
     }
 
     const proj = this.mapService.getMap()?.projection || 'EPSG:3857';
-    validatedTerms.map(term => {
-      const response = stringToLonLat(term, proj, {
-        forceNA: options.forceNA
-      });
-      if (response.lonLat) {
-        return this.reverseSearch(response.lonLat, { distance: response.radius });
-      } else if (response.message) {
-        console.log(response.message);
-      }
+    const response = stringToLonLat(term, proj, {
+      forceNA: options.forceNA
     });
+    if (response.lonLat) {
+      return this.reverseSearch(response.lonLat, { distance: response.radius, conf: response.conf });
+    } else if (response.message) {
+      console.log(response.message);
+    }
 
-    options.extent = this.mapService.getMap()?.viewController.getExtent('EPSG:4326');
+    options.extent = this.mapService
+      .getMap()
+      ?.viewController.getExtent('EPSG:4326');
 
     let sources;
 
@@ -78,7 +73,7 @@ export class SearchService {
     }
 
     sources = sources.filter(sourceCanSearch);
-    return this.searchSources(sources, validatedTerms, options);
+    return this.searchSources(sources, term, options);
   }
 
   /**
@@ -108,16 +103,15 @@ export class SearchService {
    */
   private searchSources(
     sources: SearchSource[],
-    terms: string[] | string, // for compatibility
+    term: string,
     options: TextSearchOptions
   ): Research[] {
-
     return sources.map((source: SearchSource) => {
       return {
-        requests: this.stringToArray(terms).map((term) => ((source as any) as TextSearch).search(term, options)),
+        request: ((source as any) as TextSearch).search(term, options),
         reverse: false,
         source
-      } as Research;
+      };
     });
   }
 
@@ -134,23 +128,14 @@ export class SearchService {
   ): Research[] {
     return sources.map((source: SearchSource) => {
       return {
-        requests: [((source as any) as ReverseSearch).reverseSearch(
+        request: ((source as any) as ReverseSearch).reverseSearch(
           lonLat,
           options
-        )],
+        ),
         reverse: true,
         source
       };
     });
-  }
-
-  /**
-   * Validate if a list of term is valid
-   * @param term Search term
-   * @returns The validated list;
-   */
-  private validateTerms(terms: string[]): string[] {
-    return terms.filter((term) => this.termIsValid(term));
   }
 
   /**
@@ -160,9 +145,5 @@ export class SearchService {
    */
   private termIsValid(term: string): boolean {
     return typeof term === 'string' && term !== '';
-  }
-
-  private stringToArray(terms: string[] | string): string[] {
-    return typeof terms === 'string' ?  [terms] : terms;
   }
 }

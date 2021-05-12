@@ -1,8 +1,8 @@
-<mat-list-item>  
+<mat-list-item>
   <h4 mat-line>
     {{title}}
   </h4>
-  <mat-icon 
+  <mat-icon
     class="igo-external-provider"
     *ngIf="catalog.externalProvider"
     tooltip-position="below"
@@ -10,10 +10,10 @@
     [matTooltip]="'igo.geo.catalog.externalProvider.catalog' | translate"
     color="primary"
     (click)="$event.stopPropagation()"
-    svgIcon="bank-transfer-in">
+    svgIcon="earth-arrow-right">
   </mat-icon>
 
-  <button 
+  <button
   *ngIf="catalog.removable"
   mat-icon-button
   tooltip-position="below"
@@ -24,7 +24,7 @@
   <mat-icon svgIcon="delete"></mat-icon>
 </button>
 
-<button 
+<button
   class="igo-blank"
   *ngIf="!catalog.removable"
   disabled="true"

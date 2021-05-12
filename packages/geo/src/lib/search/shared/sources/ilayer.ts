@@ -271,7 +271,7 @@ export class ILayerSearchSource extends SearchSource implements TextSearch {
     response: ILayerServiceResponse, term: string
   ): SearchResult<ILayerItemResponse>[] {
     return response.items.map((data: ILayerData) =>
-      this.dataToResult(data, term, response)
+    this.dataToResult(data, term, response)
     );
   }
 

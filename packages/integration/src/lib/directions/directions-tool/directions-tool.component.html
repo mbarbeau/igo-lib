@@ -3,5 +3,6 @@
     [stopsStore]="stopsStore"
     [routeStore]="routeStore"
     [map]="map"
-    [routeFromFeatureDetail]="routeFromFeatureDetail">
+    [routeFromFeatureDetail]="routeFromFeatureDetail"
+    (activeRouteDescription)="onActiveRouteDescriptionChange($event)">
 </igo-directions-form>

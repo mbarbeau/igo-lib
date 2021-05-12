@@ -13,7 +13,7 @@ import {
   FloatLabelType,
   MatFormFieldAppearance
 } from '@angular/material/form-field';
-import { BehaviorSubject, Subscription, EMPTY, timer, forkJoin } from 'rxjs';
+import { BehaviorSubject, Subscription, EMPTY, timer } from 'rxjs';
 import { debounce, distinctUntilChanged } from 'rxjs/operators';
 
 import { LanguageService } from '@igo2/core';
@@ -118,8 +118,6 @@ export class SearchBarComponent implements OnInit, OnDestroy {
   }
   readonly term$: BehaviorSubject<string> = new BehaviorSubject('');
 
-  @Input() termSplitter;
-
   /**
    * Whether this component is disabled
    */
@@ -149,6 +147,8 @@ export class SearchBarComponent implements OnInit, OnDestroy {
    * Icons color (search and clear)
    */
   @Input() color = 'primary';
+
+  @Input() termSplitter: string = '|';
 
   /**
    * Debounce time between each keystroke
@@ -398,34 +398,37 @@ export class SearchBarComponent implements OnInit, OnDestroy {
    * Execute the search
    * @param term Search term
    */
-  private doSearch(term: string | undefined) {
+  private doSearch(rawTerm: string | undefined) {
     if (this.researches$$) {
       this.researches$$.map((research) => research.unsubscribe());
       this.researches$$ = undefined;
     }
 
-    const slug = term ? term.replace(/(#[^\s]*)/g, '').trim() : '';
-    if (slug === '') {
-      if (this.store !== undefined) {
-        this.store.clear();
+    let terms;
+    if (this.termSplitter && rawTerm.match(new RegExp(this.termSplitter, 'g'))) {
+      terms = rawTerm.split(this.termSplitter).filter((t) => t.length >= this.minLength);
+      this.store.clear();
+    } else {
+      terms = [rawTerm];
+    }
+
+    let researches: Research[] = [];
+    terms.map((term: string) => {
+      const slug = term ? term.replace(/(#[^\s]*)/g, '').trim() : '';
+      if (slug === '') {
+        if (this.store !== undefined) {
+          this.store.clear();
+        }
+        return;
       }
-      return;
-    }
 
-    const terms = this.termSplitter && this.term.match(new RegExp(this.termSplitter, 'g')) ?
-    term.split(this.termSplitter).filter((t) => t.length >= this.minLength ) : [term];
-
-    if (!terms.length) {
-      return;
-    }
-    const researches = this.searchService.search(terms, {
-      forceNA: this.forceNA
+      researches = researches.concat(this.searchService.search(term, {
+        forceNA: this.forceNA
+      }));
     });
-    this.researches$$ = researches.map((r: Research) => r.source).map((source) => {
-      const currentResearch = researches.find((r) => r.source === source);
-      return forkJoin(currentResearch.requests).subscribe((res: SearchResult[][]) => {
-        const results = [].concat.apply([], res);
-        this.onResearchCompleted(currentResearch, results);
+    this.researches$$ = researches.map((research) => {
+      return research.request.subscribe((results: SearchResult[]) => {
+        this.onResearchCompleted(research, results);
       });
     });
   }
@@ -444,7 +447,7 @@ export class SearchBarComponent implements OnInit, OnDestroy {
         .all()
         .filter((result) => result.source !== research.source)
         .concat(results);
-      this.store.load(newResults);
+      this.store.updateMany(newResults);
     }
   }
 }

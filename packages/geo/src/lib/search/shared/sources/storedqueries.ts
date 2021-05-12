@@ -312,7 +312,7 @@ export class StoredQueriesSearchSource extends SearchSource
         title: data.properties.title,
         titleHtml: data.properties[title],
         icon: 'map-marker',
-        score: computeTermSimilarity(term.trim(), data.properties.title),
+        score: computeTermSimilarity(term.trim(), data.properties.title)
       }
     };
   }

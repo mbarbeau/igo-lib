@@ -1,0 +1,71 @@
+
+  .mat-button-toggle-group {
+    margin: 5px 5px 5px 5px;
+    flex-wrap: wrap;
+    box-shadow: none;
+  }
+
+  .checkboxes {
+    flex-wrap: wrap;
+    box-shadow: none;
+  }
+
+  .groupsSelector {
+    text-align: center;
+  }
+
+  mat-button-toggle {
+    display: inline-flex;
+    border: 1.5px solid black;
+    border-radius: 5px;
+    margin: 5px;
+    white-space: normal;
+    min-height: 40px;
+    height: auto;
+    width: 150px;
+
+    ::ng-deep .mat-button-toggle-label-content {
+      line-height: unset;
+      font-size: small;
+      display: block;
+    }
+  }
+
+  ::ng-deep .material-tooltip {
+    white-space: pre-wrap;
+  }
+
+  mat-checkbox, mat-radio-button {
+    margin: 7px;
+    width: 95%;
+    display: inline-flex;
+    font-size: larger;
+
+    ::ng-deep label {
+      white-space: normal;
+    }
+  }
+
+  mat-checkbox {
+    vertical-align: middle;
+  }
+
+  h4 {
+    margin: 7px;
+    text-align: left;
+  }
+
+  u {
+    cursor: pointer;
+    color: blue;
+    margin: 5px;
+  }
+
+  p {
+    margin: unset;
+  }
+
+  igo-ogc-filter-time ::ng-deep .datetime-input {
+    width: 140px;
+    margin: 10px 0px 5px 10px;
+  }

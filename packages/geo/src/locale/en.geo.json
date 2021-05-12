@@ -16,11 +16,14 @@
            "layer": "This layer comes from an external organization."
         },
         "library.add": "Add this catalog to the list",
+        "library.cancel": "Cancel",
         "library.remove": "Remove this catalog from the list",
         "library.inlist": {
           "title": "Catalog already contained",
           "message": "The catalog is already contained in the list."
-        }
+        },
+        "library.addTitle": "Adding a catalog",
+        "library.addBtn": "Add a catalog"
       },
       "clickOnMap": {
         "clickedFeature": "Clicked Feature"
@@ -183,10 +186,13 @@
         "layerFilterable": "This layer is filterable",
         "filterBy": "Filter by",
         "advancedOgcFilters": "Advanced filters",
+        "displayMoreResults": "Display more (+)",
+        "displayLessResults": "Display less (-)",
         "placeholder": "Enter a value",
         "placeholderSnrc": "Ex: 21L14",
         "selectOperator": "Select an operator",
-        "sliderModeTitle": "Time slider"
+        "sliderModeTitle": "Time slider",
+        "reportingDate": "Reporting date"
       },
       "spatialSelector": {
         "fixedExtent": "Fixed extent",
@@ -288,6 +294,8 @@
         "subtitle": "Subtitle"
       },
       "directionsForm": {
+        "stopLayer": "Directions - stops",
+        "routeLayer": "Directions - route",
         "start": "Start",
         "intermediate": "Intermediate",
         "end": "End",

@@ -27,7 +27,7 @@ export class OgcFilterableItemComponent implements OnInit, OnDestroy {
   public hasActiveSpatialFilter = false;
   public filtersAreEditable = true;
   public filtersCollapsed = true;
-  public hasPushButton: boolean = false;
+  public hasSelector: boolean = false;
   showLegend$: BehaviorSubject<boolean> = new BehaviorSubject(false);
   inResolutionRange$: BehaviorSubject<boolean> = new BehaviorSubject(true);
   private resolution$$: Subscription;
@@ -53,11 +53,14 @@ export class OgcFilterableItemComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     const ogcFilters = this.datasource.options.ogcFilters;
-    if (ogcFilters.pushButtons && ogcFilters.pushButtons.bundles.length > 0) {
+    if (
+      (ogcFilters.pushButtons && ogcFilters.pushButtons.bundles.length > 0) ||
+      (ogcFilters.checkboxes && ogcFilters.checkboxes.bundles.length > 0) ||
+      (ogcFilters.radioButtons && ogcFilters.radioButtons.bundles.length > 0)) {
       if (ogcFilters.advancedOgcFilters === undefined) {
         ogcFilters.advancedOgcFilters = false;
       }
-      this.hasPushButton = true;
+      this.hasSelector = true;
     }
 
     switch (this.datasource.options.type) {

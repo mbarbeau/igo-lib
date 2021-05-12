@@ -25,6 +25,8 @@ export class DirectionState {
     map: this.mapState.map
   });
 
+  public activeRouteDescription: string;
+
   public routeFromFeatureDetail = false;
 
   constructor(private mapState: MapState) {}

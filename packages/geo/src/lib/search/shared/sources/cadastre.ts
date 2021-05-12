@@ -14,7 +14,6 @@ import { SearchSourceOptions, TextSearchOptions } from './source.interfaces';
 
 import { LanguageService, StorageService } from '@igo2/core';
 import { computeTermSimilarity } from '../search.utils';
-
 /**
  * Cadastre search source
  */

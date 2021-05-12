@@ -6,7 +6,7 @@ export * from './ogc-filterable-form';
 export * from './ogc-filterable-item';
 export * from './ogc-filterable-list';
 export * from './ogc-filter-form';
-export * from './ogc-filter-toggle-button';
+export * from './ogc-filter-selection';
 export * from './ogc-filter-button';
 export * from './ogc-filter-time';
 export * from './time-filter-button';

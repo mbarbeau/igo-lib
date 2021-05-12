@@ -9,6 +9,8 @@ import { IgoListModule } from '@igo2/common';
 
 import { CatalogLibaryComponent, } from './catalog-library.component';
 import { CatalogLibaryItemComponent } from './catalog-library-item.component';
+import { AddCatalogDialogComponent } from './add-catalog-dialog.component';
+
 import { MatBadgeModule } from '@angular/material/badge';
 import { IgoLanguageModule } from '@igo2/core';
 import { MatButtonModule } from '@angular/material/button';
@@ -17,6 +19,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatDialogModule } from '@angular/material/dialog';
 
 /**
  * @ignore
@@ -35,14 +38,17 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
     ReactiveFormsModule,
     MatInputModule,
     MatSelectModule,
-    MatAutocompleteModule
+    MatAutocompleteModule,
+    MatDialogModule
   ],
   exports: [
-    CatalogLibaryComponent
+    CatalogLibaryComponent,
+    AddCatalogDialogComponent
   ],
   declarations: [
     CatalogLibaryComponent,
-    CatalogLibaryItemComponent
+    CatalogLibaryItemComponent,
+    AddCatalogDialogComponent
   ]
 })
 export class IgoCatalogLibraryModule {}

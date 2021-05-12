@@ -1,7 +1,7 @@
 <div class="datetime-container">
 
   <mat-slide-toggle 
-    *ngIf="this.currentFilter.sliderOptions.enabled"
+    *ngIf="this.currentFilter.sliderOptions?.enabled"
     [(ngModel)]="sliderMode"
     (change)="modeChange($event)">
     {{'igo.geo.filter.sliderModeTitle' | translate}}

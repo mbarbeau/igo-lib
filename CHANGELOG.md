@@ -1,3 +1,61 @@
+## [1.7.1](https://github.com/infra-geo-ouverte/igo2-lib/compare/1.7.0...1.7.1) (2021-05-03)
+
+
+### Bug Fixes
+
+* **directions:** marker was not correctly selected. ([#844](https://github.com/infra-geo-ouverte/igo2-lib/issues/844)) ([04ae23b](https://github.com/infra-geo-ouverte/igo2-lib/commit/04ae23b12d6c4b914f366b93143a707b33ac7123))
+* **imagearcgisrest/layer-legend:** release 1.7 various fix ([#848](https://github.com/infra-geo-ouverte/igo2-lib/issues/848)) ([5ab57af](https://github.com/infra-geo-ouverte/igo2-lib/commit/5ab57af5808f101c2ce8225be04e0c9a85a0f3e8))
+* **ogcFilter:** css fix for pushButtons title ([#846](https://github.com/infra-geo-ouverte/igo2-lib/issues/846)) ([05cbf68](https://github.com/infra-geo-ouverte/igo2-lib/commit/05cbf689e9b63f4ceba4e978ffd82a7dd15b84ed))
+* **ogcFilters:** fix wfs datasource ogcFilters / clearTimeout for checkbox filters ([#849](https://github.com/infra-geo-ouverte/igo2-lib/issues/849)) ([99f9d75](https://github.com/infra-geo-ouverte/igo2-lib/commit/99f9d75985f037e93575ffea1faf5137fe1ded27))
+* **ogcFilters:** various fix for release 1.7 ([#847](https://github.com/infra-geo-ouverte/igo2-lib/issues/847)) ([166a895](https://github.com/infra-geo-ouverte/igo2-lib/commit/166a895b0cad266230e1a25f7797f86a931e92a3))
+
+
+### Features
+
+* **directions:** let the layer into the layer list (to be printed) ([#845](https://github.com/infra-geo-ouverte/igo2-lib/issues/845)) ([e53721a](https://github.com/infra-geo-ouverte/igo2-lib/commit/e53721a148662a5003574832a63404483d23f83d))
+* **search:** computeTermSimilarity is now not case sensitive ([#850](https://github.com/infra-geo-ouverte/igo2-lib/issues/850)) ([ef9e548](https://github.com/infra-geo-ouverte/igo2-lib/commit/ef9e548c6a5fdb83687495c53b8101f62454d216))
+
+
+
+# [1.7.0](https://github.com/infra-geo-ouverte/igo2-lib/compare/1.6.4...1.7.0) (2021-04-26)
+
+
+### Bug Fixes
+
+* disabled buttons look like they are ([757659d](https://github.com/infra-geo-ouverte/igo2-lib/commit/757659dc6471a9130e9869c19d8e483b1429eb3b))
+* **context:** load context without authService ([075fb9b](https://github.com/infra-geo-ouverte/igo2-lib/commit/075fb9b8508052a628b46ae99ede302fa0e6a707))
+* **context:** update context when auth changed ([882e663](https://github.com/infra-geo-ouverte/igo2-lib/commit/882e6635656495af460a9126ab919c1542a75f99))
+* **feature-details:** fix secure iframes ([5786376](https://github.com/infra-geo-ouverte/igo2-lib/commit/5786376830976f072bfecacb85ed76e985b33828))
+* **icherche:** allow + charactere ([2267bed](https://github.com/infra-geo-ouverte/igo2-lib/commit/2267bed6850a27b9dd7bd126da7f53e752eeb66c))
+* **icherche:** encode + correctly ([02650a4](https://github.com/infra-geo-ouverte/igo2-lib/commit/02650a4b242e483cd4981423611eae22a2082376))
+* **icherche:** fix distance options for reverse icherche ([ee17b8f](https://github.com/infra-geo-ouverte/igo2-lib/commit/ee17b8f308e15c608a5b378a5bd418fc9e6453cd))
+* **ilayer:** more results ([#842](https://github.com/infra-geo-ouverte/igo2-lib/issues/842)) ([63ed85c](https://github.com/infra-geo-ouverte/igo2-lib/commit/63ed85c84402d27ff774acb5bee2def47fa38aea))
+* **layer-legend:** catch getLegendGraphic error ([#834](https://github.com/infra-geo-ouverte/igo2-lib/issues/834)) ([2d440b7](https://github.com/infra-geo-ouverte/igo2-lib/commit/2d440b756278fb3d18b9959254bbb9fafad6e147))
+* **pointerSummary:** delete the mouseout - due to issues on rdp connections ([#829](https://github.com/infra-geo-ouverte/igo2-lib/issues/829)) ([e9ac980](https://github.com/infra-geo-ouverte/igo2-lib/commit/e9ac9802f73c883dac2274bcf5263ad630d4764e))
+* **print:** graphic scale + attribution in print pdf ([#832](https://github.com/infra-geo-ouverte/igo2-lib/issues/832)) ([82ff8b5](https://github.com/infra-geo-ouverte/igo2-lib/commit/82ff8b5a91ffb720b24488932cda9462f851cc36))
+* **shareMap:** update url if the baselayer is changed ([#827](https://github.com/infra-geo-ouverte/igo2-lib/issues/827)) ([fa34773](https://github.com/infra-geo-ouverte/igo2-lib/commit/fa34773092d8017c547e43259df2383037031d64))
+
+
+### Features
+
+* **about-tool:** authenticated training guide  ([#826](https://github.com/infra-geo-ouverte/igo2-lib/issues/826)) ([18f3ae8](https://github.com/infra-geo-ouverte/igo2-lib/commit/18f3ae831f075a2c429e1aad4d7b676a065b1b33))
+* **about-tool:** Open guide on new tab / add menu if multiple ([#833](https://github.com/infra-geo-ouverte/igo2-lib/issues/833)) ([858e40f](https://github.com/infra-geo-ouverte/igo2-lib/commit/858e40f11a9e1d559a6347e0323f8419d7d1c1d8))
+* **catalog:** advertize warning if layer or catalog come from an external source ([#835](https://github.com/infra-geo-ouverte/igo2-lib/issues/835)) ([a6a910c](https://github.com/infra-geo-ouverte/igo2-lib/commit/a6a910c421f45a49887f3a5d598a7e76dddcca55))
+* **draw:** draw points as icons ([#837](https://github.com/infra-geo-ouverte/igo2-lib/issues/837)) ([e617969](https://github.com/infra-geo-ouverte/igo2-lib/commit/e6179696ee714a893c5ab7e12b861dba0ecc6ffc)), closes [#645](https://github.com/infra-geo-ouverte/igo2-lib/issues/645) [#646](https://github.com/infra-geo-ouverte/igo2-lib/issues/646)
+* **igo-feature-detail:** add html display event ([#830](https://github.com/infra-geo-ouverte/igo2-lib/issues/830)) ([e4128c1](https://github.com/infra-geo-ouverte/igo2-lib/commit/e4128c15b12c6a19964727717be5087fd78114da))
+* **ilayer:** add ecmax setting ([fc81111](https://github.com/infra-geo-ouverte/igo2-lib/commit/fc811111a45fe7de56e95b6770117894f425ce95))
+* **imagearcgisrest:** add possibility to use renderingRule param ([f475c1e](https://github.com/infra-geo-ouverte/igo2-lib/commit/f475c1ebe930b46b6e7fe3a0d508a40db36a8c24))
+* **message:** add an optional date range to message application ([#839](https://github.com/infra-geo-ouverte/igo2-lib/issues/839)) ([01d5eef](https://github.com/infra-geo-ouverte/igo2-lib/commit/01d5eefb65c3dcfcceca77eb835d3c4fa000253b))
+* **ogc-filters:** Reshuffle of ogc filter selection ([#831](https://github.com/infra-geo-ouverte/igo2-lib/issues/831)) ([c173e36](https://github.com/infra-geo-ouverte/igo2-lib/commit/c173e369ebec7392bc74042d89b2db38e6de7f35))
+* **search:** add a method to manage if search results's geometrie are shown on map ([#825](https://github.com/infra-geo-ouverte/igo2-lib/issues/825)) ([dfd4a19](https://github.com/infra-geo-ouverte/igo2-lib/commit/dfd4a19251702f7bb69a8602c62ab3e761391196))
+* **search:** allow multiple search term separated by a term splitter ([#821](https://github.com/infra-geo-ouverte/igo2-lib/issues/821)) ([15db5e6](https://github.com/infra-geo-ouverte/igo2-lib/commit/15db5e6d3324ed32b4602c4a9767c18113cbc647))
+* **search-source:** add settings in storage ([3d53ed7](https://github.com/infra-geo-ouverte/igo2-lib/commit/3d53ed7dd113f29084af61e1e141589e1e2b8e8a))
+* **searchSource - coordinate:** show radius when available ([02fc015](https://github.com/infra-geo-ouverte/igo2-lib/commit/02fc015f0f1f30414b1c619e1f7f46886c9952c5))
+* **secure-image.pipe:** put in cache the requested  url (legend retrieval) ([#841](https://github.com/infra-geo-ouverte/igo2-lib/issues/841)) ([2b128bc](https://github.com/infra-geo-ouverte/igo2-lib/commit/2b128bc74966b9d781d94220f55f3582a8dd6927))
+* **share-map:** show the 2 options: sharing by context or by url ([ec19474](https://github.com/infra-geo-ouverte/igo2-lib/commit/ec19474511e4a800833b05878a3caf0d301482f2))
+
+
+
 ## [1.6.4](https://github.com/infra-geo-ouverte/igo2-lib/compare/1.6.3...1.6.4) (2021-03-15)
 
 

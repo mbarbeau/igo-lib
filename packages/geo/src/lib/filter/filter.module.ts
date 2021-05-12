@@ -52,7 +52,7 @@ import { OgcFilterableListComponent } from './ogc-filterable-list/ogc-filterable
 import { OgcFilterButtonComponent } from './ogc-filter-button/ogc-filter-button.component';
 import { OGCFilterService } from './shared/ogc-filter.service';
 import { OGCFilterTimeService } from './shared/ogc-filter-time.service';
-import { OgcFilterToggleButtonComponent } from './ogc-filter-toggle-button/ogc-filter-toggle-button.component';
+import { OgcFilterSelectionComponent } from './ogc-filter-selection/ogc-filter-selection.component';
 
 import { SpatialFilterTypeComponent } from './spatial-filter/spatial-filter-type/spatial-filter-type.component';
 import { SpatialFilterListComponent } from './spatial-filter/spatial-filter-list/spatial-filter-list.component';
@@ -105,7 +105,7 @@ import { OgcFilterTimeSliderComponent } from './ogc-filter-time/ogc-filter-time-
     TimeFilterListBindingDirective,
     OgcFilterFormComponent,
     OgcFilterButtonComponent,
-    OgcFilterToggleButtonComponent,
+    OgcFilterSelectionComponent,
     OgcFilterableFormComponent,
     OgcFilterableItemComponent,
     OgcFilterableListComponent,
@@ -125,7 +125,7 @@ import { OgcFilterTimeSliderComponent } from './ogc-filter-time/ogc-filter-time-
     TimeFilterListBindingDirective,
     OgcFilterFormComponent,
     OgcFilterButtonComponent,
-    OgcFilterToggleButtonComponent,
+    OgcFilterSelectionComponent,
     OgcFilterableFormComponent,
     OgcFilterableItemComponent,
     OgcFilterableListComponent,

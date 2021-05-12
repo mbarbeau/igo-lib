@@ -8,7 +8,7 @@ import {
   AfterContentChecked
 } from '@angular/core';
 
-import { forkJoin, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 
 import { MapBrowserPointerEvent as OlMapBrowserPointerEvent } from 'ol/MapBrowserEvent';
 import { ListenerFunction } from 'ol/events';
@@ -273,15 +273,16 @@ export class SearchPointerSummaryDirective implements OnInit, OnDestroy, AfterCo
 
   private onSearchCoordinate() {
     this.pointerSearchStore.clear();
-    const researches = this.searchService.reverseSearch(this.lonLat, { params: { geometry: 'false', icon: 'false' } }, true);
+    const results = this.searchService.reverseSearch(this.lonLat, { params: { geometry: 'false', icon: 'false' } }, true);
 
-    researches.map((r: Research) => r.source).map((source) => {
-      const currentResearch = researches.find((r) => r.source === source);
-      return forkJoin(currentResearch.requests).subscribe((res: SearchResult[][]) => {
-        const results = [].concat.apply([], res);
-        this.onSearch({ research: currentResearch, results });
-      });
-    });
+    for (const i in results) {
+      if (results.length > 0) {
+        this.reverseSearch$$.push(
+          results[i].request.subscribe((_results: SearchResult<Feature>[]) => {
+            this.onSearch({ research: results[i], results: _results });
+          }));
+      }
+    }
   }
 
   private onSearch(event: { research: Research; results: SearchResult[] }) {
