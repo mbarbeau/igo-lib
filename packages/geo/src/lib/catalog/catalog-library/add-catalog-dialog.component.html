@@ -35,7 +35,12 @@
       </mat-form-field>
     </div>
   </form>
-
+  <span *ngIf="error && addedCatalog && emailAddress">
+    <p class="error">{{languageService.translate.instant('igo.geo.catalog.externalProvider.unavailableWithEmail', { value: addedCatalog.url, email: emailAddress })}}</p>
+  </span>
+  <span *ngIf="error && addedCatalog && !emailAddress">
+    <p class="error">{{languageService.translate.instant('igo.geo.catalog.unavailable', { value: addedCatalog.url })}}</p>
+  </span>
 </div>
 <div mat-dialog-actions style="justify-content: center">
   <div class="igo-form-button-group add-catalog-button-top-padding">

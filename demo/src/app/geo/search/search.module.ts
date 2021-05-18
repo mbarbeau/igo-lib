@@ -23,7 +23,9 @@ import {
   provideNominatimSearchSource,
   provideIChercheReverseSearchSource,
   provideCoordinatesReverseSearchSource,
-  provideCadastreSearchSource
+  provideCadastreSearchSource,
+  provideStoredQueriesSearchSource,
+  provideStoredQueriesReverseSearchSource
 } from '@igo2/geo';
 
 import { IgoAppSearchModule } from '@igo2/integration';
@@ -56,7 +58,9 @@ import { AppSearchRoutingModule } from './search-routing.module';
     provideIChercheSearchSource(),
     provideILayerSearchSource(),
     provideNominatimSearchSource(),
-    provideIChercheReverseSearchSource()
+    provideIChercheReverseSearchSource(),
+    provideStoredQueriesSearchSource(),
+    provideStoredQueriesReverseSearchSource()
   ]
 })
 export class AppSearchModule {}
