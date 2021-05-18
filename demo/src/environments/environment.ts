@@ -165,6 +165,17 @@ export const environment: Environment = {
       ]
     },
     searchSources: {
+      storedqueries: {
+        available: true,
+        title: 'Feuillets SNRC',
+        searchUrl: '/ws/mffpecofor.fcgi',
+        storedquery_id: 'sq250et20kFeuillet',
+        fields: { name: 'no_feuillet', defaultValue: '0'},
+        resultTitle: 'feuillet',
+        params: {
+          limit: '8'
+        }
+    },
       nominatim: {
         enabled: false
       },
@@ -186,7 +197,7 @@ export const environment: Environment = {
         enabled: true
       },
       ilayer: {
-        searchUrl: '/apis/layers/search',
+        searchUrl: '/apis/icherche/layers',
         order: 4,
         enabled: true,
         params: {

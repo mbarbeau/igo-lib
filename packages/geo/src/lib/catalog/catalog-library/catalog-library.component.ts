@@ -152,6 +152,11 @@ export class CatalogLibaryComponent implements OnInit, OnDestroy {
           const title = this.languageService.translate.instant(
             'igo.geo.catalog.unavailableTitle'
           );
+          if (e.error) {
+            this.addCatalogDialog(true, addedCatalog);
+            e.error.caught = true;
+            return e;
+          }
           const message = this.languageService.translate.instant(
             'igo.geo.catalog.unavailable',
             { value: addedCatalog.url }
@@ -208,12 +213,14 @@ export class CatalogLibaryComponent implements OnInit, OnDestroy {
       .filter((c) => c.id !== catalog.id);
   }
 
-  addCatalogDialog() {
+  addCatalogDialog(error?, addedCatalog?: Catalog) {
     const dialogRef = this.dialog.open(AddCatalogDialogComponent, {
       width: '700px',
       data: {
         predefinedCatalogs: this.predefinedCatalogs,
-        store: this.store
+        store: this.store,
+        error,
+        addedCatalog
       }
     });
 

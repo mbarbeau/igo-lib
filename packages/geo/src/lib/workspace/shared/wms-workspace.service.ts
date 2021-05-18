@@ -69,6 +69,7 @@ export class WmsWorkspaceService {
     let wks;
     this.layerService
       .createAsyncLayer({
+        id: wfsLinkId,
         linkedLayers: {
           linkId: wfsLinkId
         },

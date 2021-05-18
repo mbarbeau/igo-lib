@@ -59,4 +59,5 @@ export interface CatalogServiceOptions {
   baseLayers?: boolean;
   sources?: (ICatalog | ICompositeCatalog)[];
   sourcesUrl?: string;
+  emailAddress?: string;
 }

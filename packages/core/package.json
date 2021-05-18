@@ -1,6 +1,6 @@
 {
   "name": "@igo2/core",
-  "version": "1.7.1",
+  "version": "1.7.2",
   "description": "IGO Library",
   "author": "MSP",
   "keywords": ["igo"],
@@ -22,7 +22,7 @@
     "@angular/cdk": "^10.0.1",
     "@angular/common": "^10.0.3",
     "@angular/core": "^10.0.3",
-    "@igo2/utils": "^1.7.1",
+    "@igo2/utils": "^1.7.2",
     "rxjs": "^6.6.0"
   }
 }

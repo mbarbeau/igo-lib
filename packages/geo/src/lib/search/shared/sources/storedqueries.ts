@@ -175,6 +175,11 @@ export class StoredQueriesSearchSource extends SearchSource
       options || {},
       storedqueriesParams
     );
+    if (this.options.params == null) {
+      this.options.params = { page : '1'};
+    } else {
+      this.options.params.page = options.page != null ? String(options.page) : '1';
+    }
 
     if (
       new RegExp('.*?gml.*?', 'i').test(this.storedQueriesOptions.outputformat)
@@ -183,7 +188,22 @@ export class StoredQueriesSearchSource extends SearchSource
         .get(this.searchUrl, { params, responseType: 'text' })
         .pipe(
           map(response => {
-            return this.extractResults(this.extractWFSData(response), term);
+            let resultArray = this.extractResults(this.extractWFSData(response), term);
+            resultArray.sort((a, b) =>
+              (a.meta.score > b.meta.score) ? 1 :
+              (a.meta.score === b.meta.score) ? ((a.meta.titleHtml < b.meta.titleHtml) ? 1 : -1) : -1);
+            resultArray.reverse();
+            if (resultArray.length > Number(this.options.params.limit)) {
+              const idxEnd = Number(this.options.params.limit) * Number(this.options.params.page);
+              const resultTotLenght = resultArray.length;
+              resultArray = resultArray.slice(0, idxEnd);
+              if (idxEnd < resultTotLenght) {
+                resultArray[resultArray.length - 1 ].meta.nextPage = true;
+              } else {
+                resultArray[resultArray.length - 1 ].meta.nextPage = false;
+              }
+            }
+            return resultArray;
           })
         );
     } else {
@@ -312,7 +332,10 @@ export class StoredQueriesSearchSource extends SearchSource
         title: data.properties.title,
         titleHtml: data.properties[title],
         icon: 'map-marker',
-        score: computeTermSimilarity(term.trim(), data.properties.title)
+        score: (data.properties.title) ?
+        computeTermSimilarity(term.trim(), data.properties.title) :
+        computeTermSimilarity(term.trim(), data.properties[title]),
+
       }
     };
   }

@@ -1,3 +1,18 @@
+## [1.7.2](https://github.com/infra-geo-ouverte/igo2-lib/compare/1.7.1...1.7.2) (2021-05-17)
+
+
+### Bug Fixes
+
+* **map utils:** conversion to latitude longitude out of bounds ([#858](https://github.com/infra-geo-ouverte/igo2-lib/issues/858)) ([6a5a211](https://github.com/infra-geo-ouverte/igo2-lib/commit/6a5a2113a079e622c50a1a32ad5567f1f2899cca))
+* **ogcfilters:** minors fixes ([#851](https://github.com/infra-geo-ouverte/igo2-lib/issues/851)) ([0b037fe](https://github.com/infra-geo-ouverte/igo2-lib/commit/0b037feb519d366ca4f4e71164c1893703c376c2))
+
+
+### Features
+
+* **add-catalog-dialog:** add info message if catalog isn't in the pr… ([#854](https://github.com/infra-geo-ouverte/igo2-lib/issues/854)) ([301e941](https://github.com/infra-geo-ouverte/igo2-lib/commit/301e94152ad4818eac9905954fd1ba5913d34d05))
+
+
+
 ## [1.7.1](https://github.com/infra-geo-ouverte/igo2-lib/compare/1.7.0...1.7.1) (2021-05-03)
 
 

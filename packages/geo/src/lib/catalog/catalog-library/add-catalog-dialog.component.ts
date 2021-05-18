@@ -1,3 +1,4 @@
+import { LanguageService, ConfigService } from '@igo2/core';
 import { Component, OnInit, OnDestroy, Optional, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -20,17 +21,24 @@ export class AddCatalogDialogComponent implements OnInit, OnDestroy {
   typeCapabilities: string[];
   predefinedCatalogs: Catalog[] = [];
   store: EntityStore<Catalog>;
+  error = false;
+  addedCatalog: Catalog;
+  emailAddress: string;
   private storeViewAll$$: Subscription;
 
   constructor(
     private formBuilder: FormBuilder,
+    public languageService: LanguageService,
+    private configService: ConfigService,
     public dialogRef: MatDialogRef<AddCatalogDialogComponent>,
     @Optional()
     @Inject(MAT_DIALOG_DATA)
-    public data: { predefinedCatalogs: Catalog[]; store: EntityStore<Catalog> }
+    public data: { predefinedCatalogs: Catalog[]; store: EntityStore<Catalog>; error: boolean; addedCatalog: Catalog }
   ) {
     this.store = data.store;
     this.predefinedCatalogs = data.predefinedCatalogs;
+    this.error = data.error;
+    this.addedCatalog = data.addedCatalog;
     this.form = this.formBuilder.group({
       id: ['', []],
       title: ['', []],
@@ -58,6 +66,8 @@ export class AddCatalogDialogComponent implements OnInit, OnDestroy {
     this.storeViewAll$$ = this.store.view
       .all$()
       .subscribe(() => this.computePredefinedCatalogList());
+
+    this.emailAddress = this.configService.getConfig('emailAddress');
   }
 
   ngOnDestroy() {
@@ -67,6 +77,7 @@ export class AddCatalogDialogComponent implements OnInit, OnDestroy {
 
   changeUrl(catalog: Catalog) {
     this.form.patchValue(catalog);
+    this.error = false;
     this.computePredefinedCatalogList();
   }
 
@@ -77,10 +88,12 @@ export class AddCatalogDialogComponent implements OnInit, OnDestroy {
   }
 
   addCatalog(addedCatalog: Catalog) {
+    this.error = false;
     this.dialogRef.close(addedCatalog);
   }
 
   cancel() {
+    this.error = false;
     this.dialogRef.close();
   }
 }

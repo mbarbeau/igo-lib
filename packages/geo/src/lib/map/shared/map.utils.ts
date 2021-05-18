@@ -320,13 +320,21 @@ export function stringToLonLat(
       };
     }
   }
-
-  return {
-    lonLat,
-    message: '',
-    radius: radius ? parseInt(radius, 10) : undefined,
-    conf: conf ? parseInt(conf, 10) : undefined
-  };
+  if (Math.abs(lonLat[0]) <= 180 && Math.abs(lonLat[1]) <= 90) {
+    return {
+      lonLat,
+      message: '',
+      radius: radius ? parseInt(radius, 10) : undefined,
+      conf: conf ? parseInt(conf, 10) : undefined
+    };
+  } else {
+    return {
+      lonLat: undefined,
+      message: 'Coordinate out of Longitude/Latitude bounds',
+      radius: undefined,
+      conf: undefined
+    };
+  }
 }
 
 /**
