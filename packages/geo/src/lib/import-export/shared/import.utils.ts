@@ -227,7 +227,8 @@ export function handleFileImportError(
     'Invalid file': handleInvalidFileImportError,
     'File is too large': handleSizeFileImportError,
     'Failed to read file': handleUnreadbleFileImportError,
-    'Invalid SRS definition': handleSRSImportError
+    'Invalid SRS definition': handleSRSImportError,
+    'Error 500 with OGRE in convert shapefile': handleOgreServerImportError
   };
   errMapping[error.message](
     file,
@@ -308,6 +309,17 @@ export function handleSRSImportError(
     value: file.name,
     mimeType: file.type
   });
+  messageService.error(message, title);
+}
+
+export function handleOgreServerImportError(
+  file: File,
+  error: Error,
+  messageService: MessageService,
+  languageService: LanguageService
+) {
+  const title = languageService.translate.instant('igo.geo.dropGeoFile.ogreServer.title');
+  const message = languageService.translate.instant('igo.geo.dropGeoFile.ogreServer.text');
   messageService.error(message, title);
 }
 

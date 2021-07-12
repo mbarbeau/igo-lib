@@ -61,6 +61,10 @@
         "invalidSRS": {
           "text": "La projection est valide. Elle doit commencer par EPSG:",
           "title": "Projection invalid"
+        },
+        "ogreServer": {
+          "title": "Erreur 500 du service Ogre",
+          "text": "Erreur de la conversion du fichier shapefile en geojson. Il est possible que le fichier soit trop volumineux, essayer de l'importer en format geojson"
         }
       },
       "export": {
