@@ -1,0 +1,46 @@
+@import '../foreground';
+$dq-palette: (
+    50 : #e3eaec,
+    100 : #b9cad0,
+    200 : #8ba7b1,
+    300 : #5c8391,
+    400 : #39697a,
+    500 : #164e62,
+    600 : #13475a,
+    700 : #103d50,
+    800 : #0c3546,
+    900 : #062534,
+    A100 : #6dc6ff,
+    A200 : #3ab2ff,
+    A400 : #079eff,
+    A700 : #0090ec,
+    contrast: (
+        50 : #000000,
+        100 : #000000,
+        200 : #000000,
+        300 : #ffffff,
+        400 : #ffffff,
+        500 : #ffffff,
+        600 : #ffffff,
+        700 : #ffffff,
+        800 : #ffffff,
+        900 : #ffffff,
+        A100 : #000000,
+        A200 : #000000,
+        A400 : #ffffff,
+        A700 : #ffffff,
+    )
+);
+
+$primary: mat-palette($dq-palette, 500);
+$accent: mat-palette($dq-palette, 200);
+$warn: mat-palette($mat-red);
+
+$temp-theme: mat-light-theme(
+    $primary,
+    $accent,
+    $warn
+);
+
+$foreground: theme-foreground(mat-palette($mat-grey, 900));
+$theme: map-merge($temp-theme, (foreground: $foreground));

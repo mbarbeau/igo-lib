@@ -20,6 +20,7 @@ import { AuthFormComponent } from './auth-form/auth-form.component';
 import { AuthGoogleComponent } from './auth-form/auth-google.component';
 import { AuthFacebookComponent } from './auth-form/auth-facebook.component';
 import { AuthMicrosoftComponent } from './auth-form/auth-microsoft.component';
+import { AuthMicrosoftb2cComponent } from './auth-form/auth-microsoftb2c.component';
 
 @NgModule({
   imports: [
@@ -38,6 +39,7 @@ import { AuthMicrosoftComponent } from './auth-form/auth-microsoft.component';
     AuthInternComponent,
     AuthFacebookComponent,
     AuthMicrosoftComponent,
+    AuthMicrosoftb2cComponent,
     ProtectedDirective
   ],
   exports: [AuthFormComponent, ProtectedDirective]
@@ -56,7 +58,8 @@ export class IgoAuthModule {
           provide: StorageService,
           useClass: AuthStorageService
         },
-        ...provideAuthMicrosoft()
+        ...provideAuthMicrosoft('add'),
+        ...provideAuthMicrosoft('b2c')
       ]
     };
   }

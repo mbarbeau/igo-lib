@@ -16,6 +16,7 @@ export class OgcFilterButtonComponent implements OnInit {
 
   get badge() {
     const filter = this.options.ogcFilters as any;
+    let cnt = 0;
     if (filter && !filter.advancedOgcFilters) {
       if (filter.pushButtons) {
         const pushButtons = filter.pushButtons as IgoOgcSelector;
@@ -25,8 +26,9 @@ export class OgcFilterButtonComponent implements OnInit {
           currentPushButtonGroup.computedSelectors.map(cb => cntPushButtons += (cb.selectors as any).filter(
             button => button.enabled).length);
         }
-        return cntPushButtons > 0 ? cntPushButtons : undefined;
-      } else if (filter.checkboxes) {
+        cnt += cntPushButtons;
+      }
+      if (filter.checkboxes) {
         const checkboxes = filter.checkboxes as IgoOgcSelector;
         const currentCheckboxGroup = checkboxes.groups.find(gr => gr.enabled);
         let cntCheckboxes = 0;
@@ -34,24 +36,34 @@ export class OgcFilterButtonComponent implements OnInit {
           currentCheckboxGroup.computedSelectors.map(cb => cntCheckboxes += (cb.selectors as any).filter(
             checkbox => checkbox.enabled).length);
         }
-        return cntCheckboxes > 0 ? cntCheckboxes : undefined;
-      } else if (filter.radioButtons) {
+        cnt += cntCheckboxes;
+      }
+      if (filter.radioButtons) {
         const radioButtons = filter.radioButtons as IgoOgcSelector;
         const currentRadioButtonsGroup = radioButtons.groups.find(gr => gr.enabled);
         let cntRadioButtons = 0;
         if (currentRadioButtonsGroup) {
           currentRadioButtonsGroup.computedSelectors.map(cb => cntRadioButtons += (cb.selectors as any).filter(
-            checkbox => checkbox.enabled).length);
+            radio => radio.enabled).length);
         }
-        return cntRadioButtons > 0 ? cntRadioButtons : undefined;
-      } else {
-        return;
+        cnt += cntRadioButtons;
+      }
+      if (filter.select) {
+        const select = filter.select as IgoOgcSelector;
+        const currentSelectGroup = select.groups.find(gr => gr.enabled);
+        let cntSelect = 0;
+        if (currentSelectGroup) {
+          currentSelectGroup.computedSelectors.map(cb => cntSelect += (cb.selectors as any).filter(
+            multi => multi.enabled).length);
+        }
+        cnt += cntSelect;
       }
     } else if (filter && filter.filters && !filter.filters.filters) {
       return 1;
     } else if (filter && filter.filters && filter.filters.filters) {
       return filter.filters.filters.length;
     }
+    return cnt > 0 ? cnt : undefined;
   }
 
   @Input()

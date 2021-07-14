@@ -319,10 +319,10 @@ export class ImportExportComponent implements OnDestroy, OnInit {
     const projections: InputProjections[] = [];
 
     if (this.projectionsConstraints.nad83) {
-      projections.push({ translateKey: 'nad83', alias: 'NAD83', code: 'EPSG:4326', zone: '' });
+      projections.push({ translateKey: 'nad83', alias: 'NAD83', code: 'EPSG:4269', zone: '' });
     }
     if (this.projectionsConstraints.wgs84) {
-      projections.push({ translateKey: 'wgs84', alias: 'WGS84', code: 'EPSG:4269', zone: '' });
+      projections.push({ translateKey: 'wgs84', alias: 'WGS84', code: 'EPSG:4326', zone: '' });
     }
     if (this.projectionsConstraints.webMercator) {
       projections.push({ translateKey: 'webMercator', alias: 'Web Mercator', code: 'EPSG:3857', zone: '' });

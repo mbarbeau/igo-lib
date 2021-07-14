@@ -11,6 +11,7 @@ import { MatDialog } from '@angular/material/dialog';
 
 import { EntityStore } from '@igo2/common';
 import { LanguageService, MessageService, StorageService } from '@igo2/core';
+import { ObjectUtils } from '@igo2/utils';
 import { Observable, Subscription } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { Md5 } from 'ts-md5';
@@ -129,6 +130,7 @@ export class CatalogLibaryComponent implements OnInit, OnDestroy {
     );
 
     if (predefinedCatalog) {
+      addedCatalog.version = predefinedCatalog.version;
       addedCatalog.externalProvider = predefinedCatalog.externalProvider;
       id = predefinedCatalog.id;
     }
@@ -146,7 +148,7 @@ export class CatalogLibaryComponent implements OnInit, OnDestroy {
     this.unsubscribeAddingCatalog();
 
     this.addingCatalog$$ = this.capabilitiesService
-      .getCapabilities(TypeCapabilities[addedCatalog.type], addedCatalog.url)
+    .getCapabilities(TypeCapabilities[addedCatalog.type], addedCatalog.url, addedCatalog.version)
       .pipe(
         catchError((e) => {
           const title = this.languageService.translate.instant(
@@ -186,14 +188,17 @@ export class CatalogLibaryComponent implements OnInit, OnDestroy {
             title = addedCatalog.title;
         }
 
-        const catalogToAdd = {
-          id,
-          title,
-          url: addedCatalog.url,
-          type: addedCatalog.type || 'wms',
-          externalProvider: addedCatalog.externalProvider || false,
-          removable: true
-        } as Catalog;
+        const catalogToAdd = ObjectUtils.removeUndefined(
+          Object.assign({},
+            predefinedCatalog,
+            ObjectUtils.removeUndefined({
+              id,
+              title,
+              url: addedCatalog.url,
+              type: addedCatalog.type || 'wms',
+              externalProvider: addedCatalog.externalProvider || false,
+              removable: true
+            })) as Catalog);
         this.store.insert(catalogToAdd);
         const newCatalogs = this.addedCatalogs.slice(0);
         newCatalogs.push(catalogToAdd);

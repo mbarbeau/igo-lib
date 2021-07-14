@@ -25,4 +25,10 @@ mat-list.mat-list-base mat-list-item.mat-list-item ::ng-deep div.mat-list-item-c
 mat-tab-group,
 mat-tab-group ::ng-deep .mat-tab-body-wrapper {
   height: 100%;
+  overflow: hidden;
 }
+
+:host ::ng-deep  .mat-tab-body-content  {
+    overflow: hidden;
+  }
+  

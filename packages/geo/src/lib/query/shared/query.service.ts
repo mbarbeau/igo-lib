@@ -243,7 +243,7 @@ export class QueryService {
       case QueryFormat.JSON:
       case QueryFormat.GEOJSON:
       case QueryFormat.GEOJSON2:
-        features = this.extractGeoJSONData(res);
+        features = this.extractGeoJSONData(res, layer.zIndex, allowedFieldsAndAlias);
         break;
       case QueryFormat.ESRIJSON:
         features = this.extractEsriJSONData(res, layer.zIndex, allowedFieldsAndAlias);
@@ -413,13 +413,18 @@ export class QueryService {
     );
   }
 
-  private extractGeoJSONData(res) {
+  private extractGeoJSONData(res, zIndex, allowedFieldsAndAlias?) {
     let features = [];
     try {
       features = JSON.parse(res).features;
     } catch (e) {
       console.warn('query.service: Unable to parse geojson', '\n', res);
     }
+    features.map(feature => feature.meta = {
+      id: uuid(),
+      order: 1000 - zIndex,
+      alias: allowedFieldsAndAlias
+    });
     return features;
   }
 

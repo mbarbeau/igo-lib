@@ -15,4 +15,10 @@
     font-weight: bold;
     font-size: mat-font-size($typography, subheading-2);
   }
+  .igo-map-tooltip-hidden {
+    display: none;
+  }
+  .igo-map-tooltip-measure-by-display{
+    display: none;
+  }
 }

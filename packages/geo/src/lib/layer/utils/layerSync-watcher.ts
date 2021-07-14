@@ -175,7 +175,7 @@ export class LayerSyncWatcher extends Watcher {
                             layerToApply.ol.getSource().refresh();
                         }
                         if (layerType === 'wms') {
-                            let appliedOgcFilter = this.ol.values_.sourceOptions.params.FILTER;
+                            let appliedOgcFilter;
                             if (this.ol.getProperties().sourceOptions.type === 'wfs') {
                                 appliedOgcFilter = this.ogcFilterWriter.handleOgcFiltersAppliedValue(
                                     this.layer.dataSource.options as OgcFilterableDataSourceOptions,
@@ -183,6 +183,8 @@ export class LayerSyncWatcher extends Watcher {
                                     undefined,
                                     this.map.viewController.getOlProjection()
                                 );
+                            } else if (this.ol.getProperties().sourceOptions.type === 'wms') {
+                                appliedOgcFilter = (this.dataSource as WMSDataSource).ol.getParams().FILTER;
                             }
                             (layerToApply.dataSource as WMSDataSource).ol.updateParams({ FILTER: appliedOgcFilter });
                         }
@@ -203,7 +205,7 @@ export class LayerSyncWatcher extends Watcher {
                                 layer.ol.getSource().refresh();
                             }
                             if (layerType === 'wms') {
-                                let appliedOgcFilter = this.ol.values_.sourceOptions.params.FILTER;
+                                let appliedOgcFilter;
                                 if (this.ol.getProperties().sourceOptions.type === 'wfs') {
                                     appliedOgcFilter = this.ogcFilterWriter.handleOgcFiltersAppliedValue(
                                         layer.dataSource.options as OgcFilterableDataSourceOptions,
@@ -212,6 +214,8 @@ export class LayerSyncWatcher extends Watcher {
                                         this.map.viewController.getOlProjection()
                                     );
 
+                                } else if (this.ol.getProperties().sourceOptions.type === 'wms') {
+                                    appliedOgcFilter = (this.dataSource as WMSDataSource).ol.getParams().FILTER;
                                 }
                                 (layer.dataSource as WMSDataSource).ol.updateParams({ FILTER: appliedOgcFilter });
                                 (layer.dataSource as OgcFilterableDataSource).setOgcFilters(ogcFilters, true);

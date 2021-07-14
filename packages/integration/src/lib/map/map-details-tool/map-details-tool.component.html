@@ -1,4 +1,4 @@
-<igo-layer-list *ngIf="(layers$ | async).length; else empty"
+<igo-layer-list class="mapDetailsList" *ngIf="(layers$ | async).length; else empty"
   [map]="map"
   igoLayerListBinding
   [excludeBaseLayers]="excludeBaseLayers"

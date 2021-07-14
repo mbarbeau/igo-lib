@@ -40,3 +40,42 @@ $slide-toggle-width: 60px;
 .table-compact ::ng-deep .mat-header-cell.mat-column-selectionCheckbox {
   width: 52px;
 }
+
+@mixin igo-measurer-theming($theme, $typography) {
+  $foreground: map-get($theme, foreground);
+
+  .igo-map-tooltip-measure {
+    background-color: rgba(255, 204, 51, 0.7);
+    border: 1px solid rgb(255, 205, 51);
+    color: mat-color($foreground, text);
+    font-weight: bold;
+    font-size: mat-font-size($typography, subheading-2);
+  }
+  .igo-map-tooltip-measure-area {
+    background-color: rgba(255, 204, 51, 0.7);
+    border: 1px solid rgb(255, 205, 51);
+    color: mat-color($foreground, text);
+    font-weight: bold;
+    font-size: mat-font-size($typography, subheading-2);
+  }
+  .igo-map-tooltip-measure-line-segments {
+    background-color: rgba(255, 204, 51, 0.7);
+    border: 1px solid rgb(255, 205, 51);
+    color: mat-color($foreground, text);
+    font-weight: bold;
+    font-size: mat-font-size($typography, subheading-2);
+  }
+  .igo-map-tooltip-measure-polygone-segments {
+    background-color: rgba(255, 204, 51, 0.7);
+    border: 1px solid rgb(255, 205, 51);
+    color: mat-color($foreground, text);
+    font-weight: bold;
+    font-size: mat-font-size($typography, subheading-2);
+  }
+  .igo-map-tooltip-hidden {
+    display: none;
+  }
+  .igo-map-tooltip-measure-by-display{
+    display: none;
+  }
+}

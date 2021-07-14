@@ -305,6 +305,7 @@ export class ContextService {
               .reverse();
             resMerge.toolbar = res.toolbar || resBase.toolbar;
             resMerge.message = res.message || resBase.message;
+            resMerge.messages = res.messages || resBase.messages;
             resMerge.tools = (res.tools || [])
               .concat(resBase.tools || [])
               .filter(
@@ -611,16 +612,23 @@ export class ContextService {
     if (this.contextMessage) {
       this.messageService.remove(this.contextMessage.id);
     }
-    const message = context.message;
-    if (message) {
-      message.title = message.title
-        ? this.languageService.translate.instant(message.title)
-        : undefined;
-      message.text = message.text
-        ? this.languageService.translate.instant(message.text)
-        : undefined;
-      this.messageService.message(message as Message);
+    if (this.context$.value && context.uri && this.context$.value.uri !== context.uri) {
+      this.messageService.removeAllAreNotError();
     }
+
+    context.messages = context.messages ? context.messages : [];
+    context.messages.push(context.message);
+    context.messages.map(message => {
+      if (message) {
+        message.title = message.title
+          ? this.languageService.translate.instant(message.title)
+          : undefined;
+        message.text = message.text
+          ? this.languageService.translate.instant(message.text)
+          : undefined;
+        this.messageService.message(message as Message);
+      }
+    });
   }
 
   private getContextByUri(uri: string): Observable<DetailedContext> {

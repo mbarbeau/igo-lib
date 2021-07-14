@@ -1015,7 +1015,7 @@ export class DirectionsFormComponent implements OnInit, OnDestroy {
   }
 
   getRoutes(
-    moveToExtent: boolean = true,
+    moveToExtent: boolean = false,
     directionsOptions: DirectionsOptions = {}
   ) {
     this.deleteStoreFeatureByID(this.routeStore, 'vertex');

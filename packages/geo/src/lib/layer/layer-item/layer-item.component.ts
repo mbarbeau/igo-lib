@@ -24,7 +24,6 @@ import { NetworkService, ConnectionState } from '@igo2/core';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LayerItemComponent implements OnInit, OnDestroy {
-
   public focusedCls = 'igo-layer-item-focused';
 
   @Input()

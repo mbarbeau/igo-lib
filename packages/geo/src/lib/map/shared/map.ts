@@ -24,7 +24,8 @@ import {
   MapOptions,
   MapAttributionOptions,
   MapScaleLineOptions,
-  MapExtent
+  MapExtent,
+  MapControlsOptions
 } from './map.interface';
 import { MapViewController } from './controllers/view';
 import { FeatureDataSource } from '../../datasource/shared/datasources/feature-datasource';
@@ -161,6 +162,10 @@ export class IgoMap {
 
     this.unsubscribeGeolocate();
     if (options) {
+      if (options.maxLayerZoomExtent) {
+        this.viewController.maxLayerZoomExtent = options.maxLayerZoomExtent;
+      }
+
       if (options.center) {
         const projection = view.getProjection().getCode();
         const center = olproj.fromLonLat(options.center, projection);
@@ -175,6 +180,34 @@ export class IgoMap {
         this.alwaysTracking = true;
       }
     }
+  }
+
+  updateControls(value: MapControlsOptions) {
+    if (value === undefined) {
+      return;
+    }
+
+    const controls = [];
+    if (value.attribution) {
+      const attributionOpt = (value.attribution === true
+        ? {}
+        : value.attribution) as MapAttributionOptions;
+      controls.push(new olControlAttribution(attributionOpt));
+    }
+    if (value.scaleLine) {
+      const scaleLineOpt = (value.scaleLine === true
+        ? {}
+        : value.scaleLine) as MapScaleLineOptions;
+      controls.push(new olControlScaleLine(scaleLineOpt));
+    }
+
+    const currentControls = Object.assign([], this.ol.getControls().array_);
+    currentControls.forEach(control => {
+      this.ol.removeControl(control);
+    });
+    controls.forEach(control => {
+      this.ol.addControl(control);
+    });
   }
 
   /**

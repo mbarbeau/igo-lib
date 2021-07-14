@@ -440,10 +440,16 @@ function clearOlMidpointTooltip(olMidpoint: OlPoint) {
  */
 export function updateOlTooltipsAtMidpoints(olGeometry: OlPoint | OlLineString | OlPolygon | OlCircle): OlOverlay[] {
   const olMidpoints = updateOlGeometryMidpoints(olGeometry);
+  let typeGeom = '';
+  if (olGeometry instanceof OlLineString) {
+  typeGeom = 'line-';
+  } else if (olGeometry instanceof OlPolygon) {
+    typeGeom = 'polygone-';
+    }
   const olTooltips = olMidpoints.map((olMidpoint: OlPoint) => {
     let olTooltip = olMidpoint.get('_tooltip');
     if (olTooltip === undefined) {
-      olTooltip = createOlTooltipAtPoint(olMidpoint);
+      olTooltip = createOlTooltipAtPoint(olMidpoint, false, typeGeom);
     } else {
       olTooltip.setPosition(olMidpoint.flatCoordinates);
     }
@@ -491,7 +497,7 @@ export function updateOlTooltipAtCenter(olGeometry: OlPoint | OlLineString | OlP
   const olCenter = updateOlGeometryCenter(olGeometry);
   let olTooltip = olCenter.get('_tooltip');
   if (olTooltip === undefined) {
-    olTooltip = createOlTooltipAtPoint(olCenter);
+    olTooltip = createOlTooltipAtPoint(olCenter, true);
   } else {
     olTooltip.setPosition(olCenter.flatCoordinates);
   }
@@ -527,14 +533,14 @@ export function getTooltipsOfOlGeometry(olGeometry: OlPoint | OlLineString | OlP
  * @param olPoint OL Point
  * @returns OL overlay
  */
-export function createOlTooltipAtPoint(olPoint: OlPoint): OlOverlay {
+export function createOlTooltipAtPoint(olPoint: OlPoint, center: boolean = false, srcGeomType: string= ''): OlOverlay {
   const olTooltip = new OlOverlay({
     element: document.createElement('div'),
     offset: [-30, -10],
-    className: [
-      'igo-map-tooltip',
-      'igo-map-tooltip-measure'
-    ].join(' '),
+    className: (center ?
+    [ 'igo-map-tooltip',
+      'igo-map-tooltip-measure', 'igo-map-tooltip-measure-area'] : ['igo-map-tooltip', 'igo-map-tooltip-measure',
+      `igo-map-tooltip-measure-${srcGeomType}segments`]).join(' '),
     stopEvent: false
   });
   olTooltip.setPosition(olPoint.flatCoordinates);

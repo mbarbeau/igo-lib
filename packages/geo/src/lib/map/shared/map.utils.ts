@@ -363,6 +363,28 @@ function convertDMSToDD(
 }
 
 /**
+ * Convert dd to degrees minutes seconds
+ * @param lonLatDD longitude and latitude in dd
+ * @param decimal number of decimals for seconds
+ * @returns longitude and latitude in dms
+ */
+export function convertDDToDMS(
+  lonLatDD: [number, number], decimal: number = 3
+): string[] {
+  const lonLatDMS = [];
+
+  lonLatDD.forEach(dd => {
+    const degrees = dd < 0 ? Math.ceil(dd) : Math.floor(dd);
+    const int = dd < 0 ? (degrees - dd) * 60 : (dd - degrees) * 60;
+    const minutes =  Math.floor(int);
+    const seconds = ((int - minutes) * 60).toFixed(decimal);
+
+    lonLatDMS.push(`${degrees}° ${minutes}' ${seconds}"`);
+  });
+  return lonLatDMS;
+}
+
+/**
  * Return true of two view states are equal.
  * @param state1 View state
  * @param state2 View state
@@ -473,7 +495,7 @@ export function lonLatConversion(
   const convertedLonLat = [
     {
       code: 'EPSG:3857',
-      alias: 'Web mercator',
+      alias: 'Web Mercator',
       coord: rawCoord3857,
       igo2CoordFormat: `${roundCoordTo(rawCoord3857).join(', ')} ; 3857`
     }

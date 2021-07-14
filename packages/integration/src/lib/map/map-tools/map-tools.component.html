@@ -17,17 +17,15 @@
       (appliedFilterAndSort)= onLayerListChange($event)>
 
       <ng-template #igoLayerItemToolbar let-layer="layer">
-        <!-- <igo-download-button [layer]="layer"></igo-download-button> -->
-        <igo-workspace-button [layer]="layer"></igo-workspace-button>
-        <igo-export-button *ngIf="isExportButton(layer)" [layer]="layer" (click)="activateExport(layer)"></igo-export-button>
-        <igo-ogc-filter-button *ngIf="isOGCFilterButton(layer)" [header]="ogcButton" [layer]="layer"
-        (click)="activateOgcFilter()"></igo-ogc-filter-button>
-        <igo-time-filter-button *ngIf="isTimeFilterButton(layer)" [header]="timeButton" [layer]="layer"
-          (click)="activateTimeFilter()"></igo-time-filter-button>
-        <igo-track-feature-button [trackFeature]="true" [layer]="layer"></igo-track-feature-button>
         <igo-metadata-button [layer]="layer"></igo-metadata-button>
+        <igo-track-feature-button [trackFeature]="true" [layer]="layer"></igo-track-feature-button>
+        <igo-time-filter-button *ngIf="isTimeFilterButton(layer)" [header]="timeButton" [layer]="layer"
+                                (click)="activateTimeFilter()"></igo-time-filter-button>
+        <igo-ogc-filter-button *ngIf="isOGCFilterButton(layer)" [header]="ogcButton" [layer]="layer"
+                                (click)="activateOgcFilter()"></igo-ogc-filter-button>
+        <igo-export-button *ngIf="isExportButton(layer)" [layer]="layer" (click)="activateExport(layer)"></igo-export-button>
+        <igo-workspace-button [layer]="layer"></igo-workspace-button>
       </ng-template>
-
     </igo-layer-list>
   </mat-tab>
 
@@ -91,6 +89,4 @@
         </mat-list-item>
       </mat-list>
     </ng-template>
-
-
 </mat-tab-group>

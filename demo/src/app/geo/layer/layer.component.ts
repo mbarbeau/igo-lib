@@ -28,6 +28,7 @@ export class AppLayerComponent {
 
   public view = {
     center: [-73, 47.2],
+    maxLayerZoomExtent: [-11000000, 4500000, -4500000, 10000000],
     zoom: 7
   };
 

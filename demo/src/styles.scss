@@ -43,3 +43,8 @@
   @import '~dist/core/style/themes/teal.theme';
   @include igo-all-theming($theme);
 }
+
+.bluedq-theme {
+  @import '~dist/core/style/themes/bluedq.theme';
+  @include igo-all-theming($theme);
+}

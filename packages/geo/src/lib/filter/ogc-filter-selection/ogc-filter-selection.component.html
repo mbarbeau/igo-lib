@@ -4,81 +4,161 @@
       <mat-divider></mat-divider>
       <div class="groupsSelector" *ngIf="getPushButtonsGroups().length > 1">
         <mat-form-field>
-          <mat-select tooltip-position="below" matTooltipShowDelay="500" formControlName="pushButtonsGroup"
-            [matTooltip]="'igo.geo.layer.legend.selectStyle' | translate" [(value)]="currentPushButtonsGroup">
-            <mat-option *ngFor="let selectorg of getPushButtonsGroups()" [value]="selectorg">{{selectorg.title}}</mat-option>
+          <mat-select
+            formControlName="pushButtonsGroup"
+            [matTooltip]="'igo.geo.layer.legend.selectStyle' | translate" tooltip-position="below" matTooltipShowDelay="500"
+            [(value)]="currentPushButtonsGroup">
+            <mat-option *ngFor="let selectorGroup of getPushButtonsGroups()"
+              [value]="selectorGroup">{{selectorGroup.title}}
+            </mat-option>
           </mat-select>
         </mat-form-field>
       </div>
       <ng-container *ngFor="let bundle of currentPushButtonsGroup.computedSelectors">
         <h4>{{bundle.title}}</h4>
-        <mat-button-toggle-group formControlName="pushButtons" class="mat-typography" appearance="legacy"
-          vertical={{bundleIsVertical(bundle)}} multiple="true">
-          <mat-button-toggle [ngStyle]="getButtonColor(ogcPushButton)" [checked]="ogcPushButton.enabled"
-            (change)="onSelectionChange(ogcPushButton)" tooltip-position="below" matTooltipShowDelay="500"
-            [matTooltip]="getToolTip(ogcPushButton)" matTooltipClass="material-tooltip"
-            *ngFor="let ogcPushButton of bundle.selectors" [value]="ogcPushButton">{{ogcPushButton.title}}
+        <mat-button-toggle-group
+          formControlName="pushButtons" class="mat-typography" appearance="legacy" vertical={{bundleIsVertical(bundle)}} multiple="true">
+          <mat-button-toggle *ngFor="let ogcPushButton of bundle.selectors"
+            [matTooltip]="getToolTip(ogcPushButton)" tooltip-position="below" matTooltipShowDelay="500" matTooltipClass="material-tooltip"
+            [ngStyle]="getButtonColor(ogcPushButton)"
+            [checked]="ogcPushButton.enabled" (change)="onSelectionChange(ogcPushButton, selector.selectorType)"
+            [value]="ogcPushButton">{{ogcPushButton.title}}
           </mat-button-toggle>
         </mat-button-toggle-group>
       </ng-container>
     </div>
+
     <div class="checkboxGroups" *ngIf="selector.selectorType === 'checkbox'">
       <mat-divider></mat-divider>
       <div class="groupsSelector" *ngIf="getCheckboxesGroups().length > 1">
         <mat-form-field>
-          <mat-select tooltip-position="below" matTooltipShowDelay="500" formControlName="checkboxesGroup"
-            [matTooltip]="'igo.geo.layer.legend.selectStyle' | translate" [(value)]="currentCheckboxesGroup">
-            <mat-option *ngFor="let selectorg of getCheckboxesGroups()" [value]="selectorg">{{selectorg.title}}</mat-option>
+          <mat-select
+            formControlName="checkboxesGroup"
+            [matTooltip]="'igo.geo.layer.legend.selectStyle' | translate" tooltip-position="below" matTooltipShowDelay="500"
+            [(value)]="currentCheckboxesGroup">
+            <mat-option *ngFor="let selectorGroup of getCheckboxesGroups()"
+              [value]="selectorGroup">{{selectorGroup.title}}
+            </mat-option>
           </mat-select>
         </mat-form-field>
       </div>
       <ng-container *ngFor="let bundle of currentCheckboxesGroup.computedSelectors">
         <h4>{{bundle.title}}</h4>
-        <div class="checkboxes mat-typography" appearance="legacy" multiple="true">
-          <mat-checkbox [checked]="ogcCheckbox.enabled"
-            (change)="onSelectionChange(ogcCheckbox)" tooltip-position="below" matTooltipShowDelay="500"
-            [matTooltip]="getToolTip(ogcCheckbox)" matTooltipClass="material-tooltip"
-            *ngFor="let ogcCheckbox of bundle.selectors; let i = index" [value]="ogcCheckbox">{{ogcCheckbox.title}}
+        <div class="checkboxes mat-typography">
+          <mat-checkbox *ngFor="let ogcCheckbox of bundle.selectors"
+            [matTooltip]="getToolTip(ogcCheckbox)" tooltip-position="below" matTooltipShowDelay="500"  matTooltipClass="material-tooltip"
+            [checked]="ogcCheckbox.enabled" (change)="onSelectionChange(ogcCheckbox, selector.selectorType)"
+            [value]="ogcCheckbox">{{ogcCheckbox.title}}
           </mat-checkbox>
         </div>
         <p *ngIf="isLessResults(bundle, 'checkbox') || isMoreResults(bundle, 'checkbox')">
-          <u *ngIf="isLessResults(bundle, 'checkbox')" class="lessResults mat-typography"  (click)="displayLessResults('checkbox')">
-            {{ 'igo.geo.filter.displayLessResults' | translate }}
+          <u *ngIf="isLessResults(bundle, 'checkbox')"
+            class="lessResults mat-typography"
+            (click)="displayLessResults('checkbox')">{{ 'igo.geo.filter.displayLessResults' | translate }}
           </u>
-          <u *ngIf="isMoreResults(bundle, 'checkbox')" class="moreResults mat-typography"  (click)="displayMoreResults('checkbox')">
-            {{ 'igo.geo.filter.displayMoreResults' | translate }}
+          <u *ngIf="isMoreResults(bundle, 'checkbox')"
+            class="moreResults mat-typography"
+            (click)="displayMoreResults('checkbox')">{{ 'igo.geo.filter.displayMoreResults' | translate }}
           </u>
         </p>
       </ng-container>
     </div>
+
     <div class="radioButtonGroups" *ngIf="selector.selectorType === 'radioButton'">
       <mat-divider></mat-divider>
       <div class="groupsSelector" *ngIf="getRadioButtonsGroups().length > 1">
         <mat-form-field>
-          <mat-select tooltip-position="below" matTooltipShowDelay="500" formControlName="radioButtonsGroup"
-            [matTooltip]="'igo.geo.layer.legend.selectStyle' | translate" [(value)]="currentRadioButtonsGroup">
-            <mat-option *ngFor="let selectorg of getRadioButtonsGroups()" [value]="selectorg">{{selectorg.title}}</mat-option>
+          <mat-select
+            formControlName="radioButtonsGroup"
+            [matTooltip]="'igo.geo.layer.legend.selectStyle' | translate" tooltip-position="below" matTooltipShowDelay="500"
+            [(value)]="currentRadioButtonsGroup">
+            <mat-option *ngFor="let selectorGroup of getRadioButtonsGroups()"
+              [value]="selectorGroup">{{selectorGroup.title}}
+            </mat-option>
           </mat-select>
         </mat-form-field>
       </div>
       <ng-container *ngFor="let bundle of currentRadioButtonsGroup.computedSelectors">
         <h4>{{bundle.title}}</h4>
-        <mat-radio-group formControlName="radioButtons" class="mat-typography"
-          appearance="legacy" multiple="true">
-          <mat-radio-button
-            (change)="onSelectionChange(ogcRadioButton)" tooltip-position="below" matTooltipShowDelay="500"
-            [matTooltip]="getToolTip(ogcRadioButton)" matTooltipClass="material-tooltip"
-            *ngFor="let ogcRadioButton of bundle.selectors" [value]="ogcRadioButton">{{ogcRadioButton.title}}
+        <mat-radio-group
+          formControlName="radioButtons" class="mat-typography">
+          <mat-radio-button *ngIf="bundle.unfiltered"
+            [matTooltip]="'igo.geo.filter.resetFilters' | translate" tooltip-position="below" matTooltipShowDelay="500"  matTooltipClass="material-tooltip"
+            (change)="emptyRadioButtons()">{{ 'igo.geo.filter.resetFilters' | translate }}
+          </mat-radio-button>
+          <mat-radio-button *ngFor="let ogcRadioButton of bundle.selectors"
+            [matTooltip]="getToolTip(ogcRadioButton)" tooltip-position="below" matTooltipShowDelay="500"  matTooltipClass="material-tooltip"
+            [checked]="ogcRadioButton.enabled" (change)="onSelectionChange(ogcRadioButton, selector.selectorType)"
+            [value]="ogcRadioButton">{{ogcRadioButton.title}}
           </mat-radio-button>
           <p *ngIf="isLessResults(bundle, 'radio') || isMoreResults(bundle, 'radio')">
-            <u *ngIf="isLessResults(bundle, 'radio')" class="lessResults mat-typography" (click)="displayLessResults('radio')">
-              {{ 'igo.geo.filter.displayLessResults' | translate }}
+            <u *ngIf="isLessResults(bundle, 'radio')"
+              class="lessResults mat-typography"
+              (click)="displayLessResults('radio')">{{ 'igo.geo.filter.displayLessResults' | translate }}
             </u>
-            <u *ngIf="isMoreResults(bundle, 'radio')" class="moreResults mat-typography" (click)="displayMoreResults('radio')">
-              {{ 'igo.geo.filter.displayMoreResults' | translate }}
+            <u *ngIf="isMoreResults(bundle, 'radio')"
+              class="moreResults mat-typography"
+              (click)="displayMoreResults('radio')">{{ 'igo.geo.filter.displayMoreResults' | translate }}
             </u>
           </p>
         </mat-radio-group>
+      </ng-container>
+    </div>
+
+    <div class="selectGroups" *ngIf="selector.selectorType === 'select'">
+      <mat-divider></mat-divider>
+      <div class="groupsSelector" *ngIf="getSelectGroups().length > 1">
+        <mat-form-field>
+          <mat-select
+            formControlName="selectGroup"
+            [matTooltip]="'igo.geo.layer.legend.selectStyle' | translate" tooltip-position="below" matTooltipShowDelay="500"
+            [(value)]="currentSelectGroup">
+            <mat-option *ngFor="let selectorGroup of getSelectGroups()"
+              [value]="selectorGroup">{{selectorGroup.title}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <ng-container *ngFor="let bundle of currentSelectGroup.computedSelectors">
+        <h4>{{bundle.title}}</h4>
+        <div class="groupsSelector">
+          <mat-button *ngIf="bundle.unfiltered && !bundle.multiple"
+            mat-icon-button
+            color="warn"
+            [matTooltip]="'igo.geo.filter.resetFilters' | translate" tooltip-position="below" matTooltipShowDelay="500"  matTooltipClass="material-tooltip"
+            (click)="emptySelect()">
+            <mat-icon svgIcon="filter-remove"></mat-icon>
+          </mat-button>
+          <mat-form-field>
+            <div *ngIf="bundle.multiple; else notMulti">
+              <mat-select
+                #selection [multiple]="bundle.multiple" [placeholder]="bundle.title"
+                [formControl]="select" [(ngModel)]="enableds">
+                <div class="checkboxes mat-typography">
+                  <mat-checkbox *ngIf="bundle.multiple"
+                    [(ngModel)]="allSelected" [ngModelOptions]="{standalone: true}"
+                    (change)="toggleAllSelection()">Tous
+                  </mat-checkbox>
+                </div>
+                <mat-option *ngFor="let ogcSelect of bundle.selectors"
+                  [matTooltip]="getToolTip(ogcSelect)" tooltip-position="below" matTooltipDelay="500" matTooltipClass="material-tooltip"
+                  (onSelectionChange)="optionClick()"
+                  [value]="ogcSelect">{{ogcSelect.title}}
+                </mat-option>
+              </mat-select>
+            </div>
+            <ng-template #notMulti>
+              <mat-select
+                [placeholder]="bundle.title"
+                [formControl]="select" [(ngModel)]="enabled">
+                <mat-option *ngFor="let ogcSelect of bundle.selectors"
+                  [matTooltip]="getToolTip(ogcSelect)" tooltip-position="below" matTooltipDelay="500" matTooltipClass="material-tooltip"
+                  [value]="ogcSelect">{{ogcSelect.title}}
+                </mat-option>
+              </mat-select>
+            </ng-template>
+          </mat-form-field>
+        </div>
       </ng-container>
     </div>
   </div>

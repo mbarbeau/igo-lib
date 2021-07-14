@@ -18,5 +18,14 @@
     "changeTool": "Change tool",
     "context3": "Selection of the 3rd context of the list with nth-of-type",
     "end": "End of tour"
+  },
+  "legendPosition": "Legend Position",
+  "legendPositions": {
+    "none": "No legend",
+    "topleft": "Top left corner of the map",
+    "topright": "Top right corner of the map",
+    "bottomleft": "Bottom left corner of the map",
+    "bottomright": "Bottom right corner of the map",
+    "newpage": "On a new page"
   }
 }

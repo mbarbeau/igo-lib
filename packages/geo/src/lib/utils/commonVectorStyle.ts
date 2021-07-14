@@ -4,7 +4,7 @@ import { asArray as ColorAsArray } from 'ol/color';
 
 import { createOverlayMarkerStyle } from '../overlay/shared/overlay-marker-style.utils';
 import { createOverlayDefaultStyle } from '../overlay/shared/overlay.utils';
-import { FeatureCommonVectorStyleOptions } from './commonVertorStyle.interface';
+import { FeatureCommonVectorStyleOptions } from './commonVectorStyle.interface';
 
 
 /**
