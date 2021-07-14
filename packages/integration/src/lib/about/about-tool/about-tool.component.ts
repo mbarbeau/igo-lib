@@ -45,6 +45,8 @@ export class AboutToolComponent implements OnInit {
   private baseUrlProfil;
   private baseUrlGuide;
 
+  public loading = false;
+
   constructor(
     public configService: ConfigService,
     public auth: AuthService,
@@ -71,6 +73,7 @@ export class AboutToolComponent implements OnInit {
   }
 
   openGuide(guide?) {
+    this.loading = true;
     const url = guide ?
       this.baseUrlGuide + guide + '?' :
       this.baseUrlGuide + this.trainingGuideURLs[0] + '?';
@@ -79,7 +82,9 @@ export class AboutToolComponent implements OnInit {
       responseType: 'blob'
     })
     .subscribe(() => {
+      this.loading = false;
       window.open(url, '_blank');
+      this.cdRef.detectChanges();
     });
   }
 

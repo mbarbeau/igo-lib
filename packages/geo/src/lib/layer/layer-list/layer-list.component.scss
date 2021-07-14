@@ -1,9 +1,15 @@
-:host .igo-list-min-height {
-  height: calc(100% - 91px);
+:host .igo-list-no-tools {
+  height: calc(100% - 57px);
   padding-top: 8px;
 }
 
-:host .igo-list-max-height {
+:host .igo-list-tools-single {
+  height: calc(100% - 153px);
+  padding-top: 8px;
+}
+
+:host .igo-list-tools-multi {
+  height: calc(100% - 178px);
   padding-top: 8px;
 }
 
@@ -14,13 +20,21 @@ mat-form-field.inputFilter {
 
 .igo-layer-actions-container {
   width: calc(100% - 5px);
-  padding-left: 5px;
+  padding-left: 4px;
 }
 
 .igo-layer-actions-container > div {
   text-align: center;
 }
 
+mat-list-item ::ng-deep .mat-list-item-content {
+  margin-bottom: 10px;
+}
+
+mat-checkbox ::ng-deep .mat-checkbox-inner-container {
+  margin-left: 8px;
+  margin-right: 16px;
+}
 
 #opacity-slider {
   float: left;
@@ -30,9 +44,30 @@ mat-form-field.inputFilter {
   top: 10px
 }
 
-.igo-layer-button-group {
+.igo-layer-button-group, .actions-buttons-multi {
   display: flex;
-  float: right;
+  align-items: center;
+  flex-direction: row-reverse;
+  overflow-x: auto;
+
+  &::-webkit-scrollbar {
+    height: 4px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #888;
+
+    &:hover {
+      background: #555;
+    }
+  }
+}
+
+.igo-layer-button-group {
   padding-top: 5px;
 }
 

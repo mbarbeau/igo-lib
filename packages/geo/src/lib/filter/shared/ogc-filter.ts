@@ -94,7 +94,8 @@ export class OgcFilterWriter {
     ogcFiltersOptions.geometryName = fieldNameGeometry;
 
     ogcFiltersOptions.advancedOgcFilters = true;
-    if (ogcFiltersOptions.enabled && (ogcFiltersOptions.pushButtons || ogcFiltersOptions.checkboxes || ogcFiltersOptions.radioButtons)) {
+    if (ogcFiltersOptions.enabled && (ogcFiltersOptions.pushButtons || ogcFiltersOptions.checkboxes
+      || ogcFiltersOptions.radioButtons || ogcFiltersOptions.select)) {
       ogcFiltersOptions.advancedOgcFilters = false;
     }
     return ogcFiltersOptions;
@@ -717,7 +718,7 @@ export class OgcFilterWriter {
     const conditions = [];
     let filterQueryStringSelector = '';
     let filterQueryStringAdvancedFilters = '';
-    if (ogcFilters.enabled && (ogcFilters.pushButtons || ogcFilters.checkboxes || ogcFilters.radioButtons)) {
+    if (ogcFilters.enabled && (ogcFilters.pushButtons || ogcFilters.checkboxes || ogcFilters.radioButtons || ogcFilters.select)) {
       let selectors;
       if (ogcFilters.pushButtons) {
         selectors = ogcFilters.pushButtons;
@@ -735,8 +736,17 @@ export class OgcFilterWriter {
       }
       if (ogcFilters.radioButtons) {
         selectors = ogcFilters.radioButtons;
-        const radioConditions = this.formatGroupAndFilter(ogcFilters, selectors);
+        const selectorsCorr = this.verifyMultipleEnableds(selectors);
+        const radioConditions = this.formatGroupAndFilter(ogcFilters, selectorsCorr);
         for (const condition of radioConditions) {
+          conditions.push(condition);
+        }
+      }
+      if (ogcFilters.select) {
+        selectors = ogcFilters.select;
+        const selectorsCorr = this.verifyMultipleEnableds(selectors);
+        const selectConditions = this.formatGroupAndFilter(ogcFilters, selectorsCorr);
+        for (const condition of selectConditions) {
           conditions.push(condition);
         }
       }
@@ -783,6 +793,21 @@ export class OgcFilterWriter {
     return filterQueryString;
   }
 
+  public verifyMultipleEnableds(selectors) {
+    selectors.bundles.forEach(bundle => {
+      if (!bundle.multiple) {
+        const enableds = bundle.selectors.reduce((list, filter, index) => (filter.enabled) === true ? list.concat(index) : list, []);
+        if (enableds.length > 1) {
+          enableds.splice(0, 1);
+          enableds.forEach(index => {
+            bundle.selectors[index].enabled = false;
+          });
+        }
+      }
+    });
+    return selectors;
+  }
+
   public formatGroupAndFilter(ogcFilters: OgcFiltersOptions, selectors) {
     selectors = this.computeIgoSelector(
       selectors
@@ -816,6 +841,8 @@ export class OgcFilterWriter {
       ogcFilters.checkboxes = selectors;
     } else if (selectors.selectorType === 'radioButton') {
       ogcFilters.radioButtons = selectors;
+    } else if (selectors.selectorType === 'select') {
+      ogcFilters.select = selectors;
     }
     return conditions;
   }

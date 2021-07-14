@@ -14,6 +14,7 @@ import { TileDebugDataSource } from '../../../datasource/shared/datasources/tile
 import { Layer } from './layer';
 import { TileLayerOptions } from './tile-layer.interface';
 
+import { MessageService } from '@igo2/core';
 export class TileLayer extends Layer {
   public dataSource:
     | OSMDataSource
@@ -27,8 +28,10 @@ export class TileLayer extends Layer {
 
   private watcher: TileWatcher;
 
-  constructor(options: TileLayerOptions) {
-    super(options);
+  constructor(
+    options: TileLayerOptions,
+    public messageService?: MessageService) {
+    super(options, messageService);
 
     this.watcher = new TileWatcher(this);
     this.status$ = this.watcher.status$;

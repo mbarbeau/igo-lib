@@ -106,6 +106,27 @@
   left: 50%;
 }
 
+:host ::ng-deep .ol-scale-bar {
+  background-color: rgba(255, 255, 255, 0);
+  bottom: 4px;
+  transform: translate(-50%);
+  left: 50%;
+}
+
+:host ::ng-deep .ol-scale-text {
+  text-shadow: rgb(255, 255, 255) -1px -1px 3px,
+  rgb(255, 255, 255) 1px -1px 3px,
+  rgb(255, 255, 255) -1px 1px 3px,
+  rgb(255, 255, 255) 1px 1px 4px;; 
+}
+
+:host ::ng-deep .ol-scale-step-text {
+  text-shadow: rgb(255, 255, 255) -1px -1px 3px,
+               rgb(255, 255, 255) 1px -1px 3px,
+               rgb(255, 255, 255) -1px 1px 3px,
+               rgb(255, 255, 255) 1px 1px 4px;; 
+}
+
 :host ::ng-deep canvas {
   display: block;
 }

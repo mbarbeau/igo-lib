@@ -21,10 +21,26 @@
     </mat-slide-toggle>
 
     <mat-slide-toggle
-      [checked]="showTooltips"
+      [checked]="displayLines"
       [labelPosition]="'before'"
-      (change)="onToggleTooltips($event.checked)">
-      {{'igo.geo.measure.toggleMapTooltips' | translate}}
+      (change)="onToggleDisplayLines($event.checked)">
+      {{'igo.geo.measure.toggleDisplayLines' | translate}}
+    </mat-slide-toggle> 
+
+    <mat-slide-toggle
+      [disabled]="!(hasArea$ | async)"
+      [checked]="displayDistance"
+      [labelPosition]="'before'"
+      (change)="onToggleDisplayDistance($event.checked)">
+      {{'igo.geo.measure.toggleDisplayDistance' | translate}}
+    </mat-slide-toggle>
+
+    <mat-slide-toggle
+      [disabled]="!(hasArea$ | async)"
+      [checked]="displayAreas"
+      [labelPosition]="'before'"
+      (change)="onToggleDisplayAreas($event.checked)">
+      {{'igo.geo.measure.toggleDisplayAreas' | translate}}
     </mat-slide-toggle>
 
     <mat-slide-toggle

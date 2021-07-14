@@ -269,14 +269,20 @@ export class DataSourceService {
     detailedContextUri?: string
   ): Observable<ArcGISRestDataSource> {
     const observables = [];
-    observables.push(this.capabilitiesService
-      .getArcgisOptions(context)
-      .pipe(
-        map(
-          (options: ArcGISRestDataSourceOptions) =>
-            new ArcGISRestDataSource(options)
-        )
-      ));
+    observables.push(this.capabilitiesService.getArcgisOptions(context).pipe(
+      catchError(e => {
+        const title = this.languageService.translate.instant(
+          'igo.geo.dataSource.unavailableTitle'
+        );
+        const message = this.languageService.translate.instant(
+          'igo.geo.dataSource.unavailable',
+          { value: context.layer }
+        );
+
+        this.messageService.error(message, title);
+        throw e;
+      })
+    ));
     if (this.optionsService && context.optionsFromApi === true) {
       observables.push(
         this.optionsService.getArcgisRestOptions(context, detailedContextUri).pipe(
@@ -313,14 +319,20 @@ export class DataSourceService {
   ): Observable<ArcGISRestImageDataSourceOptions> {
     const observables = [];
 
-    observables.push(this.capabilitiesService
-      .getImageArcgisOptions(context)
-      .pipe(
-        map(
-          (options: ArcGISRestImageDataSourceOptions) =>
-            new ImageArcGISRestDataSource(options)
-        )
-      ));
+    observables.push(this.capabilitiesService.getImageArcgisOptions(context).pipe(
+      catchError(e => {
+        const title = this.languageService.translate.instant(
+          'igo.geo.dataSource.unavailableTitle'
+        );
+        const message = this.languageService.translate.instant(
+          'igo.geo.dataSource.unavailable',
+          { value: context.params.LAYERS }
+        );
+
+        this.messageService.error(message, title);
+        throw e;
+      })
+    ));
     if (this.optionsService && context.optionsFromApi === true) {
       observables.push(
         this.optionsService.getArcgisRestOptions(context, detailedContextUri).pipe(
@@ -356,14 +368,20 @@ export class DataSourceService {
     detailedContextUri?: string
   ): Observable<TileArcGISRestDataSource> {
     const observables = [];
-    observables.push(this.capabilitiesService
-      .getTileArcgisOptions(context)
-      .pipe(
-        map(
-          (options: TileArcGISRestDataSourceOptions) =>
-            new TileArcGISRestDataSource(options)
-        )
-      ));
+    observables.push(this.capabilitiesService.getImageArcgisOptions(context).pipe(
+      catchError(e => {
+        const title = this.languageService.translate.instant(
+          'igo.geo.dataSource.unavailableTitle'
+        );
+        const message = this.languageService.translate.instant(
+          'igo.geo.dataSource.unavailable',
+          { value: context.params.LAYERS }
+        );
+
+        this.messageService.error(message, title);
+        throw e;
+      })
+    ));
     if (this.optionsService && context.optionsFromApi === true) {
       observables.push(
         this.optionsService.getArcgisRestOptions(context, detailedContextUri).pipe(

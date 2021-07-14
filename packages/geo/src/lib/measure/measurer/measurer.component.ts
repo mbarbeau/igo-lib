@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 
-import { BehaviorSubject, Subscription } from 'rxjs';
+import { BehaviorSubject, from, Subscription } from 'rxjs';
 import { skip } from 'rxjs/operators';
 
 import OlProjection from 'ol/proj/Projection';
@@ -22,7 +22,7 @@ import OlFeature from 'ol/Feature';
 import OlOverlay from 'ol/Overlay';
 import { unByKey } from 'ol/Observable';
 
-import { LanguageService } from '@igo2/core';
+import { LanguageService, StorageScope, StorageService  } from '@igo2/core';
 import { EntityRecord, EntityTableTemplate } from '@igo2/common';
 import type { EntityTableComponent } from '@igo2/common';
 import { uuid } from '@igo2/utils';
@@ -59,6 +59,7 @@ import {
   formatMeasure
 } from '../shared/measure.utils';
 import { MeasurerDialogComponent } from './measurer-dialog.component';
+import { feature } from '@turf/helpers';
 
 /**
  * Tool to measure lengths and areas
@@ -84,9 +85,9 @@ export class MeasurerComponent implements OnInit, OnDestroy {
       {
         name: 'length',
         title: this.languageService.translate.instant('igo.geo.measure.lengthHeader'),
-        valueAccessor: (feature: FeatureWithMeasure) => {
+        valueAccessor: (localFeature: FeatureWithMeasure) => {
           const unit = this.activeLengthUnit;
-          const measure = metersToUnit(feature.properties.measure.length, unit);
+          const measure = metersToUnit(localFeature.properties.measure.length, unit);
           return formatMeasure(measure, {
             decimal: 1,
             unit,
@@ -98,9 +99,9 @@ export class MeasurerComponent implements OnInit, OnDestroy {
       {
         name: 'area',
         title: this.languageService.translate.instant('igo.geo.measure.areaHeader'),
-        valueAccessor: (feature: FeatureWithMeasure) => {
+        valueAccessor: (localFeature: FeatureWithMeasure) => {
           const unit = this.activeAreaUnit;
-          const measure = squareMetersToUnit(feature.properties.measure.area, unit);
+          const measure = squareMetersToUnit(localFeature.properties.measure.area, unit);
           return measure ? formatMeasure(measure, {
             decimal: 1,
             unit,
@@ -135,6 +136,30 @@ export class MeasurerComponent implements OnInit, OnDestroy {
    * @internal
    */
   public measureUnitsAuto: boolean = false;
+
+  /**
+   * Whether display of distances of areas
+   * @internal
+   */
+  public displayDistance: boolean = true;
+
+  /**
+   * Whether display of distances of lines
+   * @internal
+   */
+  public displayLines: boolean = true;
+
+  /**
+   * Whether display of areas
+   * @internal
+   */
+  public displayAreas: boolean = true;
+
+  /**
+   * Observable of area boolean
+   * @internal
+   */
+  public hasArea$: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
   /**
    * Observable of area
@@ -281,7 +306,8 @@ export class MeasurerComponent implements OnInit, OnDestroy {
 
   constructor(
     private languageService: LanguageService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private storageService: StorageService
   ) {}
 
   /**
@@ -294,8 +320,8 @@ export class MeasurerComponent implements OnInit, OnDestroy {
     this.createDrawPolygonControl();
     this.createModifyControl();
     this.toggleDrawControl();
-    this.onToggleTooltips(this.showTooltips);
     this.updateTooltipsOfOlSource(this.store.source.ol);
+    this.checkDistanceAreaToggle();
   }
 
   /**
@@ -328,25 +354,104 @@ export class MeasurerComponent implements OnInit, OnDestroy {
     }
   }
 
-  /**
-   * Activate or deactivate the current draw control
-   * @internal
-   */
-  onToggleTooltips(toggle: boolean) {
-    this.showTooltips = toggle;
-    if (toggle === true) {
-      this.showTooltipsOfOlSource(this.store.source.ol);
-    } else {
-      this.clearTooltipsOfOlSource(this.store.source.ol);
-    }
-  }
 
   /**
    * Activate or deactivate the current draw control
    * @internal
    */
-  onToggleMeasureUnitsAuto(toggle: boolean) {
+   onToggleMeasureUnitsAuto(toggle: boolean) {
     this.measureUnitsAuto = toggle;
+  }
+
+  /**
+   * Activate or deactivate the current display of distances of the areas
+   * @internal
+   */
+  onToggleDisplayDistance(toggle: boolean) {
+    this.displayDistance = toggle;
+    this.onDisplayDistance();
+    toggle ? (this.storageService.set('distanceToggle', true, StorageScope.SESSION)) :
+     (this.storageService.set('distanceToggle', false, StorageScope.SESSION));
+  }
+
+  /**
+   * Activate or deactivate the current display of distances of the lines
+   * @internal
+   */
+  onToggleDisplayLines(toggle: boolean) {
+    this.displayLines = toggle;
+    this.onDisplayLines();
+    toggle ? (this.storageService.set('linesToggle', true, StorageScope.SESSION)) :
+     (this.storageService.set('linesToggle', false, StorageScope.SESSION));
+  }
+
+  /**
+   * Activate or deactivate the current display of areas
+   * @internal
+   */
+  onToggleDisplayAreas(toggle: boolean) {
+    this.displayAreas = toggle;
+    this.onDisplayAreas();
+    toggle ? (this.storageService.set('areasToggle', true, StorageScope.SESSION)) :
+     (this.storageService.set('areasToggle', false, StorageScope.SESSION));
+  }
+
+  /**
+   * Set display parametres in current values
+   * @internal
+   */
+  checkDistanceAreaToggle(){
+    if (this.storageService.get('distanceToggle') === false){
+      this.displayDistance = false;
+    }
+    if (this.storageService.get('linesToggle') === false){
+      this.displayLines = false;
+    }
+    if (this.storageService.get('areasToggle') === false){
+      this.displayAreas = false;
+    }
+  }
+
+  /**
+   * Activate or deactivate the current display of distances of areas
+   * @internal
+   */
+  onDisplayDistance() {
+    if (this.displayDistance) {
+      Array.from(document.getElementsByClassName('igo-map-tooltip-measure-polygone-segments')).map((value: Element) =>
+        value.classList.remove('igo-map-tooltip-hidden'));
+    } else {
+      Array.from(document.getElementsByClassName('igo-map-tooltip-measure-polygone-segments')).map((value: Element) =>
+        value.classList.add('igo-map-tooltip-hidden'));
+    }
+  }
+
+  /**
+   * Activate or deactivate the current display of distances of lines
+   * @internal
+   */
+  onDisplayLines() {
+    if (this.displayLines) {
+      Array.from(document.getElementsByClassName('igo-map-tooltip-measure-line-segments')).map((value: Element) =>
+        value.classList.remove('igo-map-tooltip-hidden'));
+    } else {
+      Array.from(document.getElementsByClassName('igo-map-tooltip-measure-line-segments')).map((value: Element) =>
+        value.classList.add('igo-map-tooltip-hidden'));
+    }
+  }
+
+  /**
+   * Activate or deactivate the current display of areas
+   * @internal
+   */
+  onDisplayAreas() {
+    if (this.displayAreas) {
+      Array.from(document.getElementsByClassName('igo-map-tooltip-measure-area')).map((value: Element) =>
+        value.classList.remove('igo-map-tooltip-hidden'));
+    } else {
+      Array.from(document.getElementsByClassName('igo-map-tooltip-measure-area')).map((value: Element) =>
+        value.classList.add('igo-map-tooltip-hidden'));
+    }
   }
 
   /**
@@ -377,20 +482,20 @@ export class MeasurerComponent implements OnInit, OnDestroy {
 
   onCalculateClick() {
     const features = this.selectedFeatures$.value;
-    const area = features.reduce((sum: number, feature: FeatureWithMeasure) => {
-      return sum + feature.properties.measure.area || 0;
+    const area = features.reduce((sum: number, localFeature: FeatureWithMeasure) => {
+      return sum + localFeature.properties.measure.area || 0;
     }, 0);
-    const length = features.reduce((sum: number, feature: FeatureWithMeasure) => {
-      if (feature.geometry.type === 'Polygon') {
+    const length = features.reduce((sum: number, localFeature: FeatureWithMeasure) => {
+      if (localFeature.geometry.type === 'Polygon') {
         return sum;
       }
-      return sum + feature.properties.measure.length || 0;
+      return sum + localFeature.properties.measure.length || 0;
     }, 0);
-    const perimeter = features.reduce((sum: number, feature: FeatureWithMeasure) => {
-      if (feature.geometry.type === 'LineString') {
+    const perimeter = features.reduce((sum: number, localFeature: FeatureWithMeasure) => {
+      if (localFeature.geometry.type === 'LineString') {
         return sum;
       }
-      return sum + feature.properties.measure.length || 0;
+      return sum + localFeature.properties.measure.length || 0;
     }, 0);
 
     this.openDialog({
@@ -411,10 +516,10 @@ export class MeasurerComponent implements OnInit, OnDestroy {
       this.deactivateModifyControl();
       this.toggleDrawControl();
     } else {
-      const feature = this.selectedFeatures$.value[0];
+      const localFeature = this.selectedFeatures$.value[0];
       const olFeatures = this.store.layer.ol.getSource().getFeatures();
       const olFeature = olFeatures.find((_olFeature: OlFeature) => {
-        return _olFeature.get('id') === feature.properties.id;
+        return _olFeature.get('id') === localFeature.properties.id;
       });
 
       if (olFeature !== undefined) {
@@ -440,15 +545,28 @@ export class MeasurerComponent implements OnInit, OnDestroy {
     const store = this.store;
 
     const layer = new VectorLayer({
-      title: 'Measures',
+      title: this.languageService.translate.instant('igo.geo.measure.layerTitle'),
+      id: `igo-measures-${uuid()}`,
       zIndex: 200,
       source: new FeatureDataSource(),
       style: createMeasureLayerStyle(),
-      showInLayerList: false,
+      showInLayerList: true,
       exportable: false,
-      browsable: false
+      browsable: false,
+      workspace: { enabled: false }
     });
     tryBindStoreLayer(store, layer);
+
+    layer.visible$.subscribe(visible => {
+      if (visible) {
+        Array.from(document.getElementsByClassName('igo-map-tooltip-measure')).map((value: Element) =>
+        value.classList.remove('igo-map-tooltip-measure-by-display'));
+      }
+      else {
+        Array.from(document.getElementsByClassName('igo-map-tooltip-measure')).map((value: Element) =>
+        value.classList.add('igo-map-tooltip-measure-by-display'));
+      }
+    });
 
     tryAddLoadingStrategy(store);
 
@@ -458,9 +576,10 @@ export class MeasurerComponent implements OnInit, OnDestroy {
     }));
 
     this.onFeatureAddedKey = store.source.ol.on('addfeature', (event: OlVectorSourceEvent) => {
-      const feature = event.feature;
-      const olGeometry = feature.getGeometry();
-      this.updateMeasureOfOlGeometry(olGeometry, feature.get('measure'));
+      const localFeature = event.feature;
+      const olGeometry = localFeature.getGeometry();
+      this.updateMeasureOfOlGeometry(olGeometry, localFeature.get('measure'));
+      this.onDisplayDistance();
     });
 
     this.onFeatureRemovedKey = store.source.ol.on('removefeature', (event: OlVectorSourceEvent) => {
@@ -479,6 +598,15 @@ export class MeasurerComponent implements OnInit, OnDestroy {
       }
       this.selectedFeatures$.next(records.map(record => record.entity));
     });
+
+    this.store.entities$.subscribe(objectsExists  => {
+    if (objectsExists.find(objectExist => objectExist.geometry.type === 'Polygon')){
+        this.hasArea$.next(true);
+      }
+      else {
+        this.hasArea$.next(false);
+      }
+    });
   }
 
   /**
@@ -491,8 +619,6 @@ export class MeasurerComponent implements OnInit, OnDestroy {
     this.selectedFeatures$$.unsubscribe();
     unByKey(this.onFeatureAddedKey);
     unByKey(this.onFeatureRemovedKey);
-    this.clearTooltipsOfOlSource(store.source.ol);
-    this.map.removeLayer(store.layer);
     store.deactivateStrategyOfType(FeatureStoreLoadingStrategy);
     store.deactivateStrategyOfType(FeatureStoreSelectionStrategy);
   }
@@ -649,8 +775,8 @@ export class MeasurerComponent implements OnInit, OnDestroy {
 
     if (this.activeOlGeometry !== undefined) {
       if (this.selectedFeatures$.value.length === 1) {
-        const feature = this.selectedFeatures$.value[0];
-        this.addFeatureToStore(this.activeOlGeometry, feature);
+        const localFeature = this.selectedFeatures$.value[0];
+        this.addFeatureToStore(this.activeOlGeometry, localFeature);
       }
       this.finalizeMeasureOfOlGeometry(this.activeOlGeometry);
     }
@@ -688,12 +814,7 @@ export class MeasurerComponent implements OnInit, OnDestroy {
   }
 
   private finalizeMeasureOfOlGeometry(olGeometry: OlLineString | OlPolygon) {
-    let measure = measureOlGeometry(olGeometry, this.projection);
-    if (olGeometry instanceof OlPolygon) {
-      measure = Object.assign({}, measure, {
-        lengths: []  // We don't want to display an area tooltip while drawing.
-      });
-    }
+    const measure = measureOlGeometry(olGeometry, this.projection);
     this.updateMeasureOfOlGeometry(olGeometry, measure);
   }
 
@@ -719,8 +840,8 @@ export class MeasurerComponent implements OnInit, OnDestroy {
    * will trigger and add the feature to the map.
    * @internal
    */
-  private addFeatureToStore(olGeometry: OlLineString | OlPolygon, feature?: FeatureWithMeasure) {
-    const featureId = feature ? feature.properties.id : uuid();
+  private addFeatureToStore(olGeometry: OlLineString | OlPolygon, localFeature?: FeatureWithMeasure) {
+    const featureId = localFeature ? localFeature.properties.id : uuid();
     const projection = this.map.ol.getView().getProjection();
     const geometry = new OlGeoJSON().writeGeometryObject(olGeometry, {
       featureProjection: projection,

@@ -178,6 +178,7 @@
         "selectField": "Choisir un champ"
       },
       "filter": {
+        "resetFilters": "(Appliquer aucun filtre)",
         "addFilter": "Ajouter un filtre vide à la liste courante",
         "removeFilter": "Supprimer le présent filtre à la liste des filtres",
         "toggleFilterState": "Activer/désactiver le présent filtre",
@@ -210,8 +211,10 @@
         "activateSelectionMode": "Activer le mode de sélection multiple",
         "deactivateSelectionMode": "Désactiver le mode de sélection multiple",
         "tools": "Outils",
-        "selectAll": "Tout sélectionner",
-        "deselectAll": "Tout désélectionner",
+        "selectAll": "Sélectionner toutes les couches",
+        "deselectAll": "Désélectionner toutes les couches",
+        "zoomLayer": "Cadrer sur l'étendue de la couche",
+        "zoomLayers": "Cadrer sur l'étendue des couches sélectionnées",
         "opacity": "Opacité",
         "raiseLayer": "Mettre en avant",
         "filterRaiseLayer": "Le déplacement avant se fait toujours selon l'ordre de la carte!",
@@ -287,11 +290,19 @@
         "resolution": "Résolution",
         "saveBtn": "Sauvegarder",
         "scale": "Échelle",
-        "showLegend": "Afficher la légende",
         "showProjection": "Afficher la projection",
         "showScale": "Afficher l'échelle",
         "title": "Titre",
-        "subtitle": "Sous-titre"
+        "subtitle": "Sous-titre",
+        "legendPosition": "Position de la légende",
+        "legendPositions": {
+          "none": "Aucune légende",
+          "topleft": "Coin haut gauche de la carte",
+          "topright": "Coin haut droit de la carte",
+          "bottomleft": "Coin bas gauche de la carte",
+          "bottomright": "Coin bas droit de la carte",
+          "newpage": "Sur une nouvelle page"
+        }
       },
       "directionsForm": {
         "stopLayer": "Itinéraire - arrêts",
@@ -398,6 +409,7 @@
             "gcc": "Repère de la garde cotière (GCC)",
             "sumi": "Borne SUMI",
             "km": "Repère kilométrique",
+            "hq": "Hydro-Québec",
             "entreprise": "Entreprise",
             "cadastre": "Cadastre"
           },
@@ -409,6 +421,7 @@
         "coordinates": {
           "name": "Coordonnées",
           "coord": "Coordonnée (longitude, latitude)",
+          "coordDMS": "Coordonnée (longitude, latitude) (DMS)",
           "radius": "Rayon",
           "conf": "Confiance"
         },
@@ -560,6 +573,7 @@
           "areaInAcres": "Acres",
           "perimeterInMeters": "Périmètre en mètres"
         },
+        "layerTitle": "Mesure à la carte",
         "area": "Superficie",
         "areaHeader": "Superficie",
         "length": "Distance",
@@ -586,7 +600,9 @@
         "acres": "Acres",
         "ac": "ac",
         "toggleActive": "Activer le contrôle de mesure",
-        "toggleMapTooltips": "Mesures sur la carte",
+        "toggleDisplayLines": "Afficher les distances sur les lignes",
+        "toggleDisplayDistance": "Afficher les distances pour les superficies",
+        "toggleDisplayAreas": "Afficher les superficies",
         "toggleAutoUnits": "Unités automatiques",
         "actionbar": {
           "calculate.tooltip": "Calculer",

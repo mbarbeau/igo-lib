@@ -40,6 +40,7 @@ export class PrintService {
     const paperFormat: string = options.paperFormat;
     const resolution = +options.resolution; // Default is 96
     const orientation = options.orientation;
+    const legendPostion = options.legendPosition;
 
     this.activityId = this.activityService.register();
     const doc = new jsPDF({
@@ -76,7 +77,7 @@ export class PrintService {
         resolution,
         options.showProjection,
         options.showScale
-      );
+        );
     }
     if (options.comment !== '') {
       this.addComment(doc, options.comment);
@@ -86,8 +87,13 @@ export class PrintService {
       async (status: SubjectStatus) => {
         if (status === SubjectStatus.Done) {
           await this.addScale(doc, map, margins);
-          if (options.showLegend === true) {
-            await this.addLegend(doc, map, margins, resolution);
+          await this.handleMeasureLayer(doc, map, margins);
+          if (options.legendPosition !== 'none') {
+            if (['topleft', 'topright', 'bottomleft', 'bottomright'].indexOf(options.legendPosition) > -1 ) {
+              await this.addLegendSamePage(doc, map, margins, resolution, options.legendPosition);
+            } else if (options.legendPosition === 'newpage') {
+              await this.addLegend(doc, map, margins, resolution);
+            }
           } else {
             await this.saveDoc(doc);
           }
@@ -101,6 +107,30 @@ export class PrintService {
     );
 
     return status$;
+  }
+
+  /**
+   * Add measure overlay on the map on the document when the measure layer is present
+   * @param  doc - Pdf document where measure tooltip will be added
+   * @param  map - Map of the app
+   * @param  margins - Page margins
+   */
+  private async handleMeasureLayer(
+    doc: jsPDF,
+    map: IgoMap,
+    margins: Array<number>
+  ) {
+    if (map.layers.find(layer => layer.visible && layer.id.startsWith('igo-measures-'))) {
+      let canvasOverlayHTMLMeasures;
+      const mapOverlayMeasuresHTML = map.ol.getOverlayContainer();
+      await html2canvas(mapOverlayMeasuresHTML, {
+        scale: 1,
+        backgroundColor: null
+      }).then(e => {
+        canvasOverlayHTMLMeasures = e;
+      });
+      this.addCanvas(doc, canvasOverlayHTMLMeasures, margins); // this adds measure overlays
+    }
   }
 
   /**
@@ -131,39 +161,33 @@ export class PrintService {
         observer.complete();
         return;
       }
-
       // Define important style to be sure that all container is convert
       // to image not just visible part
       html += '<style media="screen" type="text/css">';
-      html += '.html2canvas-container { width: ' + width;
-      html += 'mm !important; height: 2000px !important; }';
+      html += '.html2canvas-container { width: ' + width + 'mm !important; height: 2000px !important; }';
+      html += 'table.tableLegend {table-layout: auto;}';
+      html += 'div.styleLegend {padding-top: 5px; padding-right:5px;padding-left:5px;padding-bottom:5px;}';
       html += '</style>';
-      html += '<font size="2" face="Courier New" >';
-      html +=
-        '<div style="display:grid;grid-template-columns:' +
-        width / 2 +
-        'mm ' +
-        width / 2 +
-        'mm;max-width:' +
-        width +
-        'mm">';
+      // The font size will also be lowered afterwards (globally along the legend size)
+      // this allows having a good relative font size here and to keep ajusting the legend size
+      // while keeping good relative font size
+      html += '<font size="3" face="Times" >';
+      html += '<div class="styleLegend">';
+      html += '<table class="tableLegend" >';
 
       // For each legend, define an html table cell
       const images$ = legends.map((legend) =>
         this.getDataImage(legend.url).pipe(
           rxMap((dataImage) => {
-            let htmlImg =
-              '<table border=1 style="vertical-align:top">';
-            htmlImg += '<tr><th width="170px">' + legend.title + '</th>';
-            htmlImg +=
-              '<td><img class="printImageLegend" src="' + dataImage + '">';
-            htmlImg += '</td></tr></table>';
+            let htmlImg = '<tr><td>' + legend.title.toUpperCase() + '</td></tr>';
+            htmlImg  += '<tr><td><img src="' + dataImage + '"></td></tr>';
             return htmlImg;
           })
         )
       );
       forkJoin(images$).subscribe((dataImages) => {
         html = dataImages.reduce((acc, current) => (acc += current), html);
+        html += '</table>';
         html += '</div>';
         observer.next(html);
         observer.complete();
@@ -386,16 +410,81 @@ export class PrintService {
     });
 
     if (canvas) {
+      const pourcentageReduction = 0.85;
+      const imageSize = [pourcentageReduction * (25.4 * canvas.width) / resolution, pourcentageReduction
+        * (25.4 * canvas.height) / resolution];
       let imgData;
-      const position = 10;
-      imgData = canvas.toDataURL('image/png');
       doc.addPage();
-      const imageSize = this.getImageSizeToFitPdf(doc, canvas, margins);
-      doc.addImage(imgData, 'PNG', 10, position, imageSize[0], imageSize[1]);
-      await this.saveDoc(doc);
+      imgData = canvas.toDataURL('image/png');
+      doc.addImage(imgData, 'PNG', 10, 10, imageSize[0], imageSize[1]);
       div.parentNode.removeChild(div); // remove temp div (IE style)
     }
+
+    await this.saveDoc(doc);
+
   }
+
+  /**
+   * Add the legend to the document
+   * @param  doc - Pdf document where legend will be added
+   * @param  map - Map of the app
+   * @param  margins - Page margins
+   */
+     private async addLegendSamePage(
+      doc: jsPDF,
+      map: IgoMap,
+      margins: Array<number>,
+      resolution: number,
+      legendPosition: string
+    ) {
+      // Get html code for the legend
+      const width = doc.internal.pageSize.width;
+      const html = await this.getLayersLegendHtml(
+        map,
+        width,
+        resolution
+      ).toPromise();
+      // If no legend, save the map directly
+      if (html === '') {
+        await this.saveDoc(doc);
+        return true;
+      }
+      // Create div to contain html code for legend
+      const div = window.document.createElement('div');
+      div.style.position = 'absolute';
+      div.style.top = '0';
+      // Add html code to convert in the new window
+      window.document.body.appendChild(div);
+      div.innerHTML = html;
+      await this.timeout(1);
+      const canvas = await html2canvas(div, { useCORS: true }).catch((e) => {
+        console.log(e);
+      });
+      let marginsLegend;
+      if (canvas) {
+        const pourcentageReduction = 0.85;
+        const imageSize = [pourcentageReduction * (25.4 * canvas.width) / resolution,
+           pourcentageReduction * (25.4 * canvas.height) / resolution];
+        // Move the legend to the correct position on the page
+        if ( legendPosition === 'bottomright') {
+          marginsLegend = [doc.internal.pageSize.height - margins[2] - imageSize[1], margins[1],
+           margins[2], doc.internal.pageSize.width - margins[1] - imageSize[0]];
+        } else if (legendPosition === 'topright') {
+          marginsLegend = [margins[0], margins[1], doc.internal.pageSize.height - margins[0] - imageSize[1],
+          doc.internal.pageSize.width - margins[1] - imageSize[0] ];
+        } else if (legendPosition === 'bottomleft') {
+          // When the legend is in the bottom left, raise the legend slightly upward so that attributions are visible
+          marginsLegend = [doc.internal.pageSize.height - margins[2] - imageSize[1] - 15,
+          doc.internal.pageSize.width - margins[3] - imageSize[0], margins[2] + 15, margins[3] ];
+        } else if (legendPosition === 'topleft') {
+          marginsLegend = [margins[0], doc.internal.pageSize.width - margins[3] - imageSize[0],
+           doc.internal.pageSize.height - margins[0] - imageSize[1], margins[3] ];
+        }
+        this.addCanvas(doc, canvas, marginsLegend); // this adds the legend
+        div.parentNode.removeChild(div); // remove temp div (IE style)
+        await this.saveDoc(doc);
+      }
+    }
 
   /**
    * Add scale and attributions on the map on the document

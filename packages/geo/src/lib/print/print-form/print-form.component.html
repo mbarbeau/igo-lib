@@ -40,18 +40,24 @@
       </mat-slide-toggle>
       <mat-slide-toggle
         class="print-option"
-        formControlName="showLegend"
-        [labelPosition]="'before'">
-        {{'igo.geo.printForm.showLegend' | translate}}
-      </mat-slide-toggle>
-      <mat-slide-toggle
-        class="print-option"
         formControlName="doZipFile"
         [labelPosition]="'before'"
         [style.display]="isPrintService ? 'none' : ''">
         {{'igo.geo.printForm.doZipFile' | translate}}
       </mat-slide-toggle>
     </div>
+  </div>
+
+  <div class="igo-input-container">
+    <mat-form-field>
+      <mat-select
+        formControlName="legendPosition"
+        placeholder="{{'igo.geo.printForm.legendPosition' | translate}}">
+        <mat-option *ngFor="let legendPosition of legendPositions | keyvalue " [value]="legendPosition.key">
+            {{'igo.geo.printForm.legendPositions.' + legendPosition.value | translate}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
   </div>
 
   <div class="igo-input-container">

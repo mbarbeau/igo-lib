@@ -179,6 +179,7 @@
         "selectField": "Choose a field"
       },
       "filter": {
+        "resetFilters": "(Apply no filters)",
         "addFilter": "Add an empty filter to the current list",
         "removeFilter": "Remove the current filter from the filters's list",
         "toggleFilterState": "Enable/disable the current filter",
@@ -211,8 +212,10 @@
         "activateSelectionMode": "Activate multiple selection mode",
         "deactivateSelectionMode": "Deactivate multiple selection mode",
         "tools": "Tools",
-        "selectAll": "Select all",
-        "deselectAll": "Deselect all",
+        "selectAll": "Select all layers",
+        "deselectAll": "Deselect all layers",
+        "zoomLayer": "Zoom To Layer Extents",
+        "zoomLayers": "Zoom To Selected Layers Extents",
         "opacity": "Opacity",
         "raiseLayer": "Bring layer forward",
         "filterRaiseLayer": "The forward movement is always done according to the order of the map!",
@@ -288,11 +291,19 @@
         "resolution": "Resolution",
         "saveBtn": "Save",
         "scale": "Scale",
-        "showLegend": "Show legend",
         "showProjection": "Show projection",
         "showScale": "Show scale",
         "title": "Title",
-        "subtitle": "Subtitle"
+        "subtitle": "Subtitle",
+        "legendPosition": "Legend Position",
+        "legendPositions": {
+          "none": "No legend",
+          "topleft": "Top left corner of the map",
+          "topright": "Top right corner of the map",
+          "bottomleft": "Bottom left corner of the map",
+          "bottomright": "Bottom right corner of the map",
+          "newpage": "On a new page"
+        }
       },
       "directionsForm": {
         "stopLayer": "Directions - stops",
@@ -399,6 +410,7 @@
             "gcc": "Coast Guard mark (CCG)",
             "sumi": "SUMI mark",
             "km": "Mileage mark",
+            "hq": "Hydro-Quebec",
             "entreprise": "Entreprise",
             "cadastre": "Cadastre"
           },
@@ -410,6 +422,7 @@
         "coordinates": {
           "name": "Coordinates",
           "coord": "Geographic (longitude, latitude)",
+          "coordDMS": "Geographic (longitude, latitude) (DMS)",
           "radius": "Radius",
           "conf": "Confidence"
         },
@@ -560,6 +573,7 @@
           "areaInAcres": "Acres",
           "perimeterInMeters": "Perimeter in meters"
         },
+        "layerTitle": "Measure on map",
         "area": "Area",
         "areaHeader": "Area",
         "length": "Length",
@@ -586,7 +600,9 @@
         "acres": "Acres",
         "ac": "ac",
         "toggleActive": "Activate measures",
-        "toggleMapTooltips": "Show map tooltips",
+        "toggleDisplayLines": "Display distances for the lines",
+        "toggleDisplayDistance": "Display distances for the areas",
+        "toggleDisplayAreas": "Display areas",
         "toggleAutoUnits": "Auto Units",
         "actionbar": {
           "calculate.tooltip": "Calculate",

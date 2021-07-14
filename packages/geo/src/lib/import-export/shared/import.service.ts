@@ -179,8 +179,7 @@ export class ImportService {
         const errMsg = error.error.msg || '';
         if (errMsg === 'No valid files found') {
           observer.error(new ImportInvalidFileError());
-        } else if (
-          errMsg.startWith('ERROR 1: Failed to process SRS definition')
+        } else if (errMsg && errMsg.startWith('ERROR 1: Failed to process SRS definition')
         ) {
           observer.error(new ImportSRSError());
         } else {

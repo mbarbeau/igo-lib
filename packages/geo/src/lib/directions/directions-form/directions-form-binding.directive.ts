@@ -7,6 +7,7 @@ import {
 } from '@angular/core';
 
 import { RouteService } from '@igo2/core';
+import { delay } from 'rxjs/operators';
 import { Directions } from '../shared/directions.interface';
 import { DirectionsService } from '../shared/directions.service';
 
@@ -57,9 +58,11 @@ export class DirectionsFormBindingDirective implements AfterViewInit {
               this.component.addStopOverlay(stopCoordinatesFromURL, cnt);
               cnt++;
             });
-            this.component.activeRoute$.subscribe((activeRoute) => {
-              this.getRoutes(activeRoute);
-            });
+            this.component.activeRoute$
+              .pipe(delay(250))
+              .subscribe((activeRoute) => {
+                this.getRoutes(activeRoute);
+              });
           }
         }
       });
@@ -93,6 +96,7 @@ export class DirectionsFormBindingDirective implements AfterViewInit {
             this.component.routesResults = route;
             if (!activeRoute) {
               this.component.activeRoute = route[0] as Directions;
+              this.component.showRouteGeometry(true);
               return;
             }
             this.component.showRouteGeometry(true);

@@ -14,7 +14,8 @@ import {
   PrintPaperFormat,
   PrintOrientation,
   PrintResolution,
-  PrintSaveImageFormat
+  PrintSaveImageFormat,
+  PrintLegendPosition
 } from '../shared/print.type';
 
 @Component({
@@ -29,6 +30,7 @@ export class PrintFormComponent implements OnInit {
   public orientations = PrintOrientation;
   public resolutions = PrintResolution;
   public imageFormats = PrintSaveImageFormat;
+  public legendPositions = PrintLegendPosition;
   public isPrintService = true;
 
   @Input() disabled$: BehaviorSubject<boolean>;
@@ -79,6 +81,16 @@ export class PrintFormComponent implements OnInit {
   }
   set resolution(value: PrintResolution) {
     this.resolutionField.setValue(value || PrintResolution['96'], {
+      onlySelf: true
+    });
+  }
+
+  @Input()
+  get legendPosition(): PrintLegendPosition {
+    return this.legendPositionField.value;
+  }
+  set legendPosition(value: PrintLegendPosition) {
+    this.legendPositionField.setValue(value || PrintLegendPosition.none, {
       onlySelf: true
     });
   }
@@ -182,6 +194,10 @@ export class PrintFormComponent implements OnInit {
     return (this.form.controls as any).subtitle as FormControl;
   }
 
+  get legendPositionField() {
+    return (this.form.controls as any).legendPosition as FormControl;
+  }
+
   @Output() submit: EventEmitter<PrintOptions> = new EventEmitter();
 
   constructor(private formBuilder: FormBuilder) {
@@ -194,6 +210,7 @@ export class PrintFormComponent implements OnInit {
       imageFormat: [ '', [Validators.required]],
       resolution: ['', [Validators.required]],
       orientation: ['', [Validators.required]],
+      legendPosition: ['', [Validators.required]],
       showProjection: false,
       showScale: false,
       showLegend: false,

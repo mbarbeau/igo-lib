@@ -16,4 +16,5 @@ export interface MessageOptions extends Notification {
   template?: string;
   from?: Date | string;
   to?: Date | string;
+  id?: string;
 }

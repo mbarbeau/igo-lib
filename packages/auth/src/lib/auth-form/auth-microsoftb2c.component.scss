@@ -1,0 +1,16 @@
+:host {
+  padding: 10px 10px 10px 0;
+  display: inline-block;
+  position: relative;
+  top: -15px;
+}
+
+:host > button {
+  font-size: 15px;
+  height: 40px;
+  width: 265px;
+}
+
+mat-icon {
+  margin-right: 10px;
+}

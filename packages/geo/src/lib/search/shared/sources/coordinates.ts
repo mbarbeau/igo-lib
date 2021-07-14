@@ -14,7 +14,7 @@ import { SearchSourceOptions, ReverseSearchOptions } from './source.interfaces';
 import { LanguageService, StorageService } from '@igo2/core';
 import { GoogleLinks } from '../../../utils/googleLinks';
 import { Projection } from '../../../map/shared/projection.interfaces';
-import { lonLatConversion, roundCoordTo } from '../../../map/shared/map.utils';
+import { lonLatConversion, roundCoordTo, convertDDToDMS } from '../../../map/shared/map.utils';
 import { OsmLinks } from '../../../utils';
 
 @Injectable()
@@ -74,7 +74,7 @@ export class CoordinatesReverseSearchSource extends SearchSource
   /**
    * Search a location by coordinates
    * @param lonLat Location coordinates
-   * @param distance Search raidus around lonLat
+   * @param options options of ReverseSearchOptions (distance, conf, zoom, params)
    * @returns Observable of <SearchResult<Feature>[]
    */
   reverseSearch(
@@ -85,11 +85,13 @@ export class CoordinatesReverseSearchSource extends SearchSource
   }
 
   private dataToResult(data: [number, number], options: ReverseSearchOptions): SearchResult<Feature> {
+    const dataDMS = convertDDToDMS(data);
     const convertedCoord = lonLatConversion(data, this.projections);
     const coords = convertedCoord.reduce((obj, item) => (
       obj[item.alias] = item.igo2CoordFormat, obj), {});
 
     const roundedCoordString = roundCoordTo(data, 6).join(', ');
+    const roundedCoordStringDMS = dataDMS.join(', ');
 
     let geometry: FeatureGeometry = {
       type: 'Point',
@@ -120,6 +122,9 @@ export class CoordinatesReverseSearchSource extends SearchSource
 
     const coordKey =  this.languageService.translate.instant('igo.geo.search.coordinates.coord');
     properties[coordKey] = roundedCoordString;
+
+    const coordKeyDMS = this.languageService.translate.instant('igo.geo.search.coordinates.coordDMS');
+    properties[coordKeyDMS] = roundedCoordStringDMS;
 
     return {
       source: this,

@@ -77,7 +77,7 @@ export class MessageService {
       if (message.icon !== undefined) {
         this.addIcon(notification, message.icon);
       }
-
+      message.options.id = notification.id;
       return notification;
     }
     return;
@@ -125,6 +125,14 @@ export class MessageService {
 
   remove(id?: string) {
     this.notificationService.remove(id);
+  }
+
+  removeAllAreNotError() {
+    for (const mess of this.messages$.value) {
+      if (mess.type !== 'error') {
+        this.remove(mess.options.id);
+      }
+    }
   }
 
   private addIcon(notification: Notification, icon: string) {

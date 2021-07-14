@@ -30,3 +30,13 @@ export const PrintSaveImageFormat = strEnum([
   'Tiff'
 ]);
 export type PrintSaveImageFormat = keyof typeof PrintSaveImageFormat;
+
+export const PrintLegendPosition = strEnum([
+  'none',
+  'topright',
+  'topleft',
+  'bottomleft',
+  'bottomright',
+  'newpage'
+]);
+export type PrintLegendPosition = keyof typeof PrintLegendPosition;

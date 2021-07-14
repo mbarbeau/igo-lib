@@ -18,6 +18,7 @@ import { getResolutionFromScale } from '../../../map/shared/map.utils';
 
 import { LayerOptions } from './layer.interface';
 import { LayerSyncWatcher } from '../../utils/layerSync-watcher';
+import { Message, MessageService } from '@igo2/core';
 
 export abstract class Layer {
   public collapsed: boolean;
@@ -28,7 +29,8 @@ export abstract class Layer {
   public map: IgoMap;
   public ol: olLayer;
   public status$: Subject<SubjectStatus>;
-
+  public hasBeenVisible$: BehaviorSubject<boolean> = new BehaviorSubject(undefined);
+  private hasBeenVisible$$: Subscription;
   private resolution$$: Subscription;
 
   get id(): string {
@@ -100,6 +102,9 @@ export abstract class Layer {
   set visible(value: boolean) {
     this.ol.setVisible(value);
     this.visible$.next(value);
+    if (!this.hasBeenVisible$.value && value && this.messageService){
+      this.hasBeenVisible$.next(value);
+    }
   }
   get visible(): boolean {
     return this.visible$.value;
@@ -122,6 +127,7 @@ export abstract class Layer {
 
   constructor(
     public options: LayerOptions,
+    protected messageService?: MessageService,
     protected authInterceptor?: AuthInterceptor
   ) {
     this.dataSource = options.source;
@@ -167,6 +173,15 @@ export abstract class Layer {
       this.observeResolution();
       this.layerSyncWatcher = new LayerSyncWatcher(this, this.map);
       this.layerSyncWatcher.subscribe(() => {});
+      this.hasBeenVisible$$ = this.hasBeenVisible$.subscribe(() => {
+        if (this.options.messages && this.visible) {
+          this.options.messages.map(message => {
+            message.title = message.title;
+            message.text = message.text;
+            this.messageService.message(message as Message);
+          });
+        }
+      });
     } else {
       this.layerSyncWatcher.unsubscribe();
     }

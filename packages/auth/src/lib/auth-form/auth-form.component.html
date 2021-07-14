@@ -12,6 +12,10 @@
       *ngIf="options.microsoft && options.microsoft.enabled !== false"
       (login)="onLogin()">
     </igo-auth-microsoft>
+    <igo-auth-microsoftb2c
+      *ngIf="options.microsoftb2c && options.microsoftb2c.enabled !== false"
+      (login)="onLogin()">
+    </igo-auth-microsoftb2c>
     <igo-auth-facebook
       *ngIf="options.facebook && options.facebook.enabled !== false"
       (login)="onLogin()">

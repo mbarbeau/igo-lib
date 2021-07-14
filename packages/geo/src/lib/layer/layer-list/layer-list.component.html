@@ -1,45 +1,89 @@
-<igo-list #igoList [ngClass]="(layerTool || selection) ? 'igo-list-min-height': 'igo-list-max-height'" [navigation]="false" [selection]="false">
+<mat-list>
   <igo-layer-list-tool *ngIf="showToolbar$ | async"
-      floatLabel="auto"
-      [layersAreAllVisible]="layersAreAllVisible"
-      [term]="layerFilterAndSortOptions.keyword"
-      [onlyVisible]="layerFilterAndSortOptions.onlyVisible"
-      [sortAlpha]="layerFilterAndSortOptions.sortAlpha"
-      (appliedFilterAndSort)="onAppliedFilterAndSortChange($event)"
-      (selection)="toggleSelectionMode($event)">
-    </igo-layer-list-tool>
+    floatLabel="auto"
+    [layersAreAllVisible]="layersAreAllVisible"
+    [term]="layerFilterAndSortOptions.keyword"
+    [onlyVisible]="layerFilterAndSortOptions.onlyVisible"
+    [sortAlpha]="layerFilterAndSortOptions.sortAlpha"
+    (appliedFilterAndSort)="onAppliedFilterAndSortChange($event)"
+    (selection)="toggleSelectionMode($event)">
+  </igo-layer-list-tool>
+</mat-list>
 
+<mat-list-item *ngIf="selection">
+  <mat-checkbox
+    class="select-all-checkbox mat-subheading-2"
+    [color]="!selectAllCheck && layersChecked.length > 0 ? 'accent' : 'primary'"
+    (change)="selectAll()"
+    [checked]="selectAllCheck"
+    [indeterminate]="!selectAllCheck && layersChecked.length > 0"> {{selectAllCheck ? ('igo.geo.layer.deselectAll' | translate) : ('igo.geo.layer.selectAll' | translate)}}
+  </mat-checkbox>
+</mat-list-item>
+<mat-divider></mat-divider>
+
+<igo-list #igoList [ngClass]="{'igo-list-tools-multi': selection, 'igo-list-tools-single': (layerTool && !selection), 'igo-list-no-tools': (!layerTool && !selection)}" [navigation]="false" [selection]="false">
   <ng-template ngFor let-layer let-i="index" [ngForOf]="layers$ | async">
     <igo-layer-item *ngIf="!(excludeBaseLayers && layer.baseLayer)"
-        igoListItem
-        [layer]="layer"
-        [activeLayer]="activeLayer"
-        [orderable]="orderable && !layer.baseLayer"
-        [lowerDisabled]="getLowerLayer().id === layer.id"
-        [raiseDisabled]="getUpperLayer().id === layer.id"
-        [queryBadge]="queryBadge"
-        [expandLegendIfVisible]="expandLegendOfVisibleLayers"
-        [updateLegendOnResolutionChange]="updateLegendOnResolutionChange"
-        [toggleLegendOnVisibilityChange]="toggleLegendOnVisibilityChange"
-        [selectionMode]="selection"
-        [selectAll]="selectAllCheck"
-        [layerCheck]="layer.options.check"
-        [changeDetection]="layerItemChangeDetection$"
-        (action)="toggleLayerTool($event)"
-        (checkbox)="layersCheck($event)">
+      igoListItem
+      [layer]="layer"
+      [activeLayer]="activeLayer"
+      [orderable]="orderable && !layer.baseLayer"
+      [lowerDisabled]="getLowerLayer().id === layer.id"
+      [raiseDisabled]="getUpperLayer().id === layer.id"
+      [queryBadge]="queryBadge"
+      [expandLegendIfVisible]="expandLegendOfVisibleLayers"
+      [updateLegendOnResolutionChange]="updateLegendOnResolutionChange"
+      [toggleLegendOnVisibilityChange]="toggleLegendOnVisibilityChange"
+      [selectionMode]="selection"
+      [selectAll]="selectAllCheck"
+      [layerCheck]="layer.options.check"
+      [changeDetection]="layerItemChangeDetection$"
+      (action)="toggleLayerTool($event)"
+      (checkbox)="layersCheck($event)">
     </igo-layer-item>
   </ng-template>
 </igo-list>
 
 <igo-panel *ngIf="!selection && layerTool && activeLayer" class="igo-layer-actions-container" [title]="activeLayer.title">
-
   <div class="igo-layer-button-group">
-  <ng-container igoLayerItemToolbar
-    [ngTemplateOutlet]="templateLayerToolbar"
-    [ngTemplateOutletContext]="{layer: activeLayer}">
-  </ng-container>
+    <button
+      *ngIf="isLayerRemovable(activeLayer)"
+      class="delete-button"
+      mat-icon-button
+      color="warn"
+      tooltip-position="below"
+      matTooltipShowDelay="500"
+      [matTooltip]="'igo.geo.layer.removeLayer' | translate"
+      (click)="removeLayers()">
+      <mat-icon svgIcon="delete"></mat-icon>
+    </button>
 
-  <ng-content select="[igoLayerItemToolbar]"></ng-content>
+    <button
+      class="down-button"
+      mat-icon-button
+      color="primary"
+      tooltip-position="below"
+      matTooltipShowDelay="500"
+      [matTooltip]="(sortAlpha || onlyVisible || keyword) ? ('igo.geo.layer.filterLowerLayer' | translate) : ('igo.geo.layer.lowerLayer' | translate)"
+      [disabled]="lowerDisabled"
+      (click)="moveActiveLayer(activeLayer,layerListDisplacement.Lower)">
+      <mat-icon [matBadge]="(sortAlpha || onlyVisible || keyword) ? '!' : ''" matBadgeColor="warn" matBadgeSize="medium" [matBadgeHidden]="lowerDisabled"
+                svgIcon="arrow-down"></mat-icon>
+    </button>
+
+    <button
+      class="up-button"
+      color="primary"
+      mat-icon-button
+      tooltip-position="below"
+      matTooltipShowDelay="500"
+      [matTooltip]="(sortAlpha || onlyVisible || keyword) ? ('igo.geo.layer.filterRaiseLayer' | translate) : ('igo.geo.layer.raiseLayer' | translate)"
+      [disabled]="raiseDisabled"
+      (click)="moveActiveLayer(activeLayer,layerListDisplacement.Raise)">
+      <mat-icon [matBadge]="(sortAlpha || onlyVisible || keyword) ? '!' : ''" matBadgeColor="warn" matBadgeSize="medium" [matBadgeHidden]="raiseDisabled"
+                svgIcon="arrow-up"></mat-icon>
+    </button>
+
     <!-- <label>{{ 'igo.geo.layer.opacity' | translate }} </label> -->
     <button
       class="opacity-button"
@@ -73,16 +117,51 @@
     </mat-menu>
 
     <button
-      class="up-button"
+      *ngIf="activeLayerIsValid(activeLayer)"
+      class="zoomLayer-button"
       color="primary"
       mat-icon-button
       tooltip-position="below"
       matTooltipShowDelay="500"
-      [matTooltip]="(sortAlpha || onlyVisible || keyword) ? ('igo.geo.layer.filterRaiseLayer' | translate) : ('igo.geo.layer.raiseLayer' | translate)"
-      [disabled]="raiseDisabled"
-      (click)="moveActiveLayer(activeLayer,layerListDisplacement.Raise)">
-      <mat-icon [matBadge]="(sortAlpha || onlyVisible || keyword) ? '!' : ''" matBadgeColor="warn" matBadgeSize="medium" [matBadgeHidden]="raiseDisabled"
-                svgIcon="arrow-up"></mat-icon>
+      [matTooltip]="'igo.geo.layer.zoomLayer' | translate"
+      (click)="zoomLayerExtents(activeLayer)">
+      <mat-icon matBadgeColor="primary" matBadgeSize="medium" svgIcon="magnify-scan"></mat-icon>
+    </button>
+
+    <ng-container igoLayerItemToolbar
+      [ngTemplateOutlet]="templateLayerToolbar"
+      [ngTemplateOutletContext]="{layer: activeLayer}">
+    </ng-container>
+
+    <ng-content select="[igoLayerItemToolbar]"></ng-content>
+  </div>
+</igo-panel>
+
+<igo-panel *ngIf="selection && layers.length > 0" class="igo-layer-actions-container" [title]="'igo.geo.layer.tools' | translate">
+  <div class="actions-buttons-multi">
+    <button
+      class="delete-button"
+      mat-icon-button
+      color="warn"
+      tooltip-position="below"
+      matTooltipShowDelay="500"
+      [disabled]="layersChecked.length === 0"
+      [matTooltip]="isAllLayersRemovable(layersChecked) ? ('igo.geo.layer.removeSelectedLayers' | translate) : 'igo.geo.layer.removeSelectedLayersRestriction' | translate"
+      (click)="removeLayers(layersChecked)">
+      <mat-icon [matBadge]="'!'" matBadgeColor="warn" matBadgeSize="medium" [matBadgeHidden]="isAllLayersRemovable(layersChecked)"
+                svgIcon="delete"></mat-icon>
+    </button>
+
+    <button
+      class="eye-button"
+      mat-icon-button
+      color="primary"
+      tooltip-position="below"
+      matTooltipShowDelay="500"
+      [disabled]="layersChecked.length === 0"
+      [matTooltip]="statusSelectedLayersCheck === 'ALL_HIDDEN' ? ('igo.geo.layer.showSelectedLayers' | translate) : ('igo.geo.layer.hideSelectedLayers' | translate)"
+      (click)="toggleVisibility(layersChecked)">
+      <mat-icon	[svgIcon]="(statusSelectedLayersCheck === 'ALL_HIDDEN') ? 'eye-off' : 'eye'"></mat-icon>
     </button>
 
     <button
@@ -92,40 +171,23 @@
       tooltip-position="below"
       matTooltipShowDelay="500"
       [matTooltip]="(sortAlpha || onlyVisible || keyword) ? ('igo.geo.layer.filterLowerLayer' | translate) : ('igo.geo.layer.lowerLayer' | translate)"
-      [disabled]="lowerDisabled"
-      (click)="moveActiveLayer(activeLayer,layerListDisplacement.Lower)">
-      <mat-icon [matBadge]="(sortAlpha || onlyVisible || keyword) ? '!' : ''" matBadgeColor="warn" matBadgeSize="medium" [matBadgeHidden]="lowerDisabled"
+      [disabled]="lowerDisabledSelection"
+      (click)="lowerLayers(layersChecked)">
+      <mat-icon [matBadge]="(sortAlpha || onlyVisible || keyword) ? '!' : ''" matBadgeColor="warn" matBadgeSize="medium" [matBadgeHidden]="lowerDisabledSelection"
                 svgIcon="arrow-down"></mat-icon>
     </button>
 
     <button
-      *ngIf="isLayerRemovable(activeLayer)"
-      class="delete-button"
+      class="up-button"
+      color="primary"
       mat-icon-button
-      color="warn"
       tooltip-position="below"
       matTooltipShowDelay="500"
-      [matTooltip]="'igo.geo.layer.removeLayer' | translate"
-      (click)="removeLayers()">
-      <mat-icon svgIcon="delete"></mat-icon>
-    </button>
-  </div>
-</igo-panel>
-
-<igo-panel *ngIf="selection && layers.length > 0" class="igo-layer-actions-container" [title]="'igo.geo.layer.tools' | translate">
-  <div class="igo-layer-button-group">
-
-    <button
-      mat-stroked-button
-      tooltip-position="below"
-      matTooltipShowDelay="500"
-      [disabled]="layers.length === 0"
-      [matTooltip]="selectAllCheck ?
-                    ('igo.geo.layer.deselectAll' | translate) :
-                    ('igo.geo.layer.selectAll' | translate)"
-      (click)="selectAll()">
-      {{selectAllCheck ? ('igo.geo.layer.deselectAll' | translate) :
-                    ('igo.geo.layer.selectAll' | translate)}}
+      [matTooltip]="(sortAlpha || onlyVisible || keyword) ? ('igo.geo.layer.filterRaiseLayer' | translate) : ('igo.geo.layer.raiseLayer' | translate)"
+      [disabled]="raiseDisabledSelection"
+      (click)="raiseLayers(layersChecked)">
+      <mat-icon [matBadge]="(sortAlpha || onlyVisible || keyword) ? '!' : ''" matBadgeColor="warn" matBadgeSize="medium" [matBadgeHidden]="raiseDisabledSelection"
+                svgIcon="arrow-up"></mat-icon>
     </button>
 
     <button
@@ -160,55 +222,15 @@
     </mat-menu>
 
     <button
-      class="up-button"
+      *ngIf="layersChecked.length !== 0 && activeLayersAreValid(layersChecked)"
+      class="zoomLayer-button"
       color="primary"
       mat-icon-button
       tooltip-position="below"
       matTooltipShowDelay="500"
-      [matTooltip]="(sortAlpha || onlyVisible || keyword) ? ('igo.geo.layer.filterRaiseLayer' | translate) : ('igo.geo.layer.raiseLayer' | translate)"
-      [disabled]="raiseDisabledSelection"
-      (click)="raiseLayers(layersChecked)">
-      <mat-icon [matBadge]="(sortAlpha || onlyVisible || keyword) ? '!' : ''" matBadgeColor="warn" matBadgeSize="medium" [matBadgeHidden]="raiseDisabledSelection"
-                svgIcon="arrow-up"></mat-icon>
+      [matTooltip]="'igo.geo.layer.zoomLayers' | translate"
+      (click)="zoomLayersExtents(layersChecked)">
+      <mat-icon svgIcon="magnify-scan"></mat-icon>
     </button>
-
-    <button
-      class="down-button"
-      mat-icon-button
-      color="primary"
-      tooltip-position="below"
-      matTooltipShowDelay="500"
-      [matTooltip]="(sortAlpha || onlyVisible || keyword) ? ('igo.geo.layer.filterLowerLayer' | translate) : ('igo.geo.layer.lowerLayer' | translate)"
-      [disabled]="lowerDisabledSelection"
-      (click)="lowerLayers(layersChecked)">
-      <mat-icon [matBadge]="(sortAlpha || onlyVisible || keyword) ? '!' : ''" matBadgeColor="warn" matBadgeSize="medium" [matBadgeHidden]="lowerDisabledSelection"
-                svgIcon="arrow-down"></mat-icon>
-    </button>
-
-    <button
-      class="eye-button"
-      mat-icon-button
-      color="primary"
-      tooltip-position="below"
-      matTooltipShowDelay="500"
-      [disabled]="layersChecked.length === 0"
-      [matTooltip]="statusSelectedLayersCheck === 'ALL_HIDDEN' ? ('igo.geo.layer.showSelectedLayers' | translate) : ('igo.geo.layer.hideSelectedLayers' | translate)"
-      (click)="toggleVisibility(layersChecked)">
-      <mat-icon	[svgIcon]="(statusSelectedLayersCheck === 'ALL_HIDDEN') ? 'eye-off' : 'eye'"></mat-icon>
-    </button>
-
-    <button
-      class="delete-button"
-      mat-icon-button
-      color="warn"
-      tooltip-position="below"
-      matTooltipShowDelay="500"
-      [disabled]="layersChecked.length === 0"
-      [matTooltip]="isAllLayersRemovable(layersChecked) ? ('igo.geo.layer.removeSelectedLayers' | translate) : 'igo.geo.layer.removeSelectedLayersRestriction' | translate"
-      (click)="removeLayers(layersChecked)">
-      <mat-icon [matBadge]="'!'" matBadgeColor="warn" matBadgeSize="medium" [matBadgeHidden]="isAllLayersRemovable(layersChecked)"
-        svgIcon="delete"></mat-icon>
-    </button>
-
   </div>
 </igo-panel>

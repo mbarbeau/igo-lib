@@ -43,6 +43,11 @@ export class MapViewController extends MapController {
   maxZoomOnExtent = 19;
 
   /**
+   * Max extent possible when zooming
+   */
+  maxLayerZoomExtent: MapExtent;
+
+  /**
    * Extent stream
    */
   private extent$ = new Subject<{ extent: MapExtent; action: MapViewAction }>();
@@ -340,7 +345,17 @@ export class MapViewController extends MapController {
       size: this.olMap.getSize(),
       maxZoom,
       padding: this.padding,
-      duration: xSize > 4 ? 0 : duration
+      duration: xSize > 4 ? 0 : duration,
+      callback: (isFinished: boolean) => {
+        if (!isFinished) {
+          olView.fit(extent, {
+            size: this.olMap.getSize(),
+            maxZoom,
+            padding: this.padding,
+            duration: xSize > 4 ? 0 : duration
+          });
+        }
+      }
     });
   }
 

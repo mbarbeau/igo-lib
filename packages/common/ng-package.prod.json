@@ -9,7 +9,11 @@
       "scroll-into-view-if-needed" : "scrollIntoView",
       "typy" : "typy",
       "@ngx-translate/core" : "ngxt-core",
+      "ngx-cacheable": "ngxCacheable",
       "angular-shepherd": "angularShepherd"
     }
-  }
+  },
+  "whitelistedNonPeerDependencies": [
+    "ngx-cacheable"
+  ]
 }

@@ -232,7 +232,8 @@ export class SearchResultsToolComponent implements OnInit, OnDestroy {
               Object.assign(
                 {},
                 { feature: result.entity.data },
-                this.searchState.searchOverlayStyle
+                this.searchState.searchOverlayStyle,
+                result.entity.style?.base ? result.entity.style.base : {}
               ));
           this.shownResultsGeometries.push(result.entity.data as Feature);
           this.map.queryResultsOverlay.addFeature(result.entity.data as Feature, FeatureMotion.None);
@@ -301,17 +302,22 @@ export class SearchResultsToolComponent implements OnInit, OnDestroy {
           computedStyle = getCommonVectorSelectedStyle(
             Object.assign({},
               { feature: abstractResult },
-              this.searchState.searchOverlayStyleFocus));
+              this.searchState.searchOverlayStyleFocus,
+              result.style?.focus ? result.style.focus : {}));
           zIndexOffset = 2;
           break;
         case 'shown':
-          computedStyle = getCommonVectorStyle(Object.assign({}, { feature: abstractResult }, this.searchState.searchOverlayStyle));
+          computedStyle = getCommonVectorStyle(Object.assign({},
+            { feature: abstractResult },
+            this.searchState.searchOverlayStyle,
+            result.style?.base ? result.style.base : {}));
           break;
         case 'selected':
           computedStyle = getCommonVectorSelectedStyle(
             Object.assign({},
               { feature: abstractResult },
-              this.searchState.searchOverlayStyleSelection));
+              this.searchState.searchOverlayStyleSelection,
+              result.style?.selection ? result.style.selection : {}));
           zIndexOffset = 1;
           break;
       }
@@ -369,7 +375,8 @@ export class SearchResultsToolComponent implements OnInit, OnDestroy {
       result.data.meta.style = getCommonVectorSelectedStyle(
         Object.assign({},
           { feature: result.data },
-          this.searchState.searchOverlayStyleFocus));
+          this.searchState.searchOverlayStyleFocus,
+          result.style?.focus ? result.style.focus : {}));
 
       const feature = this.map.searchResultsOverlay.dataSource.ol.getFeatureById(result.meta.id);
       if (feature) {
@@ -392,7 +399,8 @@ export class SearchResultsToolComponent implements OnInit, OnDestroy {
         const style = getCommonVectorSelectedStyle(
           Object.assign({},
             { feature: result.data },
-            this.searchState.searchOverlayStyleSelection));
+            this.searchState.searchOverlayStyleSelection,
+            result.style?.selection ? result.style.selection : {}));
         feature.setStyle(style);
       }
       return;
@@ -532,7 +540,8 @@ export class SearchResultsToolComponent implements OnInit, OnDestroy {
     feature.meta.style = getCommonVectorSelectedStyle(
       Object.assign({},
         { feature },
-        this.searchState.searchOverlayStyleSelection));
+        this.searchState.searchOverlayStyleSelection,
+        result.style?.selection ? result.style.selection : {}));
 
     this.map.searchResultsOverlay.addFeature(feature);
   }

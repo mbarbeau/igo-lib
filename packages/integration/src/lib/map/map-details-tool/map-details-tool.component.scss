@@ -21,3 +21,7 @@ mat-list-item ::ng-deep .mat-list-text {
 mat-list.mat-list-base mat-list-item.mat-list-item ::ng-deep div.mat-list-item-content div.mat-list-text {
     padding-left: 5px;
 }
+
+.mapDetailsList {
+    overflow: hidden;
+  }

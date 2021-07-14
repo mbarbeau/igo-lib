@@ -9,7 +9,7 @@ import { globalCacheBusterNotifier } from 'ngx-cacheable';
 import { ConfigService, LanguageService, MessageService } from '@igo2/core';
 import { Base64 } from '@igo2/utils';
 
-import { User } from './auth.interface';
+import { User, IInfosUser } from './auth.interface';
 import { TokenService } from './token.service';
 
 @Injectable({
@@ -51,12 +51,13 @@ export class AuthService {
     return this.loginCall(body, myHeader);
   }
 
-  loginWithToken(token: string, type: string): Observable<void> {
+  loginWithToken(token: string, type: string, infosUser?: IInfosUser): Observable<void> {
     const myHeader = new HttpHeaders({ 'Content-Type': 'application/json' });
 
     const body = {
       token,
-      typeConnection: type
+      typeConnection: type,
+      infosUser
     };
 
     return this.loginCall(body, myHeader);

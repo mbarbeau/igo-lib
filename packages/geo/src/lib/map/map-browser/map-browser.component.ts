@@ -11,7 +11,7 @@ import { SubjectStatus } from '@igo2/utils';
 import { ActivityService } from '@igo2/core';
 
 import { IgoMap } from '../shared/map';
-import { MapViewOptions } from '../shared/map.interface';
+import { MapControlsOptions, MapViewOptions } from '../shared/map.interface';
 
 @Component({
   selector: 'igo-map-browser',
@@ -35,6 +35,18 @@ export class MapBrowserComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
   private _view: MapViewOptions;
+
+  get controls(): MapControlsOptions {
+    return this._controls;
+  }
+
+  set controls(value: MapControlsOptions) {
+    this._controls = value;
+    if (this.map !== undefined) {
+      this.map.updateControls(value);
+    }
+  }
+  private _controls: MapControlsOptions;
 
   public id = `igo-map-target-${new Date().getTime()}`;
 

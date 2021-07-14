@@ -18,5 +18,14 @@
     "changeTool": "Changement d'outil",
     "context3": "Sélection du 3e contexte de la liste avec nth-of-type",
     "end": "Fin du tour"
+  },
+  "legendPosition": "Position de la légende",
+  "legendPositions": {
+    "none": "Aucune légende",
+    "topleft": "Coin haut gauche de la carte",
+    "topright": "Coin haut droit de la carte",
+    "bottomleft": "Coin bas gauche de la carte",
+    "bottomright": "Coin bas droit de la carte",
+    "newpage": "Sur une nouvelle page"
   }
 }

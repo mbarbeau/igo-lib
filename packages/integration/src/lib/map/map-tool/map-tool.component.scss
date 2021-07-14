@@ -1,4 +1,9 @@
 mat-tab-group,
 mat-tab-group ::ng-deep .mat-tab-body-wrapper {
   height: 100%;
+  overflow: hidden;
+}
+
+:host ::ng-deep  .mat-tab-body-content  {
+    overflow: hidden;
 }

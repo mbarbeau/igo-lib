@@ -10,7 +10,8 @@ import {
   PrintPaperFormat,
   PrintOrientation,
   PrintResolution,
-  PrintSaveImageFormat
+  PrintSaveImageFormat,
+  PrintLegendPosition
 } from '../shared/print.type';
 
 import { PrintService } from '../shared/print.service';
@@ -66,6 +67,15 @@ export class PrintComponent {
     this._imageFormat = value;
   }
   private _imageFormat: PrintSaveImageFormat;
+
+  @Input()
+  get legendPosition(): PrintLegendPosition {
+    return this._legendPosition;
+  }
+  set legendPosition(value: PrintLegendPosition) {
+    this._legendPosition = value;
+  }
+  private _legendPosition: PrintLegendPosition;
 
   @Input()
   get resolution(): PrintResolution {
