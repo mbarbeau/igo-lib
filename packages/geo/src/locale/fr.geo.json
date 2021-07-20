@@ -13,6 +13,7 @@
         "unavailable": "Le catalogue '{{value}}' est indisponible pour le moment ou vous n'avez pas les permissions requises.",
         "externalProvider": {
           "catalog": "Ce catalogue provient d'une organisation externe.",
+          "group": "Ces couches proviennent d'une organisation externe.",
           "layer": "Cette couche provient d'une organisation externe.",
           "unavailableWithEmail": "Le catalogue '{{value}}' est indisponible pour le moment. Pour ajouter un service externe à la liste prédéfinie, veuillez contacter {{email}}. Des délais peuvent s'appliquer si problème il y a avec le fournisseur externe."
         },

@@ -13,6 +13,7 @@
         "unavailable": "The catalog '{{value}}' is unavailable at the moment or you don't have the required permissions.",
         "externalProvider": {
            "catalog": "This catalog comes from an external organization.",
+           "group": "This layers comes from an external organization.",
            "layer": "This layer comes from an external organization.",
            "unavailableWithEmail": "The catalog '{{value}}' is unavailable at the moment. To add an external service to the predefined list, please contact us at {{emailAddress}}. Delays can apply if problems occurs with the provider."
         },

@@ -117,6 +117,7 @@ export class CatalogService {
           {
             id: 'catalog.group.baselayers',
             type: CatalogItemType.Group,
+            externalProvider: catalog.externalProvider,
             title: catalog.title,
             items
           }
@@ -189,10 +190,12 @@ export class CatalogService {
     const compositeCatalog = (catalog as CompositeCatalog).composite;
 
     const catalogsFromInstance = [] as Catalog[];
-    compositeCatalog.map((component: Catalog) =>
+    compositeCatalog.map((component: Catalog) => {
+      component.sortDirection = catalog.sortDirection;  // propagate sortDirection with parent value
       catalogsFromInstance.push(
         CatalogFactory.createInstanceCatalog(component, this)
-      )
+    );
+  }
     );
 
     // get CatalogItems for each original Catalog-----------------------------------------------------
@@ -222,6 +225,10 @@ export class CatalogService {
         const outGroupImpose = Object.assign({}, c.groupImpose);
         outGroupImpose.address = c.id;
         outGroupImpose.type = CatalogItemType.Group;
+        outGroupImpose.externalProvider = c.externalProvider;
+        if (outGroupImpose.sortDirection === undefined) {
+          outGroupImpose.sortDirection = c.sortDirection;
+        }
         outGroupImpose.items = [];
 
         const flatLayer = flatDeepLayer(item);
@@ -433,6 +440,8 @@ export class CatalogService {
       type: CatalogItemType.Group,
       title: itemListIn.Title,
       address: catalog.id,
+      externalProvider: catalog.externalProvider || false,
+      sortDirection: catalog.sortDirection,  // propagate sortDirection
       items: itemListIn.Layer.reduce((items: CatalogItem[], layer: any) => {
         if (layer.Layer !== undefined) {
           // recursive, check next level

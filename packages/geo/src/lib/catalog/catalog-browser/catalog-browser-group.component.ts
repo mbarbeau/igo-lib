@@ -114,11 +114,11 @@ export class CatalogBrowserGroupComponent implements OnInit, OnDestroy {
     this.store.load(this.group.items);
     this.evaluateAdded();
     this.evaluateDisabled(this.collapsed);
-    if (this.catalog && this.catalog.sortDirection !== undefined) {
+    if (this.group.sortDirection !== undefined) {
       this.store.view.sort({
-        direction: this.catalog.sortDirection,
+        direction: this.group.sortDirection,
         valueAccessor: (item: CatalogItem) => item.title
-      });
+        });
     }
   }
 

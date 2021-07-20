@@ -19,7 +19,7 @@ export interface ICatalog {
   forcedProperties?: any[];
   requestEncoding?: string;
   regFilters?: string[];
-  groupImpose?: CatalogItemGroup; // only use by ICompositeCatalog object (id and title)
+  groupImpose?: CatalogItemGroup; // only use by ICompositeCatalog object (id, title, sortDirection?)
   groupSeparator?: string;
   queryFormat?: QueryFormat;
   queryParams?: { [key: string]: string };
@@ -49,6 +49,7 @@ export interface CatalogItemLayer<L = MetadataLayerOptions>
 
 export interface CatalogItemGroup extends CatalogItem {
   items?: CatalogItem[];
+  sortDirection?: 'asc' | 'desc';  // use with groupImpose and ICompositeCatalog
 }
 
 export interface CatalogItemState extends EntityState {

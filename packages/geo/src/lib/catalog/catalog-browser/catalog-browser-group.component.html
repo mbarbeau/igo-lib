@@ -10,6 +10,22 @@
   </mat-icon>
 
   <h4 class="igo-catalog-group-title" id="catalog-group-title" mat-line matTooltipShowDelay="500" [matTooltip]="title" (click)="onTitleClick()">{{title}}</h4>
+
+  <button *ngIf="group.externalProvider"
+    disabled="true"
+    mat-icon-button>
+    <mat-icon
+      class="igo-cataloggroup-external-icon"
+      *ngIf="group.externalProvider"
+      tooltip-position="below"
+      matTooltipShowDelay="500"
+      [matTooltip]="'igo.geo.catalog.externalProvider.group' | translate"
+      color="primary"
+      (click)="$event.stopPropagation()"
+      svgIcon="earth-arrow-right">
+    </mat-icon>
+  </button>
+
   <ng-container *ngIf="(added$ | async) && !(preview$ | async); else notadded">
     <button
       mat-icon-button
