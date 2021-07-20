@@ -331,7 +331,8 @@ export class ILayerSearchSource extends SearchSource implements TextSearch {
       ),
       metadata: {
         url: data.properties.metadataUrl,
-        extern: true
+        extern: data.properties.metadataUrl ? true : undefined,
+        abstract: data.properties.abstract || undefined
       },
       properties: this.formatter.formatResult(data).properties
     });

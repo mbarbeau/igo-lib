@@ -416,7 +416,7 @@ export class QueryService {
   private extractGeoJSONData(res, zIndex, allowedFieldsAndAlias?) {
     let features = [];
     try {
-      features = JSON.parse(res).features;
+      features = JSON.parse(res.replace(/(\r|\n)/g, ' ')).features;
     } catch (e) {
       console.warn('query.service: Unable to parse geojson', '\n', res);
     }
@@ -466,9 +466,9 @@ export class QueryService {
 
     const bodyTagStart = res.toLowerCase().indexOf('<body>');
     const bodyTagEnd = res.toLowerCase().lastIndexOf('</body>') + 7;
-    // replace \r \n  and ' ' with '' to validate if the body is really empty.
-    const body = res.slice(bodyTagStart, bodyTagEnd).replace(/(\r|\n|\s)/g, '');
-    if (body === '<body></body>' || res === '') {
+    // replace \r \n  and ' ' with '' to validate if the body is really empty. Clear all the html tags from body
+    const body = res.slice(bodyTagStart, bodyTagEnd).replace(/(\r|\n|\s)/g, '').replace(/<(.|\n)*?>/g, '');
+    if (body === '' || res === '') {
       return [];
     }
 
@@ -505,6 +505,7 @@ export class QueryService {
     const featureGeometry = featureOL.getGeometry() as any;
     const properties: any = Object.assign({}, featureOL.getProperties());
     delete properties.geometry;
+    delete properties.GEOMETRIE;
     delete properties.boundedBy;
     delete properties.shape;
     delete properties.SHAPE;

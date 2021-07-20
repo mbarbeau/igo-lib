@@ -7,11 +7,11 @@ import { uuid, ObjectUtils } from '@igo2/utils';
 import { LanguageService, MessageService, ConfigService } from '@igo2/core';
 import {
   CapabilitiesService,
-  TypeCapabilities,
   WMSDataSourceOptions,
   WMSDataSourceOptionsParams,
   WMTSDataSourceOptions,
-  ArcGISRestDataSourceOptions
+  ArcGISRestDataSourceOptions,
+  TypeCapabilitiesStrings
 } from '../../datasource';
 import { LayerOptions, ImageLayerOptions } from '../../layer';
 import { getResolutionFromScale } from '../../map';
@@ -327,7 +327,7 @@ export class CatalogService {
   private getCatalogCapabilities(catalog: Catalog): Observable<any> {
     const sType: string = TypeCatalog[catalog.type as string];
     return this.capabilitiesService
-      .getCapabilities(TypeCapabilities[sType], catalog.url, catalog.version)
+      .getCapabilities(sType as any, catalog.url, catalog.version)
       .pipe(
         catchError((e) => {
           const title = this.languageService.translate.instant(
@@ -345,7 +345,7 @@ export class CatalogService {
   }
 
   private prepareCatalogItemLayer(layer, idParent, layersQueryFormat, catalog) {
-    const configuredQueryFormat = this.retriveLayerInfoFormat(
+    const configuredQueryFormat = this.retrieveLayerInfoFormat(
       layer.Name,
       layersQueryFormat
     );
@@ -670,7 +670,7 @@ export class CatalogService {
     return regexes.find((regex: RegExp) => regex.test(layerName)) !== undefined;
   }
 
-  private retriveLayerInfoFormat(
+  private retrieveLayerInfoFormat(
     layerNameFromCatalog: string,
     layersQueryFormat: { layer: string; queryFormat: QueryFormat }[]
   ): QueryFormat {

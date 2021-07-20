@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
 import {
   HttpClient,
-  HttpParams,
-  HttpErrorResponse
+  HttpParams
 } from '@angular/common/http';
 import { Observable, forkJoin, of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
@@ -89,7 +88,6 @@ export class CapabilitiesService {
           : undefined;
       })
     );
-
     return options;
   }
 
@@ -118,6 +116,7 @@ export class CapabilitiesService {
     const baseUrl = baseOptions.url + '/' + baseOptions.layer + '?f=json';
     const modifiedUrl = baseOptions.url.replace('FeatureServer', 'MapServer');
     const legendUrl = modifiedUrl + '/legend?f=json';
+    const serviceCapabilities = this.getCapabilities('arcgisrest', baseOptions.url);
     const arcgisOptions = this.http.get(baseUrl);
     const legend = this.http.get(legendUrl).pipe(
       map((res: any) => res),
@@ -126,9 +125,9 @@ export class CapabilitiesService {
         return of(err);
       })
     );
-    return forkJoin([arcgisOptions, legend]).pipe(
+    return forkJoin([arcgisOptions, legend, serviceCapabilities]).pipe(
       map((res: any) => {
-        return this.parseArcgisOptions(baseOptions, res[0], res[1]);
+        return this.parseArcgisOptions(baseOptions, res[0], res[1], res[2]);
       })
     );
   }
@@ -139,6 +138,7 @@ export class CapabilitiesService {
     const baseUrl = baseOptions.url + '/' + baseOptions.layer + '?f=json';
     const modifiedUrl = baseOptions.url.replace('FeatureServer', 'MapServer');
     const legendUrl = modifiedUrl + '/legend?f=json';
+    const serviceCapabilities = this.getCapabilities('imagearcgisrest', baseOptions.url);
     const arcgisOptions = this.http.get(baseUrl);
     const legend = this.http.get(legendUrl).pipe(
       map((res: any) => res),
@@ -147,9 +147,9 @@ export class CapabilitiesService {
         return of(err);
       })
     );
-    return forkJoin([arcgisOptions, legend]).pipe(
+    return forkJoin([arcgisOptions, legend, serviceCapabilities]).pipe(
       map((res: any) => {
-        return this.parseTileOrImageArcgisOptions(baseOptions, res[0], res[1]);
+        return this.parseTileOrImageArcgisOptions(baseOptions, res[0], res[1], res[2]);
       })
     );
   }
@@ -159,6 +159,7 @@ export class CapabilitiesService {
   ): Observable<TileArcGISRestDataSourceOptions> {
     const baseUrl = baseOptions.url + '/' + baseOptions.layer + '?f=json';
     const legendUrl = baseOptions.url + '/legend?f=json';
+    const serviceCapabilities = this.getCapabilities('tilearcgisrest', baseOptions.url);
     const arcgisOptions = this.http.get(baseUrl);
     const legendInfo = this.http.get(legendUrl).pipe(
       map((res: any) => res),
@@ -167,10 +168,9 @@ export class CapabilitiesService {
         return of(err);
       })
     );
-
-    return forkJoin([arcgisOptions, legendInfo]).pipe(
+    return forkJoin([arcgisOptions, legendInfo, serviceCapabilities]).pipe(
       map((res: any) =>
-        this.parseTileOrImageArcgisOptions(baseOptions, res[0], res[1])
+        this.parseTileOrImageArcgisOptions(baseOptions, res[0], res[1], res[2])
       )
     );
   }
@@ -193,7 +193,7 @@ export class CapabilitiesService {
     });
 
     let request;
-    if ((service as any) === 'esriJSON') {
+    if (TypeCapabilities[service] === 'esriJSON') {
       request = this.http.get(baseUrl + '?f=json');
     } else {
       request = this.http.get(baseUrl, {
@@ -204,7 +204,7 @@ export class CapabilitiesService {
 
     return request.pipe(
       map((res) => {
-        if ((service as any) === 'esriJSON') {
+        if (TypeCapabilities[service] === 'esriJSON') {
           return res as object;
         }
         if (
@@ -370,6 +370,7 @@ export class CapabilitiesService {
   private parseArcgisOptions(
     baseOptions: ArcGISRestDataSourceOptions,
     arcgisOptions: any,
+    serviceCapabilities: any,
     legend?: any
   ): ArcGISRestDataSourceOptions {
     const title = arcgisOptions.name;
@@ -412,7 +413,11 @@ export class CapabilitiesService {
       _layerOptionsFromSource: {
         title,
         minResolution: getResolutionFromScale(arcgisOptions.maxScale),
-        maxResolution: getResolutionFromScale(arcgisOptions.minScale)
+        maxResolution: getResolutionFromScale(arcgisOptions.minScale),
+        metadata: {
+          extern: false,
+          abstract: arcgisOptions.description || serviceCapabilities.serviceDescription
+        },
       },
       sourceFields: arcgisOptions.fields,
       queryTitle: arcgisOptions.displayField
@@ -423,7 +428,8 @@ export class CapabilitiesService {
   private parseTileOrImageArcgisOptions(
     baseOptions: TileArcGISRestDataSourceOptions | ArcGISRestImageDataSourceOptions,
     arcgisOptions: any,
-    legend: any
+    legend: any,
+    serviceCapabilities: any
   ): TileArcGISRestDataSourceOptions | ArcGISRestImageDataSourceOptions {
     const title = arcgisOptions.name;
     const legendInfo = legend.layers ? legend : undefined;
@@ -459,7 +465,11 @@ export class CapabilitiesService {
       _layerOptionsFromSource: {
         title,
         minResolution: getResolutionFromScale(arcgisOptions.maxScale),
-        maxResolution: getResolutionFromScale(arcgisOptions.minScale)
+        maxResolution: getResolutionFromScale(arcgisOptions.minScale),
+        metadata: {
+          extern: false,
+          abstract: arcgisOptions.description || serviceCapabilities.serviceDescription
+        },
       },
       legendInfo,
       timeFilter,
